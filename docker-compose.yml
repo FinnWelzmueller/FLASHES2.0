@@ -15,8 +15,12 @@ services:
       - INFLUXDB_ADMIN_TOKEN=${INFLUXDB_ADMIN_TOKEN}
 
   mongodb:
-    image: mongo:6
+    image: mongo:latest
     container_name: flashes-mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_DB_PATH=/data/db
     ports:
       - "27017:27017"
     volumes:
@@ -45,5 +49,3 @@ services:
       - mongodb
     volumes:
       - ./backend:/app
-
-volumes: {}
