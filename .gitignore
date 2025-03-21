@@ -1,5 +1,5 @@
 .env
-/backend/venv/
+/venv/
 data/
 __pycache__/
 /backend/master_table.txt
