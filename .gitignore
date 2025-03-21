@@ -2,3 +2,5 @@
 /backend/venv/
 data/
 __pycache__/
+/backend/master_table.txt
+/backend/filldb.py
