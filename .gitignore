@@ -1,7 +1,10 @@
 .env
 /venv/
-data/
+data/influxdb/*
+data/mongodb/*
+data/grafana/*
 __pycache__/
-/backend/master_table.txt
-/backend/filldb.py
+backend/master_table.txt
+backend/filldb.py
 .vscode/
+config/influxdb/*
