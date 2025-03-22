@@ -1,18 +1,22 @@
-version: '3.3'
-
 services:
   influxdb:
-    image: influxdb:2.7
+    image: influxdb:2
     container_name: flashes-influxdb
     ports:
       - "8086:8086"
     volumes:
       - ./data/influxdb:/var/lib/influxdb2
+      - ./config/influxdb:/etc/influxdb2
     environment:
-      - INFLUXDB_DB=flashes
-      - INFLUXDB_ADMIN_USER=admin
-      - INFLUXDB_ADMIN_PASSWORD=${INFLUXDB_ADMIN_PASSWORD}
-      - INFLUXDB_ADMIN_TOKEN=${INFLUXDB_ADMIN_TOKEN}
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_ADMIN_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=flashes
+      - DOCKER_INFLUXDB_INIT_BUCKET=flashes_data
+      - DOCKER_INFLUXDB_INIT_RETENTION=0
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_ADMIN_TOKEN} 
+    networks:
+      - flashes-network
 
   mongodb:
     image: mongo:latest
@@ -36,8 +40,11 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
     depends_on:
       - influxdb
+        
     volumes:
       - ./data/grafana:/var/lib/grafana
+    networks:
+      - flashes-network
 
   backend:
     build: ./backend
@@ -49,3 +56,7 @@ services:
       - mongodb
     volumes:
       - ./backend:/app
+
+networks:
+  flashes-network:
+    driver: bridge
