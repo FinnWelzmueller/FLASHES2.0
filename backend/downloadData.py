@@ -166,12 +166,16 @@ def update():
     for source in sources_collection.find({}):
         if source["swift"]:
             swift_df = download_to_dataframe(source["swift"]["data_url"], "swift")
+            lasttimestamp = find_last_timestamp(source["integral_name"], source["swift"]["influx_key"])
 
         if source["maxi"]:
             maxi_df = download_to_dataframe(source["maxi"]["data_url"], "maxi")
-        
+            lasttimestamp = find_last_timestamp(source["integral_name"], source["maxi"]["influx_key"])
+            
         if source["fermi"]:
             fermi_df = download_fermi(source["fermi"]["data_url"], temp_dir="./_temp")
+            lasttimestamp = find_last_timestamp(source["integral_name"], source["fermi"]["influx_key"])
+
 
 def find_last_timestamp(sourcename, key):
     query = f"""
