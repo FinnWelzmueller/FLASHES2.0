@@ -1,6 +1,6 @@
 services:
   influxdb:
-    image: influxdb:2
+    image: influxdb:latest
     container_name: flashes-influxdb
     ports:
       - "8086:8086"
@@ -15,6 +15,7 @@ services:
       - DOCKER_INFLUXDB_INIT_BUCKET=flashes_data
       - DOCKER_INFLUXDB_INIT_RETENTION=0
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_ADMIN_TOKEN} 
+      - INFLUXDB_STORAGE_TSI_DISABLE_COMPACTION=true
     networks:
       - flashes-network
 
@@ -29,6 +30,8 @@ services:
       - "27017:27017"
     volumes:
       - ./data/mongodb:/data/db
+    networks:
+      - flashes-network
 
   grafana:
     image: grafana/grafana:latest
@@ -51,11 +54,15 @@ services:
     container_name: flashes-backend
     ports:
       - "8000:8000"
+    env_file:
+      - .env
     depends_on:
       - influxdb
       - mongodb
     volumes:
       - ./backend:/app
+    networks:
+      - flashes-network
 
 networks:
   flashes-network:
