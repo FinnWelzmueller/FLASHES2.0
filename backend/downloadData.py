@@ -165,17 +165,37 @@ def write_flux_to_influx(source, telescope, df):
 def update():
     for source in sources_collection.find({}):
         if source["swift"]:
+            print(f"Updating {source["integral_name"]} (Swift data)...")
             swift_df = download_to_dataframe(source["swift"]["data_url"], "swift")
-            lasttimestamp = find_last_timestamp(source["integral_name"], source["swift"]["influx_key"])
+            last_ts_swift = find_last_timestamp(source["integral_name"], source["swift"]["influx_key"])
+            new_swift_df = filter_new_data(swift_df, last_ts_swift) if last_ts_swift else swift_df
+            write_flux_to_influx(source, "swift", new_swift_df)
+            print(f"Updating {source["integral_name"]} (Swift data) done.")
 
         if source["maxi"]:
+            print(f"Updating {source["integral_name"]} (MAXI data)...")
             maxi_df = download_to_dataframe(source["maxi"]["data_url"], "maxi")
-            lasttimestamp = find_last_timestamp(source["integral_name"], source["maxi"]["influx_key"])
+            last_ts_maxi = find_last_timestamp(source["integral_name"], source["maxi"]["influx_key"])
+            new_maxi_df = filter_new_data(maxi_df, last_ts_maxi) if last_ts_maxi else maxi_df
+            write_flux_to_influx(source, "maxi", new_maxi_df)
+            print(f"Updating {source["integral_name"]} (MAXI data) done.")
             
         if source["fermi"]:
+            print(f"Updating {source["integral_name"]} (Fermi data)...")
             fermi_df = download_fermi(source["fermi"]["data_url"], temp_dir="./_temp")
-            lasttimestamp = find_last_timestamp(source["integral_name"], source["fermi"]["influx_key"])
+            last_ts_fermi = find_last_timestamp(source["integral_name"], source["fermi"]["influx_key"])
+            new_fermi_df = filter_new_data(fermi_df, last_ts_fermi) if last_ts_fermi else fermi_df
+            write_flux_to_influx(source, "fermi", new_fermi_df)
+            print(f"Updating {source["integral_name"]} (Fermi data) done.")
+        
+        #hardness calculation
+        if (source.get("swift") and source.get("maxi") and not new_swift_df.empty and not new_maxi_df.empty):
+            print(f"Updating {source["integral_name"]} (Hardness data)...")
+            calculate_hardness(source)
+            print(f"Updating {source["integral_name"]} (Hardness data) done.")
 
+def filter_new_data(df: pd.DataFrame, last_timestamp: pd.Timestamp) -> pd.DataFrame:
+    return df[df["UTC TIME"] > last_timestamp]
 
 def find_last_timestamp(sourcename, key):
     query = f"""
@@ -298,4 +318,4 @@ def calculate_hardness(source):
     write_hardness_combined_to_influx(source, df)
 
 
-find_last_timestamp("MRK 335", "maxi_mrk335")
+update()
