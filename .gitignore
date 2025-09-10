@@ -1,5 +1,5 @@
 .env
-/venv/
+backend/venv/
 data/influxdb/*
 data/mongodb/*
 data/grafana/*
