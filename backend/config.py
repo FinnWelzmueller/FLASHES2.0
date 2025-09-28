@@ -20,3 +20,13 @@ batch_size = 100 # to balance load during upload
 
 query_api = client.query_api()
 write_api = client.write_api(write_options=SYNCHRONOUS)
+
+
+field_lookup = {
+    "flux_2_20": "flux (2-20 keV)",
+    "error_2_20": "error (2-20 keV)",
+    "flux_15_150": "flux (15-150 keV)",
+    "hardness": "hardness ratio",
+    "hardness_error": "hardness error",
+    # ...
+}
