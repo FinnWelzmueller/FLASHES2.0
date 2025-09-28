@@ -1,9 +1,9 @@
 import pandas as pd
 from astropy.time import Time
-from backend.config import influx_bucket, influx_org, query_api
+from config import influx_bucket, influx_org, query_api
 
 def influx_to_pandas(influxtable):
-    df = pd.DataFrame(columns=["Time", "Value"])
+    df = pd.DataFrame(columns=['Time', 'Value'])
     times = []
     values = []
     try:
@@ -13,12 +13,12 @@ def influx_to_pandas(influxtable):
                 values.append(entry.get_value())
     except Exception as e:
         print(e)
-    df["Time"] = times
-    df["Value"] = values
+    df['Time'] = times
+    df['Value'] = values
     return df
 
 def filter_new_data(df: pd.DataFrame, last_timestamp: pd.Timestamp) -> pd.DataFrame:
-    return df[df["UTC TIME"] > last_timestamp]
+    return df[df['UTC TIME'] > last_timestamp]
 
 def find_last_timestamp(sourcename, key):
     query = f"""
@@ -26,8 +26,8 @@ def find_last_timestamp(sourcename, key):
       |> range(start: 0)
       |> filter(fn: (r) => r._measurement == "flux data")
       |> filter(fn: (r) => r.source == "{key}")
-      |> keep(columns: ["_time"])
-      |> sort(columns: ["_time"], desc: true)
+      |> keep(columns: ['_time'])
+      |> sort(columns: ['_time'], desc: true)
       |> limit(n: 1)
     """
     tables = query_api.query(org=influx_org, query=query)
