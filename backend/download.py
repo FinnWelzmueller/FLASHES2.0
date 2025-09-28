@@ -1,7 +1,7 @@
 import requests
 from io import StringIO
 import pandas as pd
-from backend.utils import get_utc_time
+from utils import get_utc_time
 import os
 import gzip
 import shutil
@@ -26,7 +26,7 @@ def download_to_dataframe(url, telescope):
             else:
                 raise KeyError(f"Telescope {telescope} not found")
             
-            df["UTC TIME"] = get_utc_time(df["TIME"])
+            df['UTC TIME'] = get_utc_time(df['TIME'])
             return df
         else:
             print(f"Failed to download {url}, status code: {response.status_code}")
@@ -62,8 +62,8 @@ def download_fermi(url, temp_dir="./_temp"):
         names = [name for name in dat.colnames if len(dat[name].shape) <= 1]
         df = dat[names].to_pandas()
         df = df[['PSRTIME', 'AMPLITUDE', 'AMPLITUDE_ERR']]
-        df.columns = ["TIME", "FLUX 12-50", "ERROR 12-50"]
-        df["UTC TIME"] = get_utc_time(df["TIME"])
+        df.columns = ['TIME", "FLUX 12-50", "ERROR 12-50']
+        df['UTC TIME'] = get_utc_time(df['TIME'])
         shutil.rmtree(temp_dir)
         return df
     else:
