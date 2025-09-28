@@ -1,6 +1,6 @@
 services:
   influxdb:
-    image: influxdb:latest
+    image: influxdb:2.7
     container_name: flashes-influxdb
     ports:
       - "8086:8086"
@@ -20,7 +20,7 @@ services:
       - flashes-network
 
   mongodb:
-    image: mongo:latest
+    image: mongo:6.0
     container_name: flashes-mongodb
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
@@ -34,7 +34,7 @@ services:
       - flashes-network
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:10.4.x
     container_name: flashes-grafana
     ports:
       - "3000:3000"
@@ -50,7 +50,9 @@ services:
       - flashes-network
 
   backend:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: flashes-backend
     ports:
       - "8000:8000"
