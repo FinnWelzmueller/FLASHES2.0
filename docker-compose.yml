@@ -34,7 +34,7 @@ services:
       - flashes-network
 
   grafana:
-    image: grafana/grafana:10.4.x
+    image: grafana/grafana
     container_name: flashes-grafana
     ports:
       - "3000:3000"
