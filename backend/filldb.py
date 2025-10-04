@@ -22,7 +22,7 @@ for _, row in df.iterrows():
         "integral_name": row['Integral Name'],  
         "coord_ra": row['Ra Obj'],
         "coord_dec": row['Dec Obj'],
-        "labels_constant" :[],
+        "labels_constant" : [],
         "labels_dynamic": []
     }
 
@@ -30,7 +30,8 @@ for _, row in df.iterrows():
     if row['Maxi Name'] != "noMaxi": # If Maxi Data is available -> .dat file available
         source_data['maxi'] = {
             "data_url": maxi_url + row['Maxi ID'] + "/" + row['Maxi ID'] + "_g_lc_1day_all.dat",
-            "influx_key": "maxi_" + row['Integral Name'].replace(" " ,"").lower()}
+            "influx_key": "maxi_" + row['Integral Name'].replace(" " ,"").lower(),
+            "last_timestamp": 0}
     else:
         source_data['maxi'] = None
 
@@ -40,14 +41,16 @@ for _, row in df.iterrows():
             str += "weak/"
         source_data['swift'] = {
             "data_url": str + row['Swift ID'] + ".lc.txt",
-            "influx_key": "swift_" + row['Integral Name'].replace(" " ,"").lower()}
+            "influx_key": "swift_" + row['Integral Name'].replace(" " ,"").lower(),
+            "last_timestamp": 0}
     else:
         source_data['swift'] = None
     
     if row['Fermi Name'] != "noFermi":  # if Fermi Data is available -> .fits file available
         source_data['fermi'] = {
             "data_url": fermi_url + row['Fermi ID'] + "_old.fits.gz", 
-            "influx_key": "fermi_" + row['Integral Name'].replace(" " ,"").lower()}
+            "influx_key": "fermi_" + row['Integral Name'].replace(" " ,"").lower(),
+            "last_timestamp": 0}
     else:
         source_data['fermi'] = None
 
@@ -55,9 +58,14 @@ for _, row in df.iterrows():
 
     if source_data['maxi'] is not None and source_data['swift'] is not None:
         source_data['hardness_ratio'] = {
-            "influx_key": "hardness_" + row['Integral Name'].replace(" " ,"").lower()
+            "influx_key": "hardness_" + row['Integral Name'].replace(" " ,"").lower(),
+            "last_timestamp": 0
         }
         source_data['combined'] = {
-            "influx_key": "combined_" + row['Integral Name'].replace(" " ,"").lower()
+            "influx_key": "combined_" + row['Integral Name'].replace(" " ,"").lower(),
+            "last_timestamp": 0
         }
+    else:
+        source_data['hardness_ratio'] = None
+        source_data['combined'] = None
     sources_collection.insert_one(source_data)
