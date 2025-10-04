@@ -7,9 +7,11 @@ def write_to_influx(df: pd.DataFrame, write_api, source: dict, telescope: str, s
     Writes data from a dataframe to the InfluxDB. The parameter telescope describes the data source. 
     It can be "swift", "maxi" or "fermi" for lightcurve data or "hardness" or "combined" for additinoal calculations.
     :param df: DataFrame containing the data to be written.
+    :param write_api: InfluxDB write API object.
     :param source: Source dictionary from MongoDB.
     :param telescope: "swift", "maxi", "fermi", "hardness" or "combined"
     :param influx_token": Token for InfluxDB authentication.
+    :param sources_collection: MongoDB collection object for sources.
     :return: None
     """
     logging.debug(f"Writing data to InfluxDB for {source['integral_name']} from {telescope}...")
