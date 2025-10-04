@@ -6,3 +6,5 @@ data/grafana/*
 __pycache__/
 .vscode/
 config/influxdb/*
+.venv
+*.ipynb
