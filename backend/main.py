@@ -31,4 +31,4 @@ client = influxdb_client.InfluxDBClient(
 )
 write_api = client.write_api(write_options=SYNCHRONOUS)
 logging.info("Success.")
-update(sources_collection, write_api, token, os.getenv("TEMP_DIR", "./_temp"))
+update(sources_collection, write_api, os.getenv("TEMP_DIR", "./_temp"))
