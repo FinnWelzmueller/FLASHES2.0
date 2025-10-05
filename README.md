@@ -70,7 +70,7 @@ If large amounts of timeseries data is stored in dictionaries, such as in a mong
 
 ### Backend
 
-The backend offers a standardized way to access data from the database.
+The backend offers a standardized way to access data from the database. It is structured into two areas. The first area is responsible for data download, processing and upload into the database. The second area is responsible for offering endpoints for access within the software. 
 
 ### Frontend
 
