@@ -26,8 +26,8 @@ def update(sources_collection, write_api, temp_dir = "./_temp") -> None:
                     errors.append((source['integral_name'], "swift"))
                     continue
                 logging.info(f"Downloaded {len(swift_df)} rows of Swift/BAT data for {source['integral_name']}")
-                swift_df = filter_times(swift_df, source, "swift")
-                write_to_influx(swift_df, write_api, source, "swift", sources_collection)
+                swift_df_new= filter_times(swift_df, source, "swift")
+                write_to_influx(swift_df_new, write_api, source, "swift", sources_collection)
             if source.get("maxi"):
                 logging.info(f"Downloading MAXI data for {source['integral_name']}...")
                 maxi_df = download_all_data_swift_maxi(source['maxi']['data_url'], "maxi")
@@ -35,8 +35,8 @@ def update(sources_collection, write_api, temp_dir = "./_temp") -> None:
                     errors.append((source['integral_name'], "maxi"))
                     continue
                 logging.info(f"Downloaded {len(maxi_df)} rows of MAXI data for {source['integral_name']}")
-                maxi_df = filter_times(maxi_df, source, "maxi")
-                write_to_influx(maxi_df, write_api, source, "maxi", sources_collection)
+                maxi_df_new = filter_times(maxi_df, source, "maxi")
+                write_to_influx(maxi_df_new, write_api, source, "maxi", sources_collection)
             if source.get("fermi"):
                 logging.info(f"Downloading Fermi/GBM data for {source['integral_name']}...")
                 fermi_df = download_all_data_fermi(source['fermi']['data_url'], temp_dir)
@@ -44,15 +44,42 @@ def update(sources_collection, write_api, temp_dir = "./_temp") -> None:
                     errors.append((source['integral_name'], "fermi"))
                     continue
                 logging.info(f"Downloaded {len(fermi_df)} rows of Fermi/GBM data for {source['integral_name']}")
-                fermi_df = filter_times(fermi_df, source, "fermi")
-                write_to_influx(fermi_df, write_api, source, "fermi", sources_collection)
-
+                fermi_df_new = filter_times(fermi_df, source, "fermi")
+                write_to_influx(fermi_df_new, write_api, source, "fermi", sources_collection)
+            if source.get("swift") and source.get("maxi"):
+                logging.info(f"Found Swift and MAXI data for {source['integral_name']}, calculating hardness ratio and combined flux...")
+                hardness_combined_df = calculate_hardness_and_combined_flux(swift_df, maxi_df)
+                write_to_influx(hardness_combined_df[['UTC TIME', 'HARDNESS RATIO', 'HARDNESS ERROR']], write_api, source, "hardness", sources_collection)
+                write_to_influx(hardness_combined_df[['UTC TIME', 'COMBINED FLUX', 'COMBINED ERROR']], write_api, source, "combined", sources_collection)
         except Exception as e:
                   logging.error(f"Error processing source {source['integral_name']}: {e}")
     shutil.rmtree(temp_dir)
-    logging.info("Update Process Complete. The following errors occured:")
+    logging.info("----- Update Process Complete. The following errors occured -----")
     for error in errors:
-         logging.error(f"Source: {error[0]}, Telescope: {error[1]}")
+         logging.info(f" - Source: {error[0]}, Telescope: {error[1]}")
+
+def calculate_hardness_and_combined_flux(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
+    """
+    Calculates the hardness ratio and combined flux from Swift/BAT and MAXI data.
+    The hardness ratio is defined as the ratio of the Swift/BAT flux (15-50 keV) to the MAXI flux (2-20 keV).
+    The combined flux is defined as the sum of the Swift/BAT flux (15-50 keV) and the MAXI flux (2-20 keV).
+    The errors are calculated using standard error propagation.
+    :param df1: DataFrame containing Swift/BAT data. Must contain columns 'UTC TIME', 'FLUX 15-50', 'ERROR 15-50'.
+    :param df2: DataFrame containing MAXI data. Must contain columns 'UTC TIME', 'FLUX 2-20', 'ERROR 2-20'.
+    :return: DataFrame containing the hardness ratio and combined flux with columns 'UTC TIME', 'HARDNESS RATIO', 'HARDNESS ERROR', 'COMBINED FLUX', 'COMBINED ERROR'.
+    """
+    df_out = pd.DataFrame(columns=['UTC TIME', 'HARDNESS RATIO', 'HARDNESS ERROR', 'COMBINED FLUX', 'COMBINED ERROR'])
+    merged = pd.merge(df1, df2, left_on="UTC TIME",right_on="UTC TIME", how='outer')
+    for idx, row in merged.iterrows():
+        if not (pd.isna(row['FLUX 2-20']) or pd.isna(row['FLUX 15-50'])):
+            df_out.loc[len(df_out)] = {
+                'UTC TIME': row['UTC TIME'],
+                'HARDNESS RATIO': row['FLUX 15-50'] / row['FLUX 2-20'],
+                'HARDNESS ERROR': (row['FLUX 15-50'] / row['FLUX 2-20']) * ((row['ERROR 15-50'] / row['FLUX 15-50'])**2 + (row['ERROR 2-20'] / row['FLUX 2-20'])**2)**0.5,
+                'COMBINED FLUX': row['FLUX 15-50'] + row['FLUX 2-20'],
+                'COMBINED ERROR': (row['ERROR 15-50']**2 + row['ERROR 2-20']**2)**0.5
+            }
+    return df_out
 
 
 def download_all_data_swift_maxi(url:str, telescope:str) -> pd.DataFrame | None:
@@ -81,6 +108,7 @@ def download_all_data_swift_maxi(url:str, telescope:str) -> pd.DataFrame | None:
                 "TIME", "FLUX 2-20", "ERROR 2-20", "FLUX 2-4", "ERROR 2-4", "FLUX 4-10", "ERROR 4-10", "FLUX 10-20", "ERROR 10-20"
                 ]
             df['UTC TIME'] = get_utc_time(df['TIME'])
+            df["TIME"] = df["TIME"].astype(int)
             logging.debug(f"Download complete from {url} for {telescope}")
             return df       
     else:
@@ -116,6 +144,7 @@ def download_all_data_fermi(url:str, temp_dir) -> pd.DataFrame | None:
         df = df[['PSRTIME', 'AMPLITUDE', 'AMPLITUDE_ERR']]
         df['UTC TIME'] = get_utc_time(df['PSRTIME'])
         df.columns = ['TIME', 'FLUX 12-50', 'ERROR 12-50', 'UTC TIME']
+        df["TIME"] = df["TIME"].astype(int)
         logging.debug(f"Download complete from {url} for fermi")
         return df
     else:
@@ -146,3 +175,15 @@ def filter_times(df: pd.DataFrame, source, telescope) -> pd.DataFrame | None:
     last_timestamp = source[telescope]['last_timestamp']
     logging.debug(f"Filtering data for {source['integral_name']} from {telescope}. Last timestamp is {last_timestamp}...")
     return df[df['TIME'] > last_timestamp]
+
+
+def calculate_hardness_ratio(swift_df: pd.DataFrame, maxi_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Calculates the hardness ratio from Swift/BAT and MAXI data.
+    :param swift_df: DataFrame containing Swift/BAT data.
+    :param maxi_df: DataFrame containing MAXI data.
+    :return: DataFrame containing the hardness ratio.
+    """
+    merged_df = pd.merge(swift_df, maxi_df, left_on="UTC TIME", right_on="UTC TIME", how='outer', suffixes=('_swift', '_maxi'))
+    merged_df['HARDNESS RATIO'] = merged_df['FLUX 15-50'] / merged_df['FLUX 2-20']
+    
