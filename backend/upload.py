@@ -45,12 +45,18 @@ def write_to_influx(df: pd.DataFrame, write_api, source: dict, telescope: str, s
             .time(row['UTC TIME'])
             points.append(p)
 
-    if telescope == "hardness":
+    if telescope == "hardness_ratio":
         for index, row in df.iterrows():
-            continue
+            p = Point("flux data").tag("source", key) \
+            .field("hardness ratio", row['HARDNESS RATIO']).field("hardness error", row['HARDNESS ERROR']) \
+            .time(row['UTC TIME'])
+            points.append(p)
     if telescope == "combined":
         for index, row in df.iterrows():
-            continue
+            p = Point("flux data").tag("source", key) \
+            .field("combined flux", row['COMBINED FLUX']).field("combined error", row['COMBINED ERROR']) \
+            .time(row['UTC TIME'])
+            points.append(p)
     try:
         write_api.write(bucket="flashes_data", org="flashes", record=points,write_precision="ns")
     except Exception as e:
