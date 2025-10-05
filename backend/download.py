@@ -1,6 +1,5 @@
 import logging
 import requests
-from dotenv import load_dotenv
 from io import StringIO
 import pandas as pd
 import gzip
@@ -11,7 +10,12 @@ import os
 from upload import write_to_influx
 
 def update(sources_collection, write_api, temp_dir = "./_temp") -> None:
-    
+    """
+    Main update function. Downloads data for all sources in the mongoDB, processes it and uploads it to InfluxDB. Calculates hardness ratio and combined flux if both Swift and MAXI data is available.
+    :param sources_collection: MongoDB collection object for sources.
+    :param write_api: InfluxDB write API object.
+    :param temp_dir: Directory to store temporary files.
+    """
     logging.info("Starting Update Process.")
     logging.debug(f"Directory for temporary files: {temp_dir}")
     os.makedirs(temp_dir, exist_ok=True)
@@ -49,8 +53,8 @@ def update(sources_collection, write_api, temp_dir = "./_temp") -> None:
             if source.get("swift") and source.get("maxi"):
                 logging.info(f"Found Swift and MAXI data for {source['integral_name']}, calculating hardness ratio and combined flux...")
                 hardness_combined_df = calculate_hardness_and_combined_flux(swift_df, maxi_df)
-                write_to_influx(hardness_combined_df[['UTC TIME', 'HARDNESS RATIO', 'HARDNESS ERROR']], write_api, source, "hardness", sources_collection)
-                write_to_influx(hardness_combined_df[['UTC TIME', 'COMBINED FLUX', 'COMBINED ERROR']], write_api, source, "combined", sources_collection)
+                write_to_influx(hardness_combined_df[['UTC TIME', 'HARDNESS RATIO', 'HARDNESS ERROR', 'TIME']], write_api, source, "hardness_ratio", sources_collection)
+                write_to_influx(hardness_combined_df[['UTC TIME', 'COMBINED FLUX', 'COMBINED ERROR', 'TIME']], write_api, source, "combined", sources_collection)
         except Exception as e:
                   logging.error(f"Error processing source {source['integral_name']}: {e}")
     shutil.rmtree(temp_dir)
@@ -61,25 +65,26 @@ def update(sources_collection, write_api, temp_dir = "./_temp") -> None:
 def calculate_hardness_and_combined_flux(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
     """
     Calculates the hardness ratio and combined flux from Swift/BAT and MAXI data.
-    The hardness ratio is defined as the ratio of the Swift/BAT flux (15-50 keV) to the MAXI flux (2-20 keV).
-    The combined flux is defined as the sum of the Swift/BAT flux (15-50 keV) and the MAXI flux (2-20 keV).
+    The hardness ratio is defined as the ratio of the Swift/BAT flux (15-150 keV) to the MAXI flux (2-20 keV).
+    The combined flux is defined as the sum of the Swift/BAT flux (15-150 keV) and the MAXI flux (2-20 keV).
     The errors are calculated using standard error propagation.
-    :param df1: DataFrame containing Swift/BAT data. Must contain columns 'UTC TIME', 'FLUX 15-50', 'ERROR 15-50'.
+    :param df1: DataFrame containing Swift/BAT data. Must contain columns 'UTC TIME', 'FLUX 15-150', 'ERROR 15-150'.
     :param df2: DataFrame containing MAXI data. Must contain columns 'UTC TIME', 'FLUX 2-20', 'ERROR 2-20'.
     :return: DataFrame containing the hardness ratio and combined flux with columns 'UTC TIME', 'HARDNESS RATIO', 'HARDNESS ERROR', 'COMBINED FLUX', 'COMBINED ERROR'.
     """
     df_out = pd.DataFrame(columns=['UTC TIME', 'HARDNESS RATIO', 'HARDNESS ERROR', 'COMBINED FLUX', 'COMBINED ERROR'])
     merged = pd.merge(df1, df2, left_on="UTC TIME",right_on="UTC TIME", how='outer')
     for idx, row in merged.iterrows():
-        if not (pd.isna(row['FLUX 2-20']) or pd.isna(row['FLUX 15-50'])):
+        if not (pd.isna(row['FLUX 2-20']) or pd.isna(row['FLUX 15-150'])):
             df_out.loc[len(df_out)] = {
                 'UTC TIME': row['UTC TIME'],
-                'HARDNESS RATIO': row['FLUX 15-50'] / row['FLUX 2-20'],
-                'HARDNESS ERROR': (row['FLUX 15-50'] / row['FLUX 2-20']) * ((row['ERROR 15-50'] / row['FLUX 15-50'])**2 + (row['ERROR 2-20'] / row['FLUX 2-20'])**2)**0.5,
-                'COMBINED FLUX': row['FLUX 15-50'] + row['FLUX 2-20'],
-                'COMBINED ERROR': (row['ERROR 15-50']**2 + row['ERROR 2-20']**2)**0.5
+                'HARDNESS RATIO': row['FLUX 15-150'] / row['FLUX 2-20'],
+                'HARDNESS ERROR': (row['FLUX 15-150'] / row['FLUX 2-20']) * ((row['ERROR 15-150'] / row['FLUX 15-150'])**2 + (row['ERROR 2-20'] / row['FLUX 2-20'])**2)**0.5,
+                'COMBINED FLUX': row['FLUX 15-150'] + row['FLUX 2-20'],
+                'COMBINED ERROR': (row['ERROR 15-150']**2 + row['ERROR 2-20']**2)**0.5
             }
-    return df_out
+    df_out['TIME'] = df_out['UTC TIME'].apply(lambda x: int(Time(x).mjd))
+    return df_out 
 
 
 def download_all_data_swift_maxi(url:str, telescope:str) -> pd.DataFrame | None:
@@ -177,13 +182,4 @@ def filter_times(df: pd.DataFrame, source, telescope) -> pd.DataFrame | None:
     return df[df['TIME'] > last_timestamp]
 
 
-def calculate_hardness_ratio(swift_df: pd.DataFrame, maxi_df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Calculates the hardness ratio from Swift/BAT and MAXI data.
-    :param swift_df: DataFrame containing Swift/BAT data.
-    :param maxi_df: DataFrame containing MAXI data.
-    :return: DataFrame containing the hardness ratio.
-    """
-    merged_df = pd.merge(swift_df, maxi_df, left_on="UTC TIME", right_on="UTC TIME", how='outer', suffixes=('_swift', '_maxi'))
-    merged_df['HARDNESS RATIO'] = merged_df['FLUX 15-50'] / merged_df['FLUX 2-20']
-    
+
