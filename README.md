@@ -12,7 +12,7 @@ The sources in the FLASHES catalogue are departed into several categories. Each 
 
 ## FLASHES2.0 architecture
 
-The architecture of this project consists of two databases, a backend for the API, data download and processing and the relevance calculationm, and two frontend technologies, one for browsing and quick information and one for the dasboards. The whole project is fully containerized and designed in a way that allows for a quick local installation. In this section, an overview is given over the individual parts. Even though being only preliminary, it is aimed to fix the framework selection as soon as possible.
+The architecture of this project consists of two databases, a backend for the API, data download and processing and the relevance calculation, and two frontend technologies, one for browsing and quick information and one for the dasboards. The whole project is fully containerized and designed in a way that allows for a quick local installation. In this section, an overview is given over the individual parts. Even though being only preliminary, it is aimed to fix the framework selection as soon as possible.
 
 ### Deployment
 
@@ -49,44 +49,134 @@ If the fields maxi, swift or fermi are not null, the document provides the neces
 If large amounts of timeseries data is stored in dictionaries, such as in a mongoDB, both memory efficiency and access speed suffer. This is why it was decided to save the timeseries data for each source in a dedicated software. A standard software package for that is InfluxDB, which is also used in this project (image version 2.7). The bucket, in which the lightcurve data is saved, is called flashes_data. Each lightcurve is tagged with a source name, either **maxi**, **swift** or **fermi**. The following table summarizes all possible data fields.
 
 
-|        Key        |  Cor. Telescope  | Comment                                                          |
-| :------------------: | :----------------: | ------------------------------------------------------------------ |
-| flux (15-150 keV) |    Swift/BAT    |                                                                  |
-| error (15-150 keV) |    Swift/BAT    |                                                                  |
-|  flux (2-20 keV)  |       MAXI       |                                                                  |
-|  error (2-20 keV)  |       MAXI       |                                                                  |
-|   flux (2-4 keV)   |       MAXI       |                                                                  |
-|  error (2-4 keV)  |       MAXI       |                                                                  |
-|  flux (4-10 keV)  |       MAXI       |                                                                  |
-|  error (4-10 keV)  |       MAXI       |                                                                  |
-|  flux (10-20 keV)  |       MAXI       |                                                                  |
-| error (10-20 keV) |       MAXI       |                                                                  |
-|  flux (12-50 keV)  |    Fermi/GBM    |                                                                  |
-| error (12-50 keV) |    Fermi/GBM    |                                                                  |
-|   hardness ratio   | MAXI & Swift/BAT | Only available if MAXI and Swift/BAT data exists for this source |
-|   hardness error   | MAXI & Swift/BAT | Only available if MAXI and Swift/BAT data exists for this source |
-|   combined flux   | MAXI & Swift/BAT | Only available if MAXI and Swift/BAT data exists for this source |
-|   combined error   | MAXI & Swift/BAT | Only available if MAXI and Swift/BAT data exists for this source |
+|        Key        |    Telescope    | Availability                                            |
+| :------------------: | :----------------: | --------------------------------------------------------- |
+| flux (15-150 keV) |    Swift/BAT    | Only if Swift/BAT data exists for this source.          |
+| error (15-150 keV) |    Swift/BAT    | Only if Swift/BAT data exists for this source.          |
+|  flux (2-20 keV)  |       MAXI       | Only if MAXI data exists for this source.               |
+|  error (2-20 keV)  |       MAXI       | Only if MAXI data exists for this source.               |
+|   flux (2-4 keV)   |       MAXI       | Only if MAXI data exists for this source.               |
+|  error (2-4 keV)  |       MAXI       | Only if MAXI data exists for this source.               |
+|  flux (4-10 keV)  |       MAXI       | Only if MAXI data exists for this source.               |
+|  error (4-10 keV)  |       MAXI       | Only if MAXI data exists for this source.               |
+|  flux (10-20 keV)  |       MAXI       | Only if MAXI data exists for this source.               |
+| error (10-20 keV) |       MAXI       | Only if MAXI data exists for this source.               |
+|  flux (12-50 keV)  |    Fermi/GBM    | Only if Fermi/GBM data exists for this source.          |
+| error (12-50 keV) |    Fermi/GBM    | Only if Fermi/GBM data exists for this source.          |
+|   hardness ratio   | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
+|   hardness error   | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
+|   combined flux   | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
+|   combined error   | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
+
+The x-ray hardness $h$ and combined x-ray fluxes $\Phi_c$ are calculated from Swift/BAT 15-150 keV data and MAXI 2-20 keV data, following these equations:
+
+$$
+h = \frac{\Phi_{15-150\text{ keV}}}{\Phi_{2-20\text{ keV}}}; \quad \Delta h = \frac{\Phi_{15-150\text{ keV}}}{\Phi_{2-20\text{ keV}}}\sqrt{\left(\frac{\Delta\Phi_{15-150\text{ keV}}}{\Phi_{15-150\text{ keV}}}\right)^2 + \left(\frac{\Delta\Phi_{2-20\text{ keV}}}{\Phi_{2-20\text{ keV}}}\right)^2}
+
+$$
+
+$$
+\Phi_c = \Phi_{15-150\text{ keV}} + \Phi_{2-20\text{ keV}}; \quad \Delta\Phi_c = \sqrt{\left(\Delta\Phi_{15-150\text{ keV}}\right)^2 + \left(\Delta\Phi_{2-20\text{ keV}}\right)^2}
+
+$$
+
+An outer join of the two dataframes is done to ensure that the times of observations match for the calculations.
 
 ### Backend
 
-The backend offers a standardized way to access data from the database. It is structured into two areas. The first area is responsible for data download, processing and upload into the database. The second area is responsible for offering endpoints for access within the software. 
+The backend offers a standardized way to access data from the database. It is structured into two areas. The first area is responsible for data download, processing and upload into the database. The second area is responsible for offering endpoints for access within the software. The backend as a whole depends on a variety of Python libraries. The top-level libraries are listed in the following table with a version number and a description why this libary is needed. It is noted that these libraries internally depend on other libraries. A complete list can be found in the `requirements.txt`, which is located in the backend folder.
+
+
+|     Library     | Version | Description                                                               |
+| :---------------: | :--------: | :-------------------------------------------------------------------------- |
+|   APScheduler   |  3.11.1  | Time-sensitive tasks, such as automated data downloads                    |
+|     astropy     |  7.0.1  | Astronomical calculations and number-conversions                          |
+|     fastapi     | 0.115.11 | Webframework for a REST-API                                               |
+| influxdb-client |  1.48.0  | Reading and Writing into the InfluxDB                                     |
+|      numpy      |  2.2.4  | Generic library for numerical calculations                                |
+|     pandas     |  2.2.3  | Data analysis and data handling                                           |
+|     pymongo     |  4.11.3  | Reading and Writing into the mongoDB                                      |
+|  python-dotenv  |  1.0.1  | Reading of environment variables, safe handling from passwords and tokens |
+|    requests    |  2.32.3  | HTTP requests for data download                                           |
+
+#### Endpoints
+
+The backend offers a variety of endpoints for the frontend and the dashboard to visualize data or to check functionalities. The following endpoints are available:
+
+##### Health
+
+The health endpoints are necessary to check the correct functionality of all services.
+
+
+| Endpoint             | Description                    |
+| :--------------------- | :------------------------------- |
+| /api/health/mongo    | Healthcheck for the mongoDB    |
+| /api/health/influx   | Healthcheck for the InfluxDB   |
+| /api/health/backend  | Healthcheck for the backend    |
+| /api/health/frontend | Healthcheck for the frontend   |
+| /api/health/grafana  | Healthcheck for the dashboards |
+
+##### Source information
+
+The source-information endpoints are used to provide generic information of the sources in the catalog to the frontend. To identify the sources, the _id field from the mongoDB is used.
+
+
+| Endpoint           | Description                                               |
+| :------------------- | :---------------------------------------------------------- |
+| /api/sources       | Lists all sources from the catalog with basic information |
+| /api/sources/{_id} | Lists all available details for a source                  |
+
+##### Timeseries data
+
+The timeseries endpoints are used to connect the dashboards to the InfluxDB. The timeseries are defined by the telescope-specific influx key from the mongoDB.
+
+
+| Endpoint                     | Description                                    |
+| :----------------------------- | :----------------------------------------------- |
+| /api/timeseries/{influx_key} | Returns a timeseries defined by the influx key |
+
+To select certain times in the dashboard, two parameters can be handed over to the InfluxDB query:
+
+
+| Parameter | Description                          |
+| :---------- | :------------------------------------- |
+| timeStart | Starting time for the InfluxDB query |
+| timeEnd   | Ending time for the InfluxDB query   |
+
+##### Data download
+
+To download data from FLASHES2.0, a system similar to the timeseries-data endpoint is used. The timeseries are defined by the influx key from the mongoDB. Additionally, generic source information can be downloaded. To identify the source, the _id field from the mongoDB is used.
+
+
+| Endpoint                   | Description                                           |
+| :--------------------------- | :------------------------------------------------------ |
+| /api/download/{influx_key} | Downloads a timeseries defined by the influx key      |
+| /api/download/{_id}        | Downloads source information defined by the source ID |
+
+To define the start and end of the desired download, two parameters can be handed over to the InfluxDB query:
+
+
+| Parameter | Description                          |
+| :---------- | :------------------------------------- |
+| timeStart | Starting time for the InfluxDB query |
+| timeEnd   | Ending time for the InfluxDB query   |
 
 ### Frontend
 
-The frontend
-
 ### Dashboards
 
-For each source, a dashboard is provided, showing all available information. In this project, grafana (image version 10.4) is used to provide the dashboard environment
+For each source, a dashboard is provided, showing all available information. In this project, grafana (image grafana/grafana) is used to provide the dashboard environment
 
 ## Relevance Calculation
 
 ## Roadmap
 
 [] Fix framework selection
+
 [] Agree on licensing
+
 [] Fully set up the container system
+
 
 ## Further Ideas
 
@@ -96,3 +186,18 @@ For each source, a dashboard is provided, showing all available information. In 
 
 - Docker (v28.0.1), incl. compose (v2.33.1)
 - mongoDB (Docker image: mongo:6.0)
+- InfluxDB (Docker image: influxdb:2.7)
+- Grafana (Docker image: grafana/grafana)
+- Python (v3.13.7), incl. libraries from the Table in the backend section
+
+
+| Parameter | Description                          |
+| :---------- | :------------------------------------- |
+| timeStart | Starting time for the InfluxDB query |
+| timeEnd   | Ending time for the InfluxDB query   |
+
+
+| Parameter | Description                          |
+| :---------- | :------------------------------------- |
+| timeStart | Starting time for the InfluxDB query |
+| timeEnd   | Ending time for the InfluxDB query   |
