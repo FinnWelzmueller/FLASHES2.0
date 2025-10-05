@@ -40,7 +40,7 @@ def write_to_influx(df: pd.DataFrame, write_api, source: dict, telescope: str, s
 
     if telescope == "fermi":
         for index, row in df.iterrows():
-            Point("flux data").tag("source", key) \
+            p = Point("flux data").tag("source", key) \
             .field("flux (12-50 keV)", row['FLUX 12-50']).field("error (12-50 keV)", row['ERROR 12-50']) \
             .time(row['UTC TIME'])
             points.append(p)
@@ -57,6 +57,8 @@ def write_to_influx(df: pd.DataFrame, write_api, source: dict, telescope: str, s
         logging.error(f"Error writing to InfluxDB for {source['integral_name']} from {telescope}: {e}")
         return
     logging.info(f"Successfully wrote {len(points)} points to InfluxDB for {source['integral_name']} from {telescope}.")
+    if len(points) == 0:
+        return
     set_last_timestamp(sources_collection=sources_collection, source=source, telescope=telescope, timestamp=df['TIME'].max())
 
 def set_last_timestamp(sources_collection, source: dict, telescope: str, timestamp: int) -> None:
@@ -70,9 +72,9 @@ def set_last_timestamp(sources_collection, source: dict, telescope: str, timesta
     """
     try:
         sources_collection.update_one(
-        {"integral_name": source['integral_name']},
-        {"$set": {f"{telescope}.last_timestamp": timestamp}}
-    )
+            {"_id": source['_id']},
+            {"$set": {f"{telescope}.last_timestamp": int(timestamp)}}
+        )
     except Exception as e:
         logging.error(f"Error setting last timestamp for {source['integral_name']} from {telescope}: {e}")
         return
