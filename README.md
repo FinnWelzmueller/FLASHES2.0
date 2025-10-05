@@ -103,37 +103,45 @@ The backend offers a standardized way to access data from the database. It is st
 
 The backend offers a variety of endpoints for the frontend and the dashboard to visualize data or to check functionalities. The following endpoints are available:
 
+##### Generic
+
+
+| Endpoint | Description                                                       |
+| ---------- | ------------------------------------------------------------------- |
+| /docs    | Opens the FastAPI SwaggerUI for testing and interactive API calls |
+
 ##### Health
 
-The health endpoints are necessary to check the correct functionality of all services.
+The health endpoints are necessary to check the correct functionality of all services. If a healthcheck was successful, the status "ok" is returned. Otherwise, the status "down" is returned. The table below shows the supported healthchecks, including the corresponding URL, a description and how the healthcheck is performed.
 
 
-| Endpoint             | Description                    |
-| :--------------------- | :------------------------------- |
-| /api/health/mongo    | Healthcheck for the mongoDB    |
-| /api/health/influx   | Healthcheck for the InfluxDB   |
-| /api/health/backend  | Healthcheck for the backend    |
-| /api/health/frontend | Healthcheck for the frontend   |
-| /api/health/grafana  | Healthcheck for the dashboards |
+| Endpoint         | Description                    | Healthcheck                                                                                              |
+| :----------------- | :------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| /health/mongo    | Healthcheck for the mongoDB    | Tries to find all documents in the mongodb. If at least one document is found, the check was successful. |
+| /health/influx   | Healthcheck for the InfluxDB   |                                                                                                          |
+| /health/backend  | Healthcheck for the backend    |                                                                                                          |
+| /health/frontend | Healthcheck for the frontend   |                                                                                                          |
+| /health/grafana  | Healthcheck for the dashboards |                                                                                                          |
+
 
 ##### Source information
 
 The source-information endpoints are used to provide generic information of the sources in the catalog to the frontend. To identify the sources, the _id field from the mongoDB is used.
 
 
-| Endpoint           | Description                                               |
-| :------------------- | :---------------------------------------------------------- |
-| /api/sources       | Lists all sources from the catalog with basic information |
-| /api/sources/{_id} | Lists all available details for a source                  |
+| Endpoint       | Description                                               |
+| :--------------- | :---------------------------------------------------------- |
+| /sources       | Lists all sources from the catalog with basic information |
+| /sources/{_id} | Lists all available details for a source                  |
 
 ##### Timeseries data
 
 The timeseries endpoints are used to connect the dashboards to the InfluxDB. The timeseries are defined by the telescope-specific influx key from the mongoDB.
 
 
-| Endpoint                     | Description                                    |
-| :----------------------------- | :----------------------------------------------- |
-| /api/timeseries/{influx_key} | Returns a timeseries defined by the influx key |
+| Endpoint                 | Description                                    |
+| :------------------------- | :----------------------------------------------- |
+| /timeseries/{influx_key} | Returns a timeseries defined by the influx key |
 
 To select certain times in the dashboard, two parameters can be handed over to the InfluxDB query:
 
@@ -148,10 +156,10 @@ To select certain times in the dashboard, two parameters can be handed over to t
 To download data from FLASHES2.0, a system similar to the timeseries-data endpoint is used. The timeseries are defined by the influx key from the mongoDB. Additionally, generic source information can be downloaded. To identify the source, the _id field from the mongoDB is used.
 
 
-| Endpoint                   | Description                                           |
-| :--------------------------- | :------------------------------------------------------ |
-| /api/download/{influx_key} | Downloads a timeseries defined by the influx key      |
-| /api/download/{_id}        | Downloads source information defined by the source ID |
+| Endpoint               | Description                                           |
+| :----------------------- | :------------------------------------------------------ |
+| /download/{influx_key} | Downloads a timeseries defined by the influx key      |
+| /download/{_id}        | Downloads source information defined by the source ID |
 
 To define the start and end of the desired download, two parameters can be handed over to the InfluxDB query:
 
@@ -176,7 +184,6 @@ For each source, a dashboard is provided, showing all available information. In 
 [] Agree on licensing
 
 [] Fully set up the container system
-
 
 ## Further Ideas
 
