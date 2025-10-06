@@ -8,6 +8,7 @@ from astropy.time import Time
 from astropy.table import Table
 import os
 from upload import write_to_influx
+from utils import get_utc_time
 
 def update(sources_collection, write_api, temp_dir = "./_temp") -> None:
     """
@@ -156,15 +157,7 @@ def download_all_data_fermi(url:str, temp_dir) -> pd.DataFrame | None:
         logging.error(f"Failed to download data from {url}. Status code: {response.status_code}. Skipping download.")
         return None
 
-def get_utc_time(mjd: pd.Series) -> pd.Series:
-    """
-    Converts MJD to UTC time at midnight.
-    :param mjd: Series of MJD times.
-    :return: Series of UTC times at midnight.
-    """
-    dt_series = pd.to_datetime(Time(mjd, format="mjd").to_datetime())
-    dt_series = pd.Series(dt_series).dt.floor("D")  # set to midnight
-    return dt_series
+
 
 
 def filter_times(df: pd.DataFrame, source, telescope) -> pd.DataFrame | None:
