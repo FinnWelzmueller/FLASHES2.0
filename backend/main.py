@@ -5,7 +5,7 @@ from pymongo import MongoClient
 from download import update
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
-from fastapi import FastAPI, Path
+from fastapi import FastAPI, Path, Optional
 
 load_dotenv()
 
@@ -31,6 +31,7 @@ client = influxdb_client.InfluxDBClient(
    org="flashes"
 )
 write_api = client.write_api(write_options=SYNCHRONOUS)
+query_api = client.query_api()
 logging.info("Success.")
 #update(sources_collection, write_api, os.getenv("TEMP_DIR", "./_temp"))
 
@@ -39,12 +40,7 @@ app = FastAPI()
 async def root():
     return {"message": "Hello World"}
 
-@app.get("/sources/{source_id}")
-async def get_sources(source_id: str = Path(..., description="The ID from the mongoDB of the source to retrieve")):
-    """
-        Get a source by its ID.
-    """
-    return sources_collection.find({"_id": source_id})[0]
+### Healthchecks endpoints
 
 @app.get("/health/mongo")
 async def get_health_mongo():
@@ -58,3 +54,60 @@ async def get_health_mongo():
         logging.error(f"MongoDB health check failed: {e}")
         return {"status": "error"}
     
+
+### Source information endpoints
+
+@app.get("/sources")
+async def get_all_sources():
+    """
+        Get all sources.
+    """
+    out = dict()
+    for source in sources_collection.find({}):
+        out[str(source["_id"])] = source
+    return out
+
+@app.get("/sources/{source_id}")
+async def get_sources(source_id: str = Path(..., description="The ID from the mongoDB of the source to retrieve")):
+    """
+        Get a source by its ID.
+    """
+    return sources_collection.find({"_id": source_id})[0]
+
+### Timeseries data endpoints
+
+@app.get("/timeseries/{influx_key}")
+async def load_timeseries(influx_key):
+    query_flux = f"""
+        from(bucket: "flashes_data")
+            |> range(start: -1y)
+            |> filter(fn: (r) => r._measurement == "flux data")
+            |> filter(fn: (r) => r.source == "{influx_key}")
+    """
+    swift_keys = ["error (15-150 keV)", "flux (15-150 keV)"]
+    maxi_keys = ["error (10-20 keV)", "error (2-20 keV)", "error (2-4 keV)", "error (4-10 keV)",
+            "flux (10-20 keV)", "flux (2-20 keV)", "flux (2-4 keV)", "flux (4-10 keV)"]
+    fermi_keys = ["error (12-50 keV)", "flux (12-50 keV)"]
+    combined_keys = ["combined error", "combined flux"]
+    hardness_keys = ["hardness error", "hardness ratio"]
+
+    telescope_dict = {
+        "swift": swift_keys,
+        "maxi": maxi_keys,
+        "fermi": fermi_keys,
+        "combined": combined_keys,
+        "hardness": hardness_keys
+    }
+    telescope = influx_key.split("_")[0]
+    keys = telescope_dict.get(telescope)
+    if not keys:
+        raise ValueError(f"Unbekanntes Teleskop: {telescope}")
+    result = {key: [] for key in keys}
+
+    tables = query_api.query(org="flashes", query=query_flux)
+
+    for key, table in zip(keys, tables):
+        for record in table.records:
+            result[key].append((record.get_time(), record.get_value()))
+        
+    return result
