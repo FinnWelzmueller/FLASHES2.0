@@ -1,6 +1,7 @@
 from influxdb_client import Point
 import pandas as pd
 import logging
+from utils import set_last_timestamp
 
 def write_to_influx(df: pd.DataFrame, write_api, source: dict, telescope: str, sources_collection) -> None:
     """
@@ -67,21 +68,3 @@ def write_to_influx(df: pd.DataFrame, write_api, source: dict, telescope: str, s
         return
     set_last_timestamp(sources_collection=sources_collection, source=source, telescope=telescope, timestamp=df['TIME'].max())
 
-def set_last_timestamp(sources_collection, source: dict, telescope: str, timestamp: int) -> None:
-    """
-    Sets the last timestamp for a given source and telescope in the MongoDB.
-    :param db: MongoDB database object.
-    :param source: Source dictionary from MongoDB.
-    :param telescope: "swift", "maxi" or "fermi"
-    :param timestamp: Last timestamp to be set.
-    :return: None
-    """
-    try:
-        sources_collection.update_one(
-            {"_id": source['_id']},
-            {"$set": {f"{telescope}.last_timestamp": int(timestamp)}}
-        )
-    except Exception as e:
-        logging.error(f"Error setting last timestamp for {source['integral_name']} from {telescope}: {e}")
-        return
-    logging.debug(f"Set last timestamp for {source['integral_name']} from {telescope} to {timestamp}.")
