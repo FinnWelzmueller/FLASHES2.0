@@ -5,7 +5,8 @@ from pymongo import MongoClient
 from download import update
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
-from fastapi import FastAPI, Path, Optional
+from fastapi import FastAPI, Path, Query
+from utils import mjd_to_iso
 
 load_dotenv()
 
@@ -77,10 +78,23 @@ async def get_sources(source_id: str = Path(..., description="The ID from the mo
 ### Timeseries data endpoints
 
 @app.get("/timeseries/{influx_key}")
-async def load_timeseries(influx_key):
+async def load_timeseries(influx_key: str, 
+                          start :int = Query(None, description="Start time as MJD"),
+                          end :int = Query(None, description="End time as MJD")):
+    
+    if start is not None:
+        start_iso = mjd_to_iso(start)
+    else:
+        start_iso = "-1y"
+    if end is not None:
+        end_iso = mjd_to_iso(end)
+        range_str = f'|> range(start: {start_iso}, stop: {end_iso})'
+    else:
+        range_str = f'|> range(start: {start_iso})'
+        
     query_flux = f"""
         from(bucket: "flashes_data")
-            |> range(start: -1y)
+            {range_str}
             |> filter(fn: (r) => r._measurement == "flux data")
             |> filter(fn: (r) => r.source == "{influx_key}")
     """
@@ -109,5 +123,4 @@ async def load_timeseries(influx_key):
     for key, table in zip(keys, tables):
         for record in table.records:
             result[key].append((record.get_time(), record.get_value()))
-        
     return result
