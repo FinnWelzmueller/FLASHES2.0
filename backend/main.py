@@ -81,6 +81,14 @@ async def get_sources(source_id: str = Path(..., description="The ID from the mo
 async def load_timeseries(influx_key: str, 
                           start :int = Query(None, description="Start time as MJD"),
                           end :int = Query(None, description="End time as MJD")):
+    """
+        Load timeseries data for a given source and telescope from InfluxDB. Start and End can be given as MJD. 
+        If no start is given, data from the last year is returned. If no end is given, data up to the current time is returned.
+        :param influx_key: InfluxDB key for the source and telescope (e.g. "cygx1_swift").
+        :param start: Start time as MJD (optional).
+        :param end: End time as MJD (optional).
+        :return: Dictionary with timeseries data.
+    """
     
     if start is not None:
         start_iso = mjd_to_iso(start)
@@ -91,7 +99,7 @@ async def load_timeseries(influx_key: str,
         range_str = f'|> range(start: {start_iso}, stop: {end_iso})'
     else:
         range_str = f'|> range(start: {start_iso})'
-        
+
     query_flux = f"""
         from(bucket: "flashes_data")
             {range_str}
