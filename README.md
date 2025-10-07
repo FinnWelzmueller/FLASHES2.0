@@ -16,7 +16,7 @@ The architecture of this project consists of two databases, a backend for the AP
 
 ### Deployment
 
-The deployment of FLASHES2.0 is done in Docker, as it allows for an easy local installation. For development, Docker v28.0.1 is used. The services are arranged in a yml-file with Docker compose v2.33.1. The inter-container communication is done in a dedicated Docker network. All secrets are stored in an env-file.
+The deployment of FLASHES2.0 is done in Docker, as it allows for an easy local installation. For development, Docker v28.0.1 is used. The services are arranged in a yml-file with Docker compose v2.33.1. The inter-container communication is done in a dedicated Docker network. All secrets are stored in an env-file. If you want to set up FLASHES2.0 for yourself, an example for an env-file is provided as env-example. Please fill in the empty tokens and passwords and rename the file to .env before you start. For detailed instructions, please refer to the deployment guide below.
 
 ### Database architecture
 
@@ -105,6 +105,8 @@ The backend offers a variety of endpoints for the frontend and the dashboard to 
 
 ##### Generic
 
+Generic endpoints are offered by the fastapi library and are not necessarily part of FLASHES2.0. Nevertheless, they may offer functionalities that are useful during development or use.
+
 
 | Endpoint | Description                                                       |
 | ---------- | ------------------------------------------------------------------- |
@@ -112,17 +114,15 @@ The backend offers a variety of endpoints for the frontend and the dashboard to 
 
 ##### Health
 
-The health endpoints are necessary to check the correct functionality of all services. If a healthcheck was successful, the status "ok" is returned. Otherwise, the status "down" is returned. The table below shows the supported healthchecks, including the corresponding URL, a description and how the healthcheck is performed.
+The health endpoints are necessary to check the correct functionality of all services. If a healthcheck was successful, the status "ok" (200) is returned. Otherwise, the status "error" (503) is returned together with the exception that caused the healthcheck to fail. The table below shows the supported healthchecks, including the corresponding URL, a description and how the healthcheck is performed.
 
 
-| Endpoint         | Description                    | Healthcheck                                                                                              |
-| :----------------- | :------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| /health/mongo    | Healthcheck for the mongoDB    | Tries to find all documents in the mongodb. If at least one document is found, the check was successful. |
-| /health/influx   | Healthcheck for the InfluxDB   |                                                                                                          |
-| /health/backend  | Healthcheck for the backend    |                                                                                                          |
-| /health/frontend | Healthcheck for the frontend   |                                                                                                          |
-| /health/grafana  | Healthcheck for the dashboards |                                                                                                          |
-
+| Endpoint         | Description                    | Healthcheck                                            |
+| :----------------- | :------------------------------- | -------------------------------------------------------- |
+| /health/mongo    | Healthcheck for the mongoDB    | Tries to count all documents in the sources collection |
+| /health/influx   | Healthcheck for the InfluxDB   | Connects to the off-the-shelf health endpoint          |
+| /health/frontend | Healthcheck for the frontend   | Calls the frontend landing page                        |
+| /health/grafana  | Healthcheck for the dashboards | Connects to the off-the-shelf health endpoint          |
 
 ##### Source information
 
@@ -176,6 +176,17 @@ To define the start and end of the desired download, two parameters can be hande
 For each source, a dashboard is provided, showing all available information. In this project, grafana (image grafana/grafana) is used to provide the dashboard environment
 
 ## Relevance Calculation
+
+## Deployment Guide
+
+1. Clone the project to the desired directory.
+2. Fill in your credentials in the env-example file and rename the file to ".env".
+3. Install Docker and compose if not already happened.
+4. Build all services and launch the mongoDB.
+5. Run the script backend/filldb.py, which fills the mongoDB with life. You might want to create a venv from the requirements.txt first, which is located in the backend folder.
+6. Once the mongoDB is filled, launch the remaining services.
+
+Once the Scheduler in the backend is started, the first download is triggered, which downloads all available data. Depending on the host system, this can take a while (two or more hours), so be patient and take an eye on the backend logs. Once done, the updates are done every day.
 
 ## Roadmap
 
