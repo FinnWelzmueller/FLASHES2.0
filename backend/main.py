@@ -2,9 +2,13 @@ import logging
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from pymongo.errors import PyMongoError
 from download import update
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
+from influxdb_client.rest import ApiException
+from fastapi.responses import JSONResponse
+import requests
 from fastapi import FastAPI, Path, Query
 from utils import mjd_to_iso
 
@@ -44,17 +48,70 @@ async def root():
 ### Healthchecks endpoints
 
 @app.get("/health/mongo")
-async def get_health_mongo():
-    logging.info("Performing health check on MongoDB...")
+async def health_mongo():
+    """
+        Healthcheck for MongoDB. Tries to count documents in the sources collection. Returns 200 if successful, 503 otherwise.
+    """
+    logging.info("Healthcheck MongoDB called.")
     try:
-        if (sources_collection.count_documents({})) > 0:
-            logging.info("MongoDB is healthy.")
+        sources_collection.count_documents({})
+        logging.info("Healthcheck MongoDB successful.")
+        return {"status": "ok"}
+    except PyMongoError as e:
+        logging.error(f"Healthcheck MongoDB failed: {e}")
+        return JSONResponse(status_code=503, content={"status": "error", "details": str(e)})
+
+@app.get("/health/influx")
+async def health_influx():
+    """
+        Healthcheck for InfluxDB. Tries to get the health status of the InfluxDB server. Returns 200 if successful, 503 otherwise.
+    """
+    logging.info("Healthcheck InfluxDB called.")
+    try:
+        health = client.health()
+        if health.status == "pass":
+            logging.info("Healthcheck InfluxDB successful.")
             return {"status": "ok"}
-        return {"status": "error"}
+        logging.error(f"Healthcheck InfluxDB failed: {health.message}")
+        return JSONResponse(status_code=503, content={"status": "error", "details": health.message})
+    except ApiException as e:
+        logging.error(f"Healthcheck InfluxDB failed: {e}")
+        return JSONResponse(status_code=503, content={"status": "error", "details": str(e)})
+
+@app.get("/health/frontend")
+async def health_frontend():
+    """
+        Healthcheck for the frontend. Tries to connect to the frontend service. Returns 200 if successful, 503 otherwise.
+    """
+    logging.info("Healthcheck Frontend called.")
+    try:
+        resp = requests.get("http://frontend:80", timeout=2)
+        if resp.status_code == 200:
+            logging.info("Healthcheck Frontend successful.")
+            return {"status": "ok"}
+        logging.error(f"Healthcheck Frontend failed: {resp.text}")
+        return JSONResponse(status_code=503, content={"status": "error", "details": resp.text})
     except Exception as e:
-        logging.error(f"MongoDB health check failed: {e}")
-        return {"status": "error"}
+        logging.error(f"Healthcheck Frontend failed: {e}")
+        return JSONResponse(status_code=503, content={"status": "error", "details": str(e)})
     
+@app.get("/health/grafana")
+async def health_grafana():
+    """
+        Healthcheck for the Grafana dashboards. Tries to connect to the Grafana service. Returns 200 if successful, 503 otherwise.
+    """
+    logging.info("Healthcheck Grafana called.")
+    try:
+        resp = requests.get("http://grafana:3000/api/health", timeout=2)
+        if resp.status_code == 200 and resp.json().get("database") == "ok":
+            logging.info("Healthcheck Grafana successful.")
+            return {"status": "ok"}
+        logging.error(f"Healthcheck Grafana failed: {resp.text}")
+        return JSONResponse(status_code=503, content={"status": "error", "details": resp.text})
+    except Exception as e:
+        logging.error(f"Healthcheck Grafana failed: {e}")
+        return JSONResponse(status_code=503, content={"status": "error", "details": str(e)})
+
 
 ### Source information endpoints
 
