@@ -10,7 +10,6 @@ from influxdb_client.rest import ApiException
 from fastapi.responses import JSONResponse
 import requests
 from fastapi import FastAPI, Path, Query
-from utils import mjd_to_iso
 
 load_dotenv()
 
@@ -135,9 +134,9 @@ async def get_sources(source_id: str = Path(..., description="The ID from the mo
 ### Timeseries data endpoints
 
 @app.get("/timeseries/{influx_key}")
-async def load_timeseries(influx_key: str, 
-                          start :int = Query(None, description="Start time as MJD"),
-                          end :int = Query(None, description="End time as MJD")):
+async def load_timeseries(influx_key : str, 
+                          start : str = Query(None, description="Start time as ISO format (YYYY-MM-DD)"),
+                          end : str = Query(None, description="End time as ISO format (YYYY-MM-DD)")):
     """
         Load timeseries data for a given source and telescope from InfluxDB. Start and End can be given as MJD. 
         If no start is given, data from the last year is returned. If no end is given, data up to the current time is returned.
@@ -147,15 +146,12 @@ async def load_timeseries(influx_key: str,
         :return: Dictionary with timeseries data.
     """
     
-    if start is not None:
-        start_iso = mjd_to_iso(start)
-    else:
-        start_iso = "-1y"
+    if start is None:
+        start = "-1y"
     if end is not None:
-        end_iso = mjd_to_iso(end)
-        range_str = f'|> range(start: {start_iso}, stop: {end_iso})'
+        range_str = f'|> range(start: {start}, stop: {end})'
     else:
-        range_str = f'|> range(start: {start_iso})'
+        range_str = f'|> range(start: {start})'
 
     query_flux = f"""
         from(bucket: "flashes_data")
