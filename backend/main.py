@@ -10,6 +10,8 @@ from influxdb_client.rest import ApiException
 from fastapi.responses import JSONResponse
 import requests
 from fastapi import FastAPI, Path, Query
+from datetime import timezone
+
 
 load_dotenv()
 
@@ -158,6 +160,10 @@ async def load_timeseries(influx_key : str,
             {range_str}
             |> filter(fn: (r) => r._measurement == "flux data")
             |> filter(fn: (r) => r.source == "{influx_key}")
+            |> keep(columns: ["_time", "_field", "_value"])
+            |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
+            |> sort(columns: ["_time"])
+            |> drop(columns: ["_start","_stop"])
     """
     swift_keys = ["error (15-150 keV)", "flux (15-150 keV)"]
     maxi_keys = ["error (10-20 keV)", "error (2-20 keV)", "error (2-4 keV)", "error (4-10 keV)",
@@ -165,7 +171,8 @@ async def load_timeseries(influx_key : str,
     fermi_keys = ["error (12-50 keV)", "flux (12-50 keV)"]
     combined_keys = ["combined error", "combined flux"]
     hardness_keys = ["hardness error", "hardness ratio"]
-
+    out = []
+    
     telescope_dict = {
         "swift": swift_keys,
         "maxi": maxi_keys,
@@ -176,12 +183,21 @@ async def load_timeseries(influx_key : str,
     telescope = influx_key.split("_")[0]
     keys = telescope_dict.get(telescope)
     if not keys:
-        raise ValueError(f"Unbekanntes Teleskop: {telescope}")
-    result = {key: [] for key in keys}
+        raise ValueError(f"Unknown Teleskop: {telescope}")
+    
+    # Getting data
+    out = []
+    for idx, row in query_api.query_data_frame(org="flashes", query=query_flux).iterrows():
+        timestamp_dict = {"time": row["_time"]}
+        for col in telescope_dict[telescope]:
+            timestamp_dict[col] = row[col]
+        out.append(timestamp_dict)
 
-    tables = query_api.query(org="flashes", query=query_flux)
+    # correct timestamp object: rewrite as grafana-understandable string
+    for entry in out:
+        t = entry["time"]
+        if hasattr(t, "to_pydatetime"):
+            t = t.to_pydatetime()
+        entry["time"] = t.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    for key, table in zip(keys, tables):
-        for record in table.records:
-            result[key].append((record.get_time(), record.get_value()))
-    return result
+    return out
