@@ -134,9 +134,82 @@ async def get_sources(source_id: str = Path(..., description="The ID from the mo
     return sources_collection.find({"_id": source_id})[0]
 
 ### Timeseries data endpoints
-
 @app.get("/timeseries/{influx_key}")
-async def load_timeseries(influx_key : str, 
+async def load_timeseries(influx_key : str,
+                          start : str = Query(None, description = "Start time as ISO format (YYYY-MM-DD)"),
+                          end : str = Query(None, description="End time as ISO format (YYYY-MM-DD)")):
+    if start is None:
+        start = "-1y"
+    if end is not None:
+        range_str = f'|> range(start: {start}, stop: {end})'
+    else:
+        range_str = f'|> range(start: {start})'
+
+    query_flux = f"""
+        from(bucket: "flashes_data")
+            {range_str}
+            |> filter(fn: (r) => r._measurement == "flux data")
+            |> filter(fn: (r) => r.source == "{influx_key}")
+            |> keep(columns: ["_time", "_field", "_value"])
+            |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
+            |> sort(columns: ["_time"])
+            |> drop(columns: ["_start","_stop"])
+    """
+    swift_keys = ["error (15-150 keV)", "flux (15-150 keV)"]
+    maxi_keys = ["error (10-20 keV)", "error (2-20 keV)", "error (2-4 keV)", "error (4-10 keV)",
+            "flux (10-20 keV)", "flux (2-20 keV)", "flux (2-4 keV)", "flux (4-10 keV)"]
+    fermi_keys = ["error (12-50 keV)", "flux (12-50 keV)"]
+    combined_keys = ["combined error", "combined flux"]
+    hardness_keys = ["hardness error", "hardness ratio"]
+
+    swift_data_cols = ["flux (15-150 keV)", "flux (15-150 keV) max", "flux (15-150 keV) min"]
+    maxi_data_cols = ["flux (10-20 keV)", "flux (10-20 keV) max", "flux (10-20 keV) min",
+                      "flux (2-20 keV)", "flux (2-20 keV) max", "flux (2-20 keV) min",
+                      "flux (2-4 keV)", "flux (2-4 keV) max", "flux (2-4 keV) min",
+                      "flux (4-10 keV)", "flux (4-10 keV) max", "flux (4-10 keV) min"]
+    fermi_data_cols = ["flux (12-50 keV)", "flux (12-50 keV) max", "flux (12-50 keV) min"]
+    combined_data_cols = ["combined flux", "combined flux max", "combined flux min"]
+    hardness_data_cols = ["hardness ratio", "hardness ratio max", "hardness ratio min"]
+
+    data_cols_dict = {
+        "swift": swift_data_cols,
+        "maxi": maxi_data_cols,
+        "fermi": fermi_data_cols,
+        "combined": combined_data_cols,
+        "hardness": hardness_data_cols
+    }
+    telescope_dict = {
+        "swift": swift_keys,
+        "maxi": maxi_keys,
+        "fermi": fermi_keys,
+        "combined": combined_keys,
+        "hardness": hardness_keys  
+    }
+
+    telescope = influx_key.split("_")[0]
+    if not list(data_cols_dict.keys()):
+        raise ValueError(f"Unknown Teleskop: {telescope}")
+    
+    # Getting data
+    out = []
+    for idx, row in query_api.query_data_frame(org="flashes", query=query_flux).iterrows():
+        timestamp_dict = {"time": row["_time"]}
+        for col in telescope_dict[telescope]:
+            if "flux" in col:
+                timestamp_dict[col] = row[col]
+                timestamp_dict[col + " max"] = row[col] + row[col.replace("flux", "error")]
+                timestamp_dict[col + " min"] = row[col] - row[col.replace("flux", "error")]
+        out.append(timestamp_dict)
+        # correct timestamp object: rewrite as grafana-understandable string
+    for entry in out:
+        t = entry["time"]
+        if hasattr(t, "to_pydatetime"):
+            t = t.to_pydatetime()
+        entry["time"] = t.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return out
+
+@app.get("/download/{influx_key}")
+async def load_download(influx_key : str, 
                           start : str = Query(None, description="Start time as ISO format (YYYY-MM-DD)"),
                           end : str = Query(None, description="End time as ISO format (YYYY-MM-DD)")):
     """
@@ -171,7 +244,7 @@ async def load_timeseries(influx_key : str,
     fermi_keys = ["error (12-50 keV)", "flux (12-50 keV)"]
     combined_keys = ["combined error", "combined flux"]
     hardness_keys = ["hardness error", "hardness ratio"]
-    out = []
+
     
     telescope_dict = {
         "swift": swift_keys,
@@ -192,7 +265,6 @@ async def load_timeseries(influx_key : str,
         for col in telescope_dict[telescope]:
             timestamp_dict[col] = row[col]
         out.append(timestamp_dict)
-
     # correct timestamp object: rewrite as grafana-understandable string
     for entry in out:
         t = entry["time"]
