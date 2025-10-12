@@ -2221,7 +2221,7 @@ IGR J20216+4359,7106,305.4504,44.00889,-,noMaxi,noMaxi,noSwift,noSwift,noFermi,n
 3EG J2022+4317,1700,305.5,43.3,-,noMaxi,noMaxi,noSwift,noSwift,noFermi,noFermi,noSwift
 MRC 2019+098,7104,305.53503,10.02,"[VV96] J202208.4+100112, RX J2022.1+1001, 2E 2019.7+0951, QSO B2019+0951, 3C 411, PKS J2022+1001",noMaxi,noMaxi,noSwift,noSwift,noFermi,noFermi,noSwift
 IGR J20231+5302,9999,305.774,53.036,-,noMaxi,noMaxi,noSwift,noSwift,noFermi,noFermi,noSwift
-V404 Cyg,32768,306.01592999999997,33.867195,,GS 2023+338,J2024+338,V404 Cyg,V404Cyg,noFermi,noFermi,yes
+V404 Cyg,1110,306.01592999999997,33.867195,,GS 2023+338,J2024+338,V404 Cyg,V404Cyg,noFermi,noFermi,yes
 QSO B2022-077,7200,306.4194,-7.597972,"2EG J2023-0836, 3EG J2025-0744, GeV J2024-0812, PKS J2025-0735",noMaxi,noMaxi,PKS 2023-07,PKS2023-07,noFermi,noFermi,yes
 GeV J2026+4124,1700,306.625,41.416668,-,noMaxi,noMaxi,noSwift,noSwift,noFermi,noFermi,noSwift
 2EG J2027+1054,1700,306.775,10.916667,-,noMaxi,noMaxi,noSwift,noSwift,noFermi,noFermi,noSwift
