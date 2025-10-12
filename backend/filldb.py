@@ -2,6 +2,63 @@ import pandas as pd
 import os
 from pymongo import MongoClient
 from dotenv import load_dotenv
+from astroquery.heasarc import Heasarc
+
+def load_tags(df: pd.DataFrame) -> pd.DataFrame:
+    def get_hierarchy():
+        query = "SELECT Class_Name, Class_ID FROM class"
+        result = heasarc.query_tap(query).to_table()
+        out = dict()
+        for row in result:
+            if row['class_name'] != "UNCLASSIFIED":
+                out[str(row['class_id'])] = row['class_name']
+        return out
+
+    classification = get_hierarchy()
+    allowed_tags = [
+        "LMXRB",
+        "CLUSTER",
+        "PULSAR",
+        "TRANSIENT",
+        "HMXRB",
+        "AGN",
+        "SUPERGIANT",
+        "PULSATOR",
+        "BURSTER",
+        "REPEATER",
+        "HARD",
+        "UNCLASSIFIED",
+        "UNIDENTIFIED",
+        "BINARY",
+        "QSO",
+        "QPO"
+    ]
+
+    substitutions = {
+        "SEYFERT": "SEYFERT GALAXY",
+        "GLOBULAR": "GLOBULAR CLUSTER",
+        "GAMMA": "GAMMA RAY SOURCE",
+        "BE": "BE STAR",
+        "BL": "BL LAC",
+        "BLACK": "BLACK HOLE",
+        "GALAXIES": "GALAXY CLUSTER"
+    }
+    all = []
+
+    for idx, row in df.iterrows():
+        source_element = list()
+        tags = classification[str(row['Class'])].split()
+        for tag in tags:
+            if tag in substitutions:
+                tag = tag.upper().replace(" ", "")
+                source_element.append(substitutions[tag])
+            if tag in allowed_tags:
+                source_element.append(tag)
+        if source_element == []:
+            source_element.append("UNCLASSIFIED")
+        all.append(source_element)
+    df['Tags'] = all
+    return df
 
 load_dotenv()
 
@@ -16,13 +73,17 @@ sources_collection = db['sources']
 df = pd.read_csv(os.path.join(os.getcwd() ,"master_table.txt"))
 df = df[~((df['Swift Name'] == 'noSwift') & (df['Maxi Name'] == 'noMaxi') & (df['Fermi Name'] == 'noFermi'))] # drop empty elements
 
+heasarc = Heasarc()
+
+df = load_tags(df)
+
 for _, row in df.iterrows():
     source_data = { # Base Information
         "_id": row['Integral Name'].replace(" ", "").lower(), # -> _id from Name? -> I don't want to have twice the same source in the db anyway
         "integral_name": row['Integral Name'],  
         "coord_ra": row['Ra Obj'],
         "coord_dec": row['Dec Obj'],
-        "labels_constant" : [],
+        "labels_constant" : row["Tags"],
         "labels_dynamic": []
     }
 
