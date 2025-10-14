@@ -49,24 +49,24 @@ If the fields maxi, swift or fermi are not null, the document provides the neces
 If large amounts of timeseries data is stored in dictionaries, such as in a mongoDB, both memory efficiency and access speed suffer. This is why it was decided to save the timeseries data for each source in a dedicated software. A standard software package for that is InfluxDB, which is also used in this project (image version 2.7). The bucket, in which the lightcurve data is saved, is called flashes_data. Each lightcurve is tagged with a source name, either **maxi**, **swift** or **fermi**. The following table summarizes all possible data fields.
 
 
-|        Key        |    Telescope    | Availability                                            |
-| :------------------: | :----------------: | --------------------------------------------------------- |
-| flux (15-150 keV) |    Swift/BAT    | Only if Swift/BAT data exists for this source.          |
-| error (15-150 keV) |    Swift/BAT    | Only if Swift/BAT data exists for this source.          |
-|  flux (2-20 keV)  |       MAXI       | Only if MAXI data exists for this source.               |
-|  error (2-20 keV)  |       MAXI       | Only if MAXI data exists for this source.               |
-|   flux (2-4 keV)   |       MAXI       | Only if MAXI data exists for this source.               |
-|  error (2-4 keV)  |       MAXI       | Only if MAXI data exists for this source.               |
-|  flux (4-10 keV)  |       MAXI       | Only if MAXI data exists for this source.               |
-|  error (4-10 keV)  |       MAXI       | Only if MAXI data exists for this source.               |
-|  flux (10-20 keV)  |       MAXI       | Only if MAXI data exists for this source.               |
-| error (10-20 keV) |       MAXI       | Only if MAXI data exists for this source.               |
-|  flux (12-50 keV)  |    Fermi/GBM    | Only if Fermi/GBM data exists for this source.          |
-| error (12-50 keV) |    Fermi/GBM    | Only if Fermi/GBM data exists for this source.          |
-|   hardness ratio   | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
-|   hardness error   | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
-|   combined flux   | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
-|   combined error   | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
+|        Key        | Backend Channel-ID |    Telescope    | Availability                                            |
+| :------------------: | -------------------- | :----------------: | --------------------------------------------------------- |
+| flux (15-150 keV) | 15-150             |    Swift/BAT    | Only if Swift/BAT data exists for this source.          |
+| error (15-150 keV) | 15-150             |    Swift/BAT    | Only if Swift/BAT data exists for this source.          |
+|  flux (2-20 keV)  | 2-20               |       MAXI       | Only if MAXI data exists for this source.               |
+|  error (2-20 keV)  | 2-20               |       MAXI       | Only if MAXI data exists for this source.               |
+|   flux (2-4 keV)   | 2-4                |       MAXI       | Only if MAXI data exists for this source.               |
+|  error (2-4 keV)  | 2-4                |       MAXI       | Only if MAXI data exists for this source.               |
+|  flux (4-10 keV)  | 4-10               |       MAXI       | Only if MAXI data exists for this source.               |
+|  error (4-10 keV)  | 4-10               |       MAXI       | Only if MAXI data exists for this source.               |
+|  flux (10-20 keV)  | 10-20              |       MAXI       | Only if MAXI data exists for this source.               |
+| error (10-20 keV) | 10-20              |       MAXI       | Only if MAXI data exists for this source.               |
+|  flux (12-50 keV)  | 12-50              |    Fermi/GBM    | Only if Fermi/GBM data exists for this source.          |
+| error (12-50 keV) | 12-50              |    Fermi/GBM    | Only if Fermi/GBM data exists for this source.          |
+|   hardness ratio   | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
+|   hardness error   | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
+|   combined flux   | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
+|   combined error   | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
 
 The x-ray hardness $h$ and combined x-ray fluxes $\Phi_c$ are calculated from Swift/BAT 15-150 keV data and MAXI 2-20 keV data, following these equations:
 
@@ -91,6 +91,7 @@ The backend offers a standardized way to access data from the database. It is st
 | :---------------: | :--------: | :-------------------------------------------------------------------------- |
 |   APScheduler   |  3.11.1  | Time-sensitive tasks, such as automated data downloads                    |
 |     astropy     |  7.0.1  | Astronomical calculations and number-conversions                          |
+|   astroquery   |  0.4.11  | Source classification with Heasarc                                        |
 |     fastapi     | 0.115.11 | Webframework for a REST-API                                               |
 | influxdb-client |  1.48.0  | Reading and Writing into the InfluxDB                                     |
 |      numpy      |  2.2.4  | Generic library for numerical calculations                                |
@@ -136,24 +137,28 @@ The source-information endpoints are used to provide generic information of the 
 
 ##### Timeseries data
 
-The timeseries endpoints are used to connect the dashboards to the InfluxDB. The timeseries are defined by the telescope-specific influx key from the mongoDB.
+The timeseries endpoints are used to connect the dashboards to the InfluxDB. The timeseries are defined by the telescope-specific influx key from the mongoDB, channel information and a timeframe. 
 
 
-| Endpoint                 | Description                                    |
-| :------------------------- | :----------------------------------------------- |
-| /timeseries/{influx_key} | Returns a timeseries defined by the influx key |
+| Endpoint    | Description                                           |
+| :------------ | :------------------------------------------------------ |
+| /timeseries | Lists data from influxDB in a Grafana-readable format |
 
-To select certain times in the dashboard, two parameters can be handed over to the InfluxDB query:
+It is noted that this data endpoint is to be used internally from the software only and is hence tailored to the needs of Grafana, which contains a list of dictionaries. Each dictionary provides a timestamp, the corresponding flux (named after the fields in the corresponding Table in the backend Section, the flux plus the error (naming: "flux {channel} max") and the flux minus the error (naming: "flux {channel} min"). This has the reason that the errors are displayed as shaded areas around the lightcurve rather than as error bars. To select certain data sets in the dashboard, four parameters can be handed over to the InfluxDB query:
 
 
-| Parameter | Description                          |
-| :---------- | :------------------------------------- |
-| timeStart | Starting time for the InfluxDB query |
-| timeEnd   | Ending time for the InfluxDB query   |
+| Parameter  | Description                          |
+| :----------- | :------------------------------------- |
+| influx_key | Influx ID from the MongoDB           |
+| channel    | Channel information                  |
+| timeStart  | Starting time for the InfluxDB query |
+| timeEnd    | Ending time for the InfluxDB query   |
+
+The influx_key parameter has to be given in order to lead to data. Furthermore, the parameter channel has to be given if Swift/BAT, MAXI or Fermi/GBM data is accessed to select the certain channel. The time-frame information, i.e. timeStart and timeEnd are optional if data from a certain timeframe is needed. If timeStart and timeEnd are not provided, data from the last year is loaded.
 
 ##### Data download
 
-To download data from FLASHES2.0, a system similar to the timeseries-data endpoint is used. The timeseries are defined by the influx key from the mongoDB. Additionally, generic source information can be downloaded. To identify the source, the _id field from the mongoDB is used.
+To download data from FLASHES2.0, a system similar to the timeseries-data endpoint is used. The timeseries are defined by the influx key from the mongoDB. Additionally, generic source information can be downloaded. To identify the source, the _id field from the mongoDB is used. It is noted that these endpoints are to be used by the user to access data.
 
 
 | Endpoint               | Description                                           |
@@ -173,9 +178,50 @@ To define the start and end of the desired download, two parameters can be hande
 
 ### Dashboards
 
-For each source, a dashboard is provided, showing all available information. In this project, grafana (image grafana/grafana) is used to provide the dashboard environment
+For each source, a dashboard is provided, showing all available information. In this project, grafana (image grafana/grafana) is used to provide the dashboard environment‚
+
+## Source Tagging
+
+To group the source catalogue into classes and to make things easier if someone is only interested in a particular class of sources, each source has at least one tag for identification. The tags are based on the [HEASARC Object Classification](https://heasarc.gsfc.nasa.gov/W3Browse/all/class.html). Following this classification, each source has a four-digit number als class ID. This ID is saved in the Master Table. From the ID, a classification can be done using the Heasarc class from the astroquery Python library. To get a common basis for the tags, all Class Names were analyzed and the most abundant and meaningfull words were selected. The available tags are (in non particular order):
+
+
+| Tag              | Description                                                                                                                                                                                         |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| LMXRB            | Low-Mass X-Ray Binary - A binary system, in which a Black Hole or a Neutron Star accretes matter from a low-mass companion. The hot matter produces light in the x-ray regime.                      |
+| SEYFERT GALAXY   | A subclass of AGN with a luminous nucleus. Emits x-rays though hot gas in the accretion disk.                                                                                                       |
+| GLOBULAR CLUSTER | A spherically-shaped group of typically very old stars. Frequently hosting x-ray sources [Pooley, 2010]                                                                                             |
+| GAMMA RAY SOURCE | Object with such extreme conditions that gamma rays are emitted.                                                                                                                                    |
+| BE STAR          | B-type star with a circumstellar disk. Common donor in Be/X-ray binaries.                                                                                                                           |
+| BL LAC           | A subclass of AGN, in which the jet is aligned with the line of sight. Emits x-ray though hot matter in the jet.                                                                                    |
+| BLACK HOLE       | Extreme-gravity environments. Often surrounded by rotation disks of hot gas and other matter, which emit x-ray due to their high temperatures.                                                      |
+| GALAXY CLUSTER   | Large-scale structures of galaxies bound together via gravity. Emit x-rays due to bremsstrahlung, recombination or deexcitation of electrons [Böhringer, 2010]                                     |
+| CLUSTER          | A bound group of astrophysical objects, typically stars or galaxies, bound together via gravity. Emits x-rays typically through bremsstrahlung.                                                     |
+| PULSAR           | Rapidly rotating neutron star, emitting periodic pulses across the whole electromagnetic spectrum.                                                                                                  |
+| TRANSIENT        | A source that brightens/appears only temporarily. Can have a variety of reasons.                                                                                                                    |
+| HMXRB            | High-Mass X-Ray Binary - A binary system, in which a Black Hole or a Neutron Star accretes matter from a high-mass companion. The hot matter produces light in the x-ray regime.                    |
+| AGN              | Active Galactic Nucleus - A bright central region of a galaxy powered by accretion of matter onto a supermassive Black Hole. The matter is heated up during the accretion process and emits x-rays. |
+| SUPERGIANT       | A massive star, which can emit strong x-rays when their stellar wind is accreted by another object.                                                                                                 |
+| PULSATOR         | An object with strong brightness variations. Can be connected to neutron stars and/or accretion processes.                                                                                          |
+| BURSTER          | An object showing very sudden increases in brightness, often due to thermonuclear processes.                                                                                                        |
+| REPEATER         | An object with recurrent bursts or flares.                                                                                                                                                          |
+| HARD             | Refers to the type of x-rays. Hard x-rays are dominated by high-energy photons.                                                                                                                     |
+| BINARY           | Gravitationally bound system of two objects. Often lead to x-ray emission if matter from one object is accreted onto its counterpart.                                                               |
+| QSO              | Quasi-Stellar Object (QUASAR) - A subclass of AGN with extremly large luminosity. Emits x-ray though hot matter in the accretion disk.                                                              |
+| QPO              | Quasi-Periodic Oscillation - Nearly periodic modulations in x-ray flux with some exceptions.                                                                                                        |
+| UNIDENTIFIED     | X-ray source with a known multi-wavelength counterpart.                                                                                                                                             |
+| UNCLASSIFIED     | Classification not done or not possible. Default tag if no other tag is given.                                                                                                                      |
 
 ## Relevance Calculation
+
+The relevance calculation is the key part of FLASHES that might lead to new research. It is shaped in a way that sources behaving odd, in the sense of deviating from their usual behaviour, are add touted as exceptionally relevant by FLASHES. A few examples, in which cases a source should be advertised:
+
+- A typically rather quite x-ray source has a sudden outburst.
+- A source with a regular outburst pattern deviates from this pattern either in outburst frequency or peak luminosity.
+- A source switches from dominantly hard x-ray emission to dominantly soft x-ray emission or vice versa.
+
+In all these cases, the relevance should be computed as close to 1 (very relevant). Sources behaving as suspected should have a relevance of 0 (not relevant).
+
+As no modified physical model exists for x-ray outburst to date - which is relatable as the sources covered in the FLASHES2.0 catalogue are of very different types - the relevance calculation has to be purely data-driven. To provide a reliable relevance for every source individually, a Machine Learning Algorithm is deployed which learns the behaviour of every source, analyses the newly incoming datapoint and calculates the relevance accordingly.
 
 ## Deployment Guide
 
@@ -190,11 +236,17 @@ Once the Scheduler in the backend is started, the first download is triggered, w
 
 ## Roadmap
 
-[] Fix framework selection
+[🎉️] Fix framework selection
 
-[] Agree on licensing
+[ ] Agree on licensing
 
-[] Fully set up the container system
+[ ] Fully set up the container system
+
+[ ] Implement the dashboards
+
+[ ] Implement a frontend
+
+[ ] Implement a relevance calculation
 
 ## Further Ideas
 
@@ -206,16 +258,10 @@ Once the Scheduler in the backend is started, the first download is triggered, w
 - mongoDB (Docker image: mongo:6.0)
 - InfluxDB (Docker image: influxdb:2.7)
 - Grafana (Docker image: grafana/grafana)
-- Python (v3.13.7), incl. libraries from the Table in the backend section
+- Python (v3.13.7), incl. libraries from the corresponding Table in the backend section
 
+## References
 
-| Parameter | Description                          |
-| :---------- | :------------------------------------- |
-| timeStart | Starting time for the InfluxDB query |
-| timeEnd   | Ending time for the InfluxDB query   |
+**Böhringer [2010]:** Böhringer, H., Werner, N. X-ray spectroscopy of galaxy clusters: studying astrophysical processes in the largest celestial laboratories. *Astron Astrophys Rev 18*, 127–196 (2010) [https://doi.org/10.1007/s00159-009-0023-3](https://doi.org/10.1007/s00159-009-0023-3).
 
-
-| Parameter | Description                          |
-| :---------- | :------------------------------------- |
-| timeStart | Starting time for the InfluxDB query |
-| timeEnd   | Ending time for the InfluxDB query   |
+**Pooley [2010]:** D. Pooley, Globular cluster x-ray sources, *Proc. Natl. Acad. Sci. U.S.A.* 107 (16) 7164-7167 (2010), [https://doi.org/10.1073/pnas.0913903107](https://doi.org/10.1073/pnas.0913903107).
