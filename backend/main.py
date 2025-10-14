@@ -11,8 +11,10 @@ from fastapi.responses import JSONResponse
 import requests
 from fastapi import FastAPI, Path, Query
 from datetime import timezone
+from scheduler import start_scheduler
 
 
+### SETUP ###
 load_dotenv()
 
 logging.basicConfig(
@@ -39,8 +41,21 @@ client = influxdb_client.InfluxDBClient(
 write_api = client.write_api(write_options=SYNCHRONOUS)
 query_api = client.query_api()
 logging.info("Success.")
-#update(sources_collection, write_api, os.getenv("TEMP_DIR", "./_temp"))
 
+do_initial_update = os.getenv("DO_INITIAL_UPDATE", "True").lower() in ["true", "1", "yes"]
+logging.debug(f"DO_INITIAL_UPDATE is set to {do_initial_update}")
+if os.getenv("DO_INITIAL_UPDATE", "True").lower() in ["true", "1", "yes"]:
+    logging.info("Running initial update...")
+    update(sources_collection, write_api, os.getenv("TEMP_DIR", "./_temp"))
+else:
+    logging.info("Skipping initial update.")
+
+### Scheduler ###
+
+start_scheduler(args=[sources_collection, write_api, os.getenv("TEMP_DIR", "./_temp")])
+
+### FastAPI ###
+logging.info("Starting API...")
 app = FastAPI()
 @app.get("/")
 async def root():
