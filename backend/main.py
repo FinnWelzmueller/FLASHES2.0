@@ -141,7 +141,6 @@ async def load_timeseries(influx_key : str = Query(None, description="Influx Key
                           end : str = Query(None, description="End time as ISO format (YYYY-MM-DD)")):
     
     channel_in_influx = f"flux ({channel} keV)"
-    print(channel_in_influx)
     swift_data_cols = ["flux (15-150 keV)", "flux (15-150 keV) max", "flux (15-150 keV) min"]
     maxi_data_cols = ["flux (10-20 keV)", "flux (10-20 keV) max", "flux (10-20 keV) min",
                       "flux (2-20 keV)", "flux (2-20 keV) max", "flux (2-20 keV) min",
@@ -168,8 +167,6 @@ async def load_timeseries(influx_key : str = Query(None, description="Influx Key
     }
 
     telescope = influx_key.split("_")[0]
-    print(telescope)
-    print(channel)
     if not list(data_cols_dict.keys()):
         return {"message": f"Unknown telescope: {telescope}, please check your URL"}
     if telescope in list(channel_dict.keys()):
