@@ -137,7 +137,7 @@ The source-information endpoints are used to provide generic information of the 
 
 ##### Timeseries data
 
-The timeseries endpoints are used to connect the dashboards to the InfluxDB. The timeseries are defined by the telescope-specific influx key from the mongoDB, channel information and a timeframe. 
+The timeseries endpoints are used to connect the dashboards to the InfluxDB. The timeseries are defined by the telescope-specific influx key from the mongoDB, channel information and a timeframe.
 
 
 | Endpoint    | Description                                           |
@@ -161,10 +161,9 @@ The influx_key parameter has to be given in order to lead to data. Furthermore, 
 To download data from FLASHES2.0, a system similar to the timeseries-data endpoint is used. The timeseries are defined by the influx key from the mongoDB. Additionally, generic source information can be downloaded. To identify the source, the _id field from the mongoDB is used. It is noted that these endpoints are to be used by the user to access data.
 
 
-| Endpoint               | Description                                           |
-| :----------------------- | :------------------------------------------------------ |
-| /download/{influx_key} | Downloads a timeseries defined by the influx key      |
-| /download/{_id}        | Downloads source information defined by the source ID |
+| Endpoint               | Description                                      |
+| :----------------------- | :------------------------------------------------- |
+| /download/{influx_key} | Downloads a timeseries defined by the influx key |
 
 To define the start and end of the desired download, two parameters can be handed over to the InfluxDB query:
 
