@@ -34,7 +34,14 @@ def get_utc_time(mjd: pd.Series) -> pd.Series:
 
 def mjd_to_iso(mjd):
     """
-    Converts a MJD float to an ISO8601 UTC string.
+    Converts a MJD int to an ISO8601 UTC string.
     """
     t = Time(mjd, format="mjd")
     return t.to_datetime().strftime("%Y-%m-%dT%H:%M:%SZ")
+
+def iso_to_mjd(iso):
+    """
+    Converts an ISO8601 UTC string to a MJD itn.
+    """
+    t = Time(iso, format="isot", scale="utc")
+    return int(t.mjd)
