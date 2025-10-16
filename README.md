@@ -222,7 +222,13 @@ In all these cases, the relevance should be computed as close to 1 (very relevan
 
 As no modified physical model exists for x-ray outburst to date - which is relatable as the sources covered in the FLASHES2.0 catalogue are of very different types - the relevance calculation has to be purely data-driven. To provide a reliable relevance for every source individually, a Machine Learning Algorithm is deployed which learns the behaviour of every source, analyses the newly incoming datapoint and calculates the relevance accordingly.
 
+## Alerting
+
+FLASHES2.0 supports alerting, which are shown on the web-application.
+
 ## Deployment Guide
+
+FLASHES2.0 can be hosted locally to tailor relevance calculations to individual needs. This guide shows how to set up FLASHES2.0 on your local device.
 
 1. Clone the project to the desired directory.
 2. Fill in your credentials in the env-example file and rename the file to ".env".
@@ -239,7 +245,7 @@ Once the Scheduler in the backend is started, the first download is triggered, w
 
 [ ] Agree on licensing
 
-[ ] Fully set up the container system
+[🎉️] Fully set up the container system
 
 [ ] Implement the dashboards
 
@@ -247,7 +253,12 @@ Once the Scheduler in the backend is started, the first download is triggered, w
 
 [ ] Implement a relevance calculation
 
+[ ] Implement alerting
+
 ## Further Ideas
+
+- FLASHES supported user-handling to "subscribe" to specific sources of interest. FLASHES2.0 should implement a similar feature but ideally without credential handling to keep things safe. An idea is to map generate a hashcode from the sources of interest, which then can be saved on the user-side and pasted into FLASHES2.0 to generate an individual dashboard from this code.
+- FLASHES2.0 should support alerting via E-Mail for individual sources. The E-Mail adresses has to be treated with care to assure data security measures and must be revokable.
 
 ## Introduced Changes to FLASHES
 
