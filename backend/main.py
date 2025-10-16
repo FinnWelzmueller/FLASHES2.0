@@ -7,15 +7,16 @@ from download import update
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 from influxdb_client.rest import ApiException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 import requests
 from fastapi import FastAPI, Path, Query
 from datetime import timezone
 from scheduler import start_scheduler
-
+from utils import iso_to_mjd
 
 ### SETUP ###
 load_dotenv()
+os.makedirs("./download", exist_ok=True)
 
 logging.basicConfig(
     format="{asctime} - {levelname} - {message}",
@@ -290,14 +291,44 @@ async def load_download(influx_key : str,
     out = []
     for idx, row in query_api.query_data_frame(org="flashes", query=query_flux).iterrows():
         timestamp_dict = {"time": row["_time"]}
+
         for col in telescope_dict[telescope]:
             timestamp_dict[col] = row[col]
         out.append(timestamp_dict)
-    # correct timestamp object: rewrite as grafana-understandable string
+
+    if not out or len(out) == 0:
+        return JSONResponse(status_code=404, content={"message": "No data for given query"})
+    
     for entry in out:
         t = entry["time"]
         if hasattr(t, "to_pydatetime"):
             t = t.to_pydatetime()
         entry["time"] = t.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    print(query_api.query_data_frame(org="flashes", query=query_flux).head())
-    return out
+        entry["mjd"] = iso_to_mjd(entry["time"])
+
+    # bring things into the right order
+    download = list()
+    for row in out:
+        row_dict = dict()
+        row_dict["time"] = row["time"]
+        row_dict["mjd"] = row["mjd"]
+        for k in keys:
+            row_dict[k] = row.get(k, None)
+        download.append(row_dict)
+
+    # start download
+    keys = download[0].keys()
+
+    def generate():
+        # Header
+        yield ("\t".join(keys) + "\n").encode("utf-8")
+        # Reihen
+        for row in download:
+            vals = [str(row.get(k)) for k in keys]
+            yield ("\t".join(vals) + "\n").encode("utf-8")
+    
+    filename = f"{influx_key}_data.txt"
+    logging.info(f"Preparing download for {filename} with {len(download)} rows.")
+    return StreamingResponse(generate(), media_type="text/tab-separated-values", headers={
+        "Content-Disposition": f'attachment; filename="{filename}"'
+    })
