@@ -177,7 +177,16 @@ To define the start and end of the desired download, two parameters can be hande
 
 ### Dashboards
 
-For each source, a dashboard is provided, showing all available information. In this project, grafana (image grafana/grafana) is used to provide the dashboard environment‚
+For each source, a dashboard is provided, showing all available information. In this project, Grafana (image grafana/grafana) is used to provide the dashboard environment. Each source has a dedicated dashboard providing all lightcurve information. As not all sources support the same data sets, the dashbaords have to be created depending on the available information. The following combinations are available:
+
+- only MAXI data is available
+- only Swift/BAT data is available
+- Swift/BAT and MAXI data is available -> in this case, also combined fluxes and hardness ratio is calculated
+- Swift/BAT and Fermi/GBM data is available
+- MAXI and Fermi/GBM data is available
+- Swift/BAT, MAXI and Fermi/GBM data is available -> in this case, also combined fluxes and hardness ratio is calculated
+
+For each of the six cases, a template for a dashboard is available. In the template, the placeholder for the source name is 'integral_name'. The placeholders for the influx keys are 'swift_influxkey', 'maxi_influxkey', 'fermi_influxkey', 'hardness_influxkey' and 'combined_influxkey'. When creating a dashboard for a source, the placeholders are replaced with the corresponding keys from the mongoDB.
 
 ## Source Tagging
 
