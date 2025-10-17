@@ -190,11 +190,13 @@ async def load_timeseries(influx_key : str = Query(None, description="Influx Key
             return {"message": f"Unknown channel {channel} for telescope {telescope}, please check your URL"}
         
     if start is None:
-        start = "-1y"
-    if end is not None:
-        range_str = f'|> range(start: {start}, stop: {end})'
+        start_influx = "-1y"
     else:
-        range_str = f'|> range(start: {start})'
+        start_influx = start + "T00:00:00Z"
+    if end is not None:
+        range_str = f'|> range(start: {start_influx}, stop: {end + "T00:00:00Z"})'
+    else:
+        range_str = f'|> range(start: {start_influx})'
 
     query_flux = f"""
         from(bucket: "flashes_data")
@@ -244,16 +246,18 @@ async def load_download(influx_key : str,
     """
         Load timeseries data for a given source and telescope from InfluxDB. Start and End can be given as MJD. 
         If no start is given, data from the last year is returned. If no end is given, data up to the current time is returned.
-        :param influx_key: InfluxDB key for the source and telescope (e.g. "cygx1_swift").
-        :param start: Start time as MJD (optional).
-        :param end: End time as MJD (optional).
+        :param influx_key: InfluxDB key for the source and telescope (e.g. "swift_smcx-3").
+        :param start: Start time in iso format (YYYY-MM-DD) (optional).
+        :param end: End time in iso format (YYYY-MM-DD) (optional).
         :return: Dictionary with timeseries data.
     """
     
     if start is None:
         start = "-1y"
+    else:
+        start = start + "T00:00:00Z"
     if end is not None:
-        range_str = f'|> range(start: {start}, stop: {end})'
+        range_str = f'|> range(start: {start}, stop: {end + "T00:00:00Z"})'
     else:
         range_str = f'|> range(start: {start})'
 
