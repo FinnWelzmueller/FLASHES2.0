@@ -23,50 +23,50 @@ The deployment of FLASHES2.0 is done in Docker, as it allows for an easy local i
 The database system contains a service for the source information and a dedicated timeseries database for all timeseries. The source information database is a mongoDB (image version 6.0), as this is currently the latest version with long-term support. As a document-based database, mongoDB allows for excellent compability with backend technologies at sufficient speed. Each document resembles a source from the FLASHES source catalog. For each source, the following entries *must* be provided:
 
 
-|       Key       |     Unit     | Description                                                                                                                                                                                   |
-| :---------------: | :-------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|       _id       |      str      | The source name without whitespaces and in lower letters. This is the primary key and used for identification in the backend                                                                  |
-|  integral_name  |      str      | The source name from the Integral source catalog                                                                                                                                              |
-|    coord_ra    |    degree    | Right Ascension coordinate of the source                                                                                                                                                      |
-|    coord_dec    |    degree    | Declination coordinate of the source                                                                                                                                                          |
-| labels_constant |   list[str]   | List containing the constant tags. The tags define the categories in the frontend and which algorithm is used for the relevance calculation in the backend                                    |
-| labels_dynamic |   list[str]   | List containing temporary labels. The temporary labels - also called alerts - will be written and deleted dynamically if certain events are detected.                                         |
-|      maxi      | Object / null | Shows whether data from MAXI is available. If so, the field contains a dictionary with the necessary information. If no MAXI data is available for this source, this field is null.           |
-|      swift      | Object / null | Shows whether data from Swift/BAT is available. If so, the field contains a dictionary with the necessary information. If no Swift/BAT data is available for this source, this field is null. |
-|      fermi      | Object / null | Shows whether data from Fermi/GBM is available. If so, the field contains a dictionary with the necessary information. If no Fermi/GBM data is available for this source, this field is null. |
-| hardness_ratio | Object / null | Provides the information necessary if hardness data is calculated. If no hardness data is calculated, this field is null.                                                                     |
-|    combined    | Object / null | Provides the information necessary if combined-flux data is calculated. If no combined-flux data is calculated, this field is null.                                                           |
+| Key             | Unit          | Description                                                                                                                                                                                   |
+| :---------------- | :-------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| _id             | str           | The source name without whitespaces and in lower letters. This is the primary key and used for identification in the backend                                                                  |
+| integral_name   | str           | The source name from the Integral source catalog                                                                                                                                              |
+| coord_ra        | degree        | Right Ascension coordinate of the source                                                                                                                                                      |
+| coord_dec       | degree        | Declination coordinate of the source                                                                                                                                                          |
+| labels_constant | list[str]     | List containing the constant tags. The tags define the categories in the frontend and which algorithm is used for the relevance calculation in the backend                                    |
+| labels_dynamic  | list[str]     | List containing temporary labels. The temporary labels - also called alerts - will be written and deleted dynamically if certain events are detected.                                         |
+| maxi            | Object / null | Shows whether data from MAXI is available. If so, the field contains a dictionary with the necessary information. If no MAXI data is available for this source, this field is null.           |
+| swift           | Object / null | Shows whether data from Swift/BAT is available. If so, the field contains a dictionary with the necessary information. If no Swift/BAT data is available for this source, this field is null. |
+| fermi           | Object / null | Shows whether data from Fermi/GBM is available. If so, the field contains a dictionary with the necessary information. If no Fermi/GBM data is available for this source, this field is null. |
+| hardness_ratio  | Object / null | Provides the information necessary if hardness data is calculated. If no hardness data is calculated, this field is null.                                                                     |
+| combined        | Object / null | Provides the information necessary if combined-flux data is calculated. If no combined-flux data is calculated, this field is null.                                                           |
 
 If the fields maxi, swift or fermi are not null, the document provides the necessary information to download the new lightcurve data. The information is the following
 
 
-|      Key      | Unit | Description                                                                                                                                                                                                                               |
-| :--------------: | :----: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|    data_url    | str | Contains the exact url from which the data can be downloaded. If the data is calculated from existing data (in the ase of hardness or combined flux), this field does not exist.                                                          |
-|   influx_key   | str | Contains an unique identifier for the influxdb, which is the telescope name, an underscore and the integral name without whitespaces. As it can be guaranteed that sources are not doubled in FLASHES, the identifiers are indeed unique. |
-| last_timestamp | int | Contains the timestamp of the latest datapoint in the timeseries. All data above this timestamp will be imported. This technique assumes that the lightcurve data is provided chronologically ordered.                                    |
+| Key            | Unit | Description                                                                                                                                                                                                                               |
+| :--------------- | :----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| data_url       | str  | Contains the exact url from which the data can be downloaded. If the data is calculated from existing data (in the ase of hardness or combined flux), this field does not exist.                                                          |
+| influx_key     | str  | Contains an unique identifier for the influxdb, which is the telescope name, an underscore and the integral name without whitespaces. As it can be guaranteed that sources are not doubled in FLASHES, the identifiers are indeed unique. |
+| last_timestamp | int  | Contains the timestamp of the latest datapoint in the timeseries. All data above this timestamp will be imported. This technique assumes that the lightcurve data is provided chronologically ordered.                                    |
 
 If large amounts of timeseries data is stored in dictionaries, such as in a mongoDB, both memory efficiency and access speed suffer. This is why it was decided to save the timeseries data for each source in a dedicated software. A standard software package for that is InfluxDB, which is also used in this project (image version 2.7). The bucket, in which the lightcurve data is saved, is called flashes_data. Each lightcurve is tagged with a source name, either **maxi**, **swift** or **fermi**. The following table summarizes all possible data fields.
 
 
-|        Key        | Backend Channel-ID |    Telescope    | Availability                                            |
-| :------------------: | -------------------- | :----------------: | --------------------------------------------------------- |
-| flux (15-150 keV) | 15-150             |    Swift/BAT    | Only if Swift/BAT data exists for this source.          |
-| error (15-150 keV) | 15-150             |    Swift/BAT    | Only if Swift/BAT data exists for this source.          |
-|  flux (2-20 keV)  | 2-20               |       MAXI       | Only if MAXI data exists for this source.               |
-|  error (2-20 keV)  | 2-20               |       MAXI       | Only if MAXI data exists for this source.               |
-|   flux (2-4 keV)   | 2-4                |       MAXI       | Only if MAXI data exists for this source.               |
-|  error (2-4 keV)  | 2-4                |       MAXI       | Only if MAXI data exists for this source.               |
-|  flux (4-10 keV)  | 4-10               |       MAXI       | Only if MAXI data exists for this source.               |
-|  error (4-10 keV)  | 4-10               |       MAXI       | Only if MAXI data exists for this source.               |
-|  flux (10-20 keV)  | 10-20              |       MAXI       | Only if MAXI data exists for this source.               |
-| error (10-20 keV) | 10-20              |       MAXI       | Only if MAXI data exists for this source.               |
-|  flux (12-50 keV)  | 12-50              |    Fermi/GBM    | Only if Fermi/GBM data exists for this source.          |
-| error (12-50 keV) | 12-50              |    Fermi/GBM    | Only if Fermi/GBM data exists for this source.          |
-|   hardness ratio   | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
-|   hardness error   | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
-|   combined flux   | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
-|   combined error   | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
+| Key                | Backend Channel-ID | Telescope        | Availability                                            |
+| :------------------- | :------------------- | :----------------- | :-------------------------------------------------------- |
+| flux (15-150 keV)  | 15-150             | Swift/BAT        | Only if Swift/BAT data exists for this source.          |
+| error (15-150 keV) | 15-150             | Swift/BAT        | Only if Swift/BAT data exists for this source.          |
+| flux (2-20 keV)    | 2-20               | MAXI             | Only if MAXI data exists for this source.               |
+| error (2-20 keV)   | 2-20               | MAXI             | Only if MAXI data exists for this source.               |
+| flux (2-4 keV)     | 2-4                | MAXI             | Only if MAXI data exists for this source.               |
+| error (2-4 keV)    | 2-4                | MAXI             | Only if MAXI data exists for this source.               |
+| flux (4-10 keV)    | 4-10               | MAXI             | Only if MAXI data exists for this source.               |
+| error (4-10 keV)   | 4-10               | MAXI             | Only if MAXI data exists for this source.               |
+| flux (10-20 keV)   | 10-20              | MAXI             | Only if MAXI data exists for this source.               |
+| error (10-20 keV)  | 10-20              | MAXI             | Only if MAXI data exists for this source.               |
+| flux (12-50 keV)   | 12-50              | Fermi/GBM        | Only if Fermi/GBM data exists for this source.          |
+| error (12-50 keV)  | 12-50              | Fermi/GBM        | Only if Fermi/GBM data exists for this source.          |
+| hardness ratio     | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
+| hardness error     | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
+| combined flux      | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
+| combined error     | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
 
 The x-ray hardness $h$ and combined x-ray fluxes $\Phi_c$ are calculated from Swift/BAT 15-150 keV data and MAXI 2-20 keV data, following these equations:
 
@@ -89,18 +89,18 @@ The mongoDB listens on port 27017 whereas the InfluxDB listens on port 8086.
 The backend offers a standardized way to access data from the database. It is structured into two areas. The first area is responsible for data download, processing and upload into the database. The second area is responsible for offering endpoints for access within the software. The backend as a whole depends on a variety of Python libraries. The top-level libraries are listed in the following table with a version number and a description why this libary is needed. It is noted that these libraries internally depend on other libraries. A complete list can be found in the `requirements.txt`, which is located in the backend folder.
 
 
-|     Library     | Version | Description                                                               |
-| :---------------: | :--------: | :-------------------------------------------------------------------------- |
-|   APScheduler   |  3.11.1  | Time-sensitive tasks, such as automated data downloads                    |
-|     astropy     |  7.0.1  | Astronomical calculations and number-conversions                          |
-|   astroquery   |  0.4.11  | Source classification with Heasarc                                        |
-|     fastapi     | 0.115.11 | Webframework for a REST-API                                               |
-| influxdb-client |  1.48.0  | Reading and Writing into the InfluxDB                                     |
-|      numpy      |  2.2.4  | Generic library for numerical calculations                                |
-|     pandas     |  2.2.3  | Data analysis and data handling                                           |
-|     pymongo     |  4.11.3  | Reading and Writing into the mongoDB                                      |
-|  python-dotenv  |  1.0.1  | Reading of environment variables, safe handling from passwords and tokens |
-|    requests    |  2.32.3  | HTTP requests for data download                                           |
+| Library         | Version  | Description                                                               |
+| :---------------- | :--------- | :-------------------------------------------------------------------------- |
+| APScheduler     | 3.11.1   | Time-sensitive tasks, such as automated data downloads                    |
+| astropy         | 7.0.1    | Astronomical calculations and number-conversions                          |
+| astroquery      | 0.4.11   | Source classification with Heasarc                                        |
+| fastapi         | 0.115.11 | Webframework for a REST-API                                               |
+| influxdb-client | 1.48.0   | Reading and Writing into the InfluxDB                                     |
+| numpy           | 2.2.4    | Generic library for numerical calculations                                |
+| pandas          | 2.2.3    | Data analysis and data handling                                           |
+| pymongo         | 4.11.3   | Reading and Writing into the mongoDB                                      |
+| python-dotenv   | 1.0.1    | Reading of environment variables, safe handling from passwords and tokens |
+| requests        | 2.32.3   | HTTP requests for data download                                           |
 
 #### Endpoints
 
@@ -112,7 +112,7 @@ Generic endpoints are offered by the fastapi library and are not necessarily par
 
 
 | Endpoint | Description                                                       |
-| ---------- | ------------------------------------------------------------------- |
+| :--------- | :------------------------------------------------------------------ |
 | /docs    | Opens the FastAPI SwaggerUI for testing and interactive API calls |
 
 ##### Health
@@ -186,6 +186,15 @@ The backend is available at port 8000.
 
 For each source, a dashboard is provided, showing all available lightcurve data and hardness information. In this project, Grafana (image grafana/grafana) is used to provide the dashboard environment. As not all sources support the same data sets, the dashbaords have to be created depending on the available information. The following combinations are available:
 
+
+| Combination                  | Template Name                  | Dashboard UID            | Comment                                    |
+| :----------------------------- | :------------------------------- | :------------------------- | :------------------------------------------- |
+| MAXI                         | template-maxi.json             | flashes-maxi             |                                            |
+| Swift/BAT                    | template-swift.json            | flashes-swift            |                                            |
+| Swift/BAT + MAXI             | template-swift-maxi.json       | flashes-swift-maxi       | hardness ratio and combined flux available |
+| Swift/BAT + Fermi/GBM        | template-swift-fermi.json      | flashes-swift-fermi      |                                            |
+| Swift/BAT + MAXI + Fermi/GBM | template-swift-maxi-fermi.json | flashes-swift-maxi-fermi | hardness ratio and combined flux available |
+
 - only MAXI data is available
 - only Swift/BAT data is available
 - Swift/BAT and MAXI data is available -> in this case, also combined fluxes and hardness ratio is calculated
@@ -195,6 +204,8 @@ For each source, a dashboard is provided, showing all available lightcurve data 
 For each of the six cases, a template for a dashboard is available. In the template, the placeholder for the source name is 'integral_name'. The placeholders for the influx keys are 'swift_influxkey', 'maxi_influxkey', 'fermi_influxkey', 'hardness_influxkey' and 'combined_influxkey'. When creating a dashboard for a source, the placeholders are replaced with the corresponding keys from the mongoDB. The templates are available in Grafana in the template folder. To generate the dashboards from the template, the script generateDashboards.py is available in the backend.
 
 The dashboards are structured in the following way. On top, there is an overview section, which covers the most important available lightcurves (Swift/BAT 15-150 keV, MAXI 2-20 keV and Fermi/GBM 12-50 keV). If Swift and MAXI data are available, the overview section covers the Hardness-Intensity diagram and a lightcurves of the combined flux.
+
+The connection from the dashboard to the InfluxDB happens via the backend. The Infinity Datasource is used as datasource in Grafana. The UID of the datasource is 'flashes-datasource'
 
 ## Source Tagging
 
