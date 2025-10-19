@@ -7,12 +7,13 @@ from download import update
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 from influxdb_client.rest import ApiException
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse, RedirectResponse
 import requests
 from fastapi import FastAPI, Path, Query
 from datetime import timezone
 from scheduler import start_scheduler
 from utils import iso_to_mjd
+from urllib.parse import quote_plus
 
 ### SETUP ###
 load_dotenv()
@@ -247,8 +248,7 @@ async def load_download(influx_key : str,
         :param end: End time in iso format (YYYY-MM-DD) (optional).
         :return: Dictionary with timeseries data.
     """
-    print(f"start: {start}")
-    print(f"end: {end}")
+
     if start is None:
         start = "-1y"
     if end is not None:
@@ -266,7 +266,6 @@ async def load_download(influx_key : str,
             |> sort(columns: ["_time"])
             |> drop(columns: ["_start","_stop"])
     """
-    print(query_flux)
 
     swift_keys = ["error (15-150 keV)", "flux (15-150 keV)"]
     maxi_keys = ["error (10-20 keV)", "error (2-20 keV)", "error (2-4 keV)", "error (4-10 keV)",
@@ -333,3 +332,54 @@ async def load_download(influx_key : str,
     return StreamingResponse(generate(), media_type="text/tab-separated-values", headers={
         "Content-Disposition": f'attachment; filename="{filename}"'
     })
+
+@app.get("/plots/{source_id}")
+def plot_redirect(source_id: str):
+    """
+    Redirect to the appropriate Grafana dashboard for a given source based on its available data.
+    """
+    GRAFANA_BASE_URL = "http://localhost:3000"
+    doc = sources_collection.find_one({"_id": source_id})
+    if not doc:
+        return JSONResponse(status_code=404, content={"message": f"Source with INTEGRAL name {source_id} not found."})
+
+    # Robuste Fall-Erkennung: existiert ein Key?
+    has_swift = bool(doc.get("swift"))
+    has_maxi  = bool(doc.get("maxi"))
+    has_fermi = bool(doc.get("fermi"))
+
+    combos = {
+        (True,  False, False): "flashes-swift",
+        (False, True,  False): "flashes-maxi",
+        (True,  True,  False): "flashes-swift-maxi",
+        (True,  False, True ): "flashes-swift-fermi",
+        (True,  True,  True ): "flashes-swift-maxi-fermi",
+    }
+    dashboard_uid = combos.get((has_swift, has_maxi, has_fermi), "")
+    if not dashboard_uid:
+        return JSONResponse(status_code=400, content={"message": "No available dashboards for this source."})
+
+    # Basis (/d/...) ggf. absolut bauen
+    base = f"{GRAFANA_BASE_URL}/d/{dashboard_uid}/{dashboard_uid}" if GRAFANA_BASE_URL else f"/d/{dashboard_uid}/{dashboard_uid}"
+
+    # URL-Variablen nur anhängen, wenn vorhanden
+    params = [f"var-integral_name={quote_plus(doc['integral_name'])}"]
+
+    for telescope, subkey in [
+        ("swift", "swift_influxkey"),
+        ("maxi", "maxi_influxkey"),
+        ("fermi", "fermi_influxkey"),
+        ("hardness", "hardness_influxkey"),
+        ("combined", "combined_influxkey")
+    ]:
+        influx_key = None
+        if telescope == "hardness":
+            telescope = "hardness_ratio"
+        # variant: nested dict like doc["swift"]["influx_key"] or doc["swift"]["influxkey"]
+        tval = doc.get(telescope)
+        if isinstance(tval, dict):
+            influx_key = tval.get("influx_key") 
+        if influx_key:
+            params.append(f"var-{subkey}={quote_plus(influx_key)}")
+
+    return RedirectResponse(base + "?" + "&".join(params))
