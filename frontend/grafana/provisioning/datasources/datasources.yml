@@ -1,0 +1,14 @@
+apiVersion: 1
+datasources:
+  - name: flashes-datasource
+    uid: flashes-datasource
+    type: yesoreyeram-infinity-datasource
+    access: proxy
+    isDefault: true
+    jsonData:
+      authenticationType: none
+      globalQueryOptions:
+        baseUrl: http://backend:8000
+        allowedHosts:
+          - "backend"
+          - "backend:8000"
