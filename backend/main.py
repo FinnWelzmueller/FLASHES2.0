@@ -188,15 +188,12 @@ async def load_timeseries(influx_key : str = Query(None, description="Influx Key
     if telescope in list(channel_dict.keys()):
         if (channel not in channel_dict[telescope]) and (telescope in ["swift" , "maxi", "fermi"]):
             return {"message": f"Unknown channel {channel} for telescope {telescope}, please check your URL"}
-        
     if start is None:
-        start_influx = "-1y"
-    else:
-        start_influx = start + "T00:00:00Z"
+        start = "-1y"
     if end is not None:
-        range_str = f'|> range(start: {start_influx}, stop: {end + "T00:00:00Z"})'
+        range_str = f'|> range(start: {start}, stop: {end})'
     else:
-        range_str = f'|> range(start: {start_influx})'
+        range_str = f'|> range(start: {start})'
 
     query_flux = f"""
         from(bucket: "flashes_data")
@@ -208,7 +205,6 @@ async def load_timeseries(influx_key : str = Query(None, description="Influx Key
             |> sort(columns: ["_time"])
             |> drop(columns: ["_start","_stop"])
     """
-
     # Getting data
     out = []
     for idx, row in query_api.query_data_frame(org="flashes", query=query_flux).iterrows():
@@ -251,13 +247,12 @@ async def load_download(influx_key : str,
         :param end: End time in iso format (YYYY-MM-DD) (optional).
         :return: Dictionary with timeseries data.
     """
-    
+    print(f"start: {start}")
+    print(f"end: {end}")
     if start is None:
         start = "-1y"
-    else:
-        start = start + "T00:00:00Z"
     if end is not None:
-        range_str = f'|> range(start: {start}, stop: {end + "T00:00:00Z"})'
+        range_str = f'|> range(start: {start}, stop: {end})'
     else:
         range_str = f'|> range(start: {start})'
 
@@ -271,6 +266,8 @@ async def load_download(influx_key : str,
             |> sort(columns: ["_time"])
             |> drop(columns: ["_start","_stop"])
     """
+    print(query_flux)
+
     swift_keys = ["error (15-150 keV)", "flux (15-150 keV)"]
     maxi_keys = ["error (10-20 keV)", "error (2-20 keV)", "error (2-4 keV)", "error (4-10 keV)",
             "flux (10-20 keV)", "flux (2-20 keV)", "flux (2-4 keV)", "flux (4-10 keV)"]
