@@ -82,6 +82,8 @@ $$
 
 An outer join of the two dataframes is done to ensure that the times of observations match for the calculations.
 
+The mongoDB listens on port 27017 whereas the InfluxDB listens on port 8086.
+
 ### Backend
 
 The backend offers a standardized way to access data from the database. It is structured into two areas. The first area is responsible for data download, processing and upload into the database. The second area is responsible for offering endpoints for access within the software. The backend as a whole depends on a variety of Python libraries. The top-level libraries are listed in the following table with a version number and a description why this libary is needed. It is noted that these libraries internally depend on other libraries. A complete list can be found in the `requirements.txt`, which is located in the backend folder.
@@ -151,8 +153,8 @@ It is noted that this data endpoint is to be used internally from the software o
 | :----------- | :------------------------------------- |
 | influx_key | Influx ID from the MongoDB           |
 | channel    | Channel information                  |
-| timeStart  | Starting time for the InfluxDB query |
-| timeEnd    | Ending time for the InfluxDB query   |
+| start      | Starting time for the InfluxDB query |
+| end        | Ending time for the InfluxDB query   |
 
 The influx_key parameter has to be given in order to lead to data. Furthermore, the parameter channel has to be given if Swift/BAT, MAXI or Fermi/GBM data is accessed to select the certain channel. The time-frame information, i.e. timeStart and timeEnd are optional if data from a certain timeframe is needed. If timeStart and timeEnd are not provided, data from the last year is loaded.
 
@@ -170,23 +172,29 @@ To define the start and end of the desired download, two parameters can be hande
 
 | Parameter | Description                          |
 | :---------- | :------------------------------------- |
-| timeStart | Starting time for the InfluxDB query |
-| timeEnd   | Ending time for the InfluxDB query   |
+| start     | Starting time for the InfluxDB query |
+| end       | Ending time for the InfluxDB query   |
+
+When downloading data from Fermi/GBM, the column regarding the error is always 0. This is not a problem from FLASHES2.0 but rather from the supplier of the data as the fits files that are downloaded show the same behaviour.
+The download for a given timerange can be triggered directly from the Grafana dashboard. In this case, the selected timerange from the dashboard will be applied. It is noted that the download endpoint does not support channels at the moment. If necessary, this can be changed in the future.
+
+The backend is available at port 8000.
 
 ### Frontend
 
 ### Dashboards
 
-For each source, a dashboard is provided, showing all available information. In this project, Grafana (image grafana/grafana) is used to provide the dashboard environment. Each source has a dedicated dashboard providing all lightcurve information. As not all sources support the same data sets, the dashbaords have to be created depending on the available information. The following combinations are available:
+For each source, a dashboard is provided, showing all available lightcurve data and hardness information. In this project, Grafana (image grafana/grafana) is used to provide the dashboard environment. As not all sources support the same data sets, the dashbaords have to be created depending on the available information. The following combinations are available:
 
 - only MAXI data is available
 - only Swift/BAT data is available
 - Swift/BAT and MAXI data is available -> in this case, also combined fluxes and hardness ratio is calculated
 - Swift/BAT and Fermi/GBM data is available
-- MAXI and Fermi/GBM data is available
 - Swift/BAT, MAXI and Fermi/GBM data is available -> in this case, also combined fluxes and hardness ratio is calculated
 
-For each of the six cases, a template for a dashboard is available. In the template, the placeholder for the source name is 'integral_name'. The placeholders for the influx keys are 'swift_influxkey', 'maxi_influxkey', 'fermi_influxkey', 'hardness_influxkey' and 'combined_influxkey'. When creating a dashboard for a source, the placeholders are replaced with the corresponding keys from the mongoDB.
+For each of the six cases, a template for a dashboard is available. In the template, the placeholder for the source name is 'integral_name'. The placeholders for the influx keys are 'swift_influxkey', 'maxi_influxkey', 'fermi_influxkey', 'hardness_influxkey' and 'combined_influxkey'. When creating a dashboard for a source, the placeholders are replaced with the corresponding keys from the mongoDB. The templates are available in Grafana in the template folder. To generate the dashboards from the template, the script generateDashboards.py is available in the backend.
+
+The dashboards are structured in the following way. On top, there is an overview section, which covers the most important available lightcurves (Swift/BAT 15-150 keV, MAXI 2-20 keV and Fermi/GBM 12-50 keV). If Swift and MAXI data are available, the overview section covers the Hardness-Intensity diagram and a lightcurves of the combined flux.
 
 ## Source Tagging
 
