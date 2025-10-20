@@ -1405,7 +1405,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Dashboard for ${integral_name} (MAXI)",
+  "title": "Dashboard for MAXI",
   "uid": "flashes-maxi",
   "version": 5
 }

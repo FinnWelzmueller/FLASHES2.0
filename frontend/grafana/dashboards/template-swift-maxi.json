@@ -2867,7 +2867,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Dashboard for ${integral_name} (Swift/BAT & MAXI)",
+  "title": "Dashboard for Swift/BAT & MAXI",
   "uid": "flashes-swift-maxi",
   "version": 5
 }

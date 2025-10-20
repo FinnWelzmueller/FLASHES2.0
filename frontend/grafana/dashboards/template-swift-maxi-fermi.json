@@ -3210,7 +3210,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Dashboard for ${integral_name} (Swift/BAT & MAXI & Fermi/GBM)",
+  "title": "Dashboard for Swift/BAT, MAXI & Fermi/GBM",
   "uid": "flashes-swift-maxi-fermi",
   "version": 7
 }

@@ -862,7 +862,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Dashboard for ${integral_name} (Swift/BAT & Fermi/GBM)",
+  "title": "Dashboard for Swift/BAT & Fermi/GBM",
   "uid": "flashes-swift-fermi",
   "version": 5
 }

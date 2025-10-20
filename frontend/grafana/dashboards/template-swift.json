@@ -292,7 +292,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Dashboard for ${integral_name} (Swift/BAT)",
+  "title": "Dashboard for Swift/BAT",
   "uid": "flashes-swift",
   "version": 3
 }
