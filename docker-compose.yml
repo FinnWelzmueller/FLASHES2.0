@@ -83,6 +83,9 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    volumes:
+     - ./frontend:/app
+     - /app/node_modules
     networks:
       - flashes-network
 networks:
