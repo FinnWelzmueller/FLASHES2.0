@@ -102,6 +102,8 @@ The backend offers a standardized way to access data from the database. It is st
 | python-dotenv   | 1.0.1    | Reading of environment variables, safe handling from passwords and tokens |
 | requests        | 2.32.3   | HTTP requests for data download                                           |
 
+The backend is available at port 8000.
+
 #### Endpoints
 
 The backend offers a variety of endpoints for the frontend and the dashboard to visualize data or to check functionalities. The following endpoints are available:
@@ -178,9 +180,28 @@ To define the start and end of the desired download, two parameters can be hande
 When downloading data from Fermi/GBM, the column regarding the error is always 0. This is not a problem from FLASHES2.0 but rather from the supplier of the data as the fits files that are downloaded show the same behaviour.
 The download for a given timerange can be triggered directly from the Grafana dashboard. In this case, the selected timerange from the dashboard will be applied. It is noted that the download endpoint does not support channels at the moment. If necessary, this can be changed in the future.
 
-The backend is available at port 8000.
+##### Plots
+
+The plots are available via a dedicated endpoint. As not all sources support the same data sets, the source ID from the mongoDB is passed.
+
+
+| Endpoint     | Description                                     |
+| -------------- | ------------------------------------------------- |
+| /plots/{_id} | Forwards to the corresponding Grafana dashboard |
+
+After the call, the backend connects to the mongoDB and assesses the swift, maxi and fermi information to calculate which dashboard for the template has to be used. It then forwards to Grafana and passes the influx keys from all available data as URL query parameters.
 
 ### Frontend
+
+FLASHES2.0 includes to user-oriented software parts. The frontend acts as a starting point for the user and offers the navigation through the application and pages for all information that are not timeseries data. The timeseries data are shown in Grafana dashboards. The frontend is based the Next.js framework and includes typescript for the logic calculations and tailwindcss for styling classes. A list of all necessary libraries are shown in the Table below.
+
+
+| Library     | Version | Description                                              |
+| ------------- | --------- | ---------------------------------------------------------- |
+| react-dom   | 19.1.0  | Client-rendering library for React                       |
+| next        | 15.5.5  | Next.js framework                                        |
+| typescript  | ^5      | TypeScript compiler                                      |
+| tailwindcss | ^4      | Tailwind CSS utility framework, incl. the PostCSS plugin |
 
 ### Dashboards
 
@@ -201,7 +222,7 @@ For each source, a dashboard is provided, showing all available lightcurve data 
 - Swift/BAT and Fermi/GBM data is available
 - Swift/BAT, MAXI and Fermi/GBM data is available -> in this case, also combined fluxes and hardness ratio is calculated
 
-For each of the six cases, a template for a dashboard is available. In the template, the placeholder for the source name is 'integral_name'. The placeholders for the influx keys are 'swift_influxkey', 'maxi_influxkey', 'fermi_influxkey', 'hardness_influxkey' and 'combined_influxkey'. When creating a dashboard for a source, the placeholders are replaced with the corresponding keys from the mongoDB. The templates are available in Grafana in the template folder. To generate the dashboards from the template, the script generateDashboards.py is available in the backend.
+For each of the six cases, a template for a dashboard is available. In the template, the placeholder for the source name is 'integral_name'. The placeholders for the influx keys are 'swift_influxkey', 'maxi_influxkey', 'fermi_influxkey', 'hardness_influxkey' and 'combined_influxkey'. They are marked as variables as ${...} in Grafana and their usage is described [here](https://grafana.com/docs/grafana/latest/dashboards/build-dashboards/create-dashboard-url-variables/). When assessing the dashboard for a source, the placeholders are replaced with the corresponding keys from the mongoDB by forwarding them in the URL of the dashboard. The templates are available in Grafana in the template folder.
 
 The dashboards are structured in the following way. On top, there is an overview section, which covers the most important available lightcurves (Swift/BAT 15-150 keV, MAXI 2-20 keV and Fermi/GBM 12-50 keV). If Swift and MAXI data are available, the overview section covers the Hardness-Intensity diagram and a lightcurves of the combined flux.
 
@@ -295,8 +316,9 @@ Once the Scheduler in the backend is started, the first download is triggered, w
 - Docker (v28.0.1), incl. compose (v2.33.1)
 - mongoDB (Docker image: mongo:6.0)
 - InfluxDB (Docker image: influxdb:2.7)
-- Grafana (Docker image: grafana/grafana)
+- Grafana (Docker image: grafana/grafana), incl. the yesoreyeram-infinity-datasource plugin
 - Python (v3.13.7), incl. libraries from the corresponding Table in the backend section
+- react 19.1.0, incl. libraries from the corresponding Table in the frontend section
 
 ## References
 
