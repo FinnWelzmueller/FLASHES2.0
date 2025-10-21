@@ -296,13 +296,17 @@ Once the Scheduler in the backend is started, the first download is triggered, w
 
 [🎉️] Fully set up the container system
 
-[ ] Implement the dashboards
+[🎉️] Implement the dashboards
 
 [ ] Implement a frontend
+
+**--- RELEASE FLASHES2.0 beta ---**
 
 [ ] Implement a relevance calculation
 
 [ ] Implement alerting
+
+**--- RELEASE v1.0 ---**
 
 ## Further Ideas
 
