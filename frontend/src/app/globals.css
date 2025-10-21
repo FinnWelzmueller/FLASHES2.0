@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+/* Design tokens (leicht austauschbar) */
+:root {
+  --color-bg: #0a0a0a;        /* neutral-950 */
+  --color-fg: #fafafa;        /* neutral-50  */
+  --page-padding: 1.25rem;
+  --brand: 200 100% 50%;      /* HSL placeholder für Akzent (z.B. cyan) */
+}
+
+/* Base */
+html, body { height: 100%; }
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans), ui-sans-serif, system-ui;
+}
+
+/* Utility tweaks */
+.code, code, pre, kbd { font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+
+/* Fokus-Styles (barriereärmer) */
+:focus-visible {
+  outline: 2px solid hsl(var(--brand));
+  outline-offset: 3px;
+}
+
+h1 {
+  @apply text-3xl md:text-4xl font-semibold tracking-tight;
+}
+
+p {
+  @apply text-base leading-relaxed;
+}
+
+.externalLink {
+  @apply underline decoration-dotted underline-offset-4 hover:opacity-90;
+}
+.externalLink::after {
+  content: "↗";
+  margin-left: .25rem;
+  opacity: .6;
+  font-size: .85em;
+}
