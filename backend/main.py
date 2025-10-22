@@ -120,7 +120,7 @@ async def health_grafana():
     """
     logging.info("Healthcheck Grafana called.")
     try:
-        resp = requests.get("http://grafana:3000/api/health", timeout=2)
+        resp = requests.get("http://grafana:3001/api/health", timeout=2)
         if resp.status_code == 200 and resp.json().get("database") == "ok":
             logging.info("Healthcheck Grafana successful.")
             return {"status": "ok"}
@@ -138,10 +138,7 @@ async def get_all_sources():
     """
         Get all sources.
     """
-    out = dict()
-    for source in sources_collection.find({}):
-        out[str(source["_id"])] = source
-    return out
+    return list(source for source in sources_collection.find({}))
 
 @app.get("/sources/{source_id}")
 async def get_sources(source_id: str = Path(..., description="The ID from the mongoDB of the source to retrieve")):
@@ -338,7 +335,7 @@ def plot_redirect(source_id: str):
     """
     Redirect to the appropriate Grafana dashboard for a given source based on its available data.
     """
-    GRAFANA_BASE_URL = "http://localhost:3000"
+    GRAFANA_BASE_URL = "http://localhost:3001"
     doc = sources_collection.find_one({"_id": source_id})
     if not doc:
         return JSONResponse(status_code=404, content={"message": f"Source with INTEGRAL name {source_id} not found."})
