@@ -22,6 +22,28 @@ export default function Home() {
         FLASHES is still in development! If you want to contribute, feel free to explore the code in the repository on <a href="https://github.com/FinnWelzmueller/FLASHES2.0" className="externalLink" target="_blank">GitHub</a>. Any contributions are highly appreciated! If you found a bug or have a feature request, please open an issue <a href="https://github.com/FinnWelzmueller/FLASHES2.0/issues" className="externalLink" target="_blank">here</a>.
       </p>
       </div>
+      <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+        <a 
+        href='/tags/be-star' 
+        className="rounded-xl border border-neutral-500 text-neutral-100 py-4 font-medium transition hover:text-neutral-900 hover:bg-gradient-to-br hover:from-neutral-400 hover:to-neutral-300">
+                Be Star
+        </a>
+        <a 
+        href='/tags/black-hole'
+        className="rounded-xl border border-neutral-500 text-neutral-100 py-4 font-medium transition hover:text-neutral-900 hover:bg-gradient-to-br hover:from-neutral-400 hover:to-neutral-300">
+                Black Hole
+        </a>
+        <a 
+        href='/tags/burster'
+        className="rounded-xl border border-neutral-500 text-neutral-100 py-4 font-medium transition hover:text-neutral-900 hover:bg-gradient-to-br hover:from-neutral-400 hover:to-neutral-300">
+                Burster
+        </a>
+        <a 
+        href='/tags/binary'
+        className="rounded-xl border border-neutral-500 text-neutral-100 py-4 font-medium transition hover:text-neutral-900 hover:bg-gradient-to-br hover:from-neutral-400 hover:to-neutral-300">
+                Binary
+        </a>
+      </div>
     </main>
   );
 } 
