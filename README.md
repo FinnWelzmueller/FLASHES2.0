@@ -134,10 +134,10 @@ The health endpoints are necessary to check the correct functionality of all ser
 The source-information endpoints are used to provide generic information of the sources in the catalog to the frontend. To identify the sources, the _id field from the mongoDB is used.
 
 
-| Endpoint       | Description                                               |
-| :--------------- | :---------------------------------------------------------- |
-| /sources       | Lists all sources from the catalog with basic information |
-| /sources/{_id} | Lists all available details for a source                  |
+| Endpoint       | Description                                                                        |
+| :--------------- | :----------------------------------------------------------------------------------- |
+| /sources       | Lists all sources from the catalog with basic information as array of dictionaries |
+| /sources/{_id} | Lists all available details for a source in a dictionary                           |
 
 ##### Timeseries data
 
