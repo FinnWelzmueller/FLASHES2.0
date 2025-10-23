@@ -26,12 +26,15 @@ export function SourceTable({ sources }: { sources: SourceRecord[] }) {
                     <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Last Data Swift/BAT</th>
                     <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Last Data Fermi/GBM</th>
                     <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Tags</th>
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Plots</th>
                 </thead>
                 <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
                     {sources.map((source) => {
                         return (
                             <tr key={source._id} className="hover:bg-neutral-50/60 dark:hover:bg-neutral-900/50">
-                                <td className="px-4 py-3 text-sm font-medium">{source.integral_name}</td>
+                                <td className="px-4 py-3 text-sm font-medium">
+                                    <Link href={`/sources/${source._id}`} className="hover:underline">{source.integral_name}</Link>
+                                    </td>
                                 <td className="px-4 py-3 text-sm font-medium">{source.maxi ? source.maxi.last_timestamp : ""}</td>
                                 <td className="px-4 py-3 text-sm font-medium">{source.swift ? source.swift.last_timestamp : ""}</td>
                                 <td className="px-4 py-3 text-sm font-medium">{source.fermi ? source.fermi.last_timestamp : ""}</td>
