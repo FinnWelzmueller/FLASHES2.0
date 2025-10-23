@@ -1,4 +1,4 @@
-import { SourceTable, type SourceRecord } from "@/components/sourceTable";
+import { SourceTable } from "@/components/sourceTable";
 export default async function Sources() {
 
   const res = await fetch("http://localhost:8000/sources", { next: { revalidate: 0 } });
