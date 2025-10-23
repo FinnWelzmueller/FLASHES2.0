@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { Tag } from './tag';
 
 export type TelescopeRecord = {
     data_url: string;
@@ -37,7 +38,7 @@ export function SourceTable({ sources }: { sources: SourceRecord[] }) {
                                 <td className="px-4 py-3 text-sm font-medium">
                                     <div className="flex flex-wrap gap-1.5">
                                         {source.labels_constant.map((l) => (
-                                            <span key={l} className="inline-flex items-center rounded-full px-2 py-0.5 text-xs border border-neutral-300 dark:border-neutral-700">{ l }</span>))}
+                                            <Tag key={l} label={l} />))}
                                     </div>
                                 </td>
                                 <td className="px-4 py-3 text-sm font-medium">
