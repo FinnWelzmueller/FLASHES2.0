@@ -1,16 +1,25 @@
-import { formatTag } from '@/lib/formatTag';
+import { SourceTable } from "@/components/sourceTable";
+import { formatTag } from "@/lib/formatTag";
+import { PageDescription } from "@/components/pageDescription";
+export default async function SourcesFiltered({ params }: { params: { tag: string } ;
+}) {
+  const tag_name = (await params).tag;
+  const res = await fetch(`http://localhost:8000/tags/${encodeURIComponent(String(tag_name))}`, { next: { revalidate: 0 } });
+  
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Backend returned ${res.status}: ${body}`);
+  }
 
-export default async function Tag(
-    { params }: { params: Promise<{ tag: string }> ;
-}) 
-{
-    const tag = (await params).tag;
+  const data = await res.json();
+  return (
+    <main className="p-6">
+      <h1>{formatTag(tag_name)}</h1>
+      <PageDescription>
+        Select a source name to view more details. Click on the plot link to see all available timeseries data.
+      </PageDescription>
+      <SourceTable sources={data} />
 
-    return (
-    <main>
-      <h1>Tag Page</h1>
-      <p>This page displays details for a specific tag {formatTag(tag)}.</p>
     </main>
   );
 }
-
