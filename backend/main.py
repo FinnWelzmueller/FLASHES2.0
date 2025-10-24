@@ -130,7 +130,34 @@ async def health_grafana():
         logging.error(f"Healthcheck Grafana failed: {e}")
         return JSONResponse(status_code=503, content={"status": "error", "details": str(e)})
 
+### Tags endpoints
+@app.get("/tags")
+async def get_all_tags():
+    """
+        Gets all tags.
+        :return: List of all unique tags in the sources collection.
+    """
+    tags = set()
+    for source in sources_collection.find({}):
+        source_tags = source.get("labels_constant", [])
+        for tag in source_tags:
+            tags.add(tag)
+    return sorted(list(tags))
 
+@app.get("/tags/{tag_name}")
+async def get_sources_by_tag(tag_name: str = Path(..., description="The tag to filter sources by")):
+    """
+        Get all sources with a given tag. The tag name is converted to uppercase and hyphens are replaced with spaces to match the format in the database.
+        :param tag_name: The tag to filter sources by.
+        :return: List of sources with the given tag.
+    """
+    if tag_name.upper().replace("-", " ") not in await get_all_tags():
+        return JSONResponse(status_code=404, content={"message": f"Tag {tag_name} not found."})
+    sources = []
+    for source in sources_collection.find({}):
+        if tag_name.upper().replace("-", " ") in source.get("labels_constant", []):
+            sources.append(source)
+    return sources
 ### Source information endpoints
 
 @app.get("/sources")
@@ -146,6 +173,8 @@ async def get_sources(source_id: str = Path(..., description="The ID from the mo
         Get a source by its ID.
     """
     return sources_collection.find({"_id": source_id})[0]
+
+
 
 ### Timeseries data endpoints
 @app.get("/timeseries")
