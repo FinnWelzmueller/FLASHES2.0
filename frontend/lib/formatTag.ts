@@ -7,5 +7,6 @@
 
 export function formatTag(tag: string): string {
     if (!tag) return '';
-    return tag.replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+
+    return tag.replace(/-/g, ' ').toUpperCase();
 }
