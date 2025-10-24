@@ -1,4 +1,5 @@
 import { SourceTable } from "@/components/sourceTable";
+import { PageDescription } from "@/components/pageDescription";
 export default async function Sources() {
 
   const res = await fetch("http://localhost:8000/sources", { next: { revalidate: 0 } });
@@ -11,7 +12,9 @@ export default async function Sources() {
   return (
     <main>
       <h1>Sources Page</h1>
-      <p>This is the sources page of the application.</p>
+      <PageDescription>
+        This is the sources page of the application.
+        </PageDescription>
       <SourceTable sources={data} />
 
     </main>
