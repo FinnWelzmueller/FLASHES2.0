@@ -21,12 +21,14 @@ export function SourceTable({ sources }: { sources: SourceRecord[] }) {
         <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 overflow-hidden shadow-sm">
             <table className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-800">
                 <thead className="bg-neutral-50 dark:bg-neutral-900/60">
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Name</th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Last Data MAXI</th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Last Data Swift/BAT</th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Last Data Fermi/GBM</th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Tags</th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Plots</th>
+                    <tr>
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Name</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Last Data MAXI</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Last Data Swift/BAT</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Last Data Fermi/GBM</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Tags</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Plots</th>
+                    </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
                     {sources.map((source) => {
