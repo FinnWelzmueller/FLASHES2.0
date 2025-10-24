@@ -1,3 +1,5 @@
+import { BigButton } from "@/components/bigButton";
+
 export default function Home() {
   return (
     <main>
@@ -23,26 +25,25 @@ export default function Home() {
       </p>
       </div>
       <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
-        <a 
-        href='/tags/be-star' 
-        className="rounded-xl border border-neutral-500 text-neutral-100 py-4 font-medium transition hover:text-neutral-900 hover:bg-gradient-to-br hover:from-neutral-400 hover:to-neutral-300">
-                Be Star
-        </a>
-        <a 
-        href='/tags/black-hole'
-        className="rounded-xl border border-neutral-500 text-neutral-100 py-4 font-medium transition hover:text-neutral-900 hover:bg-gradient-to-br hover:from-neutral-400 hover:to-neutral-300">
-                Black Hole
-        </a>
-        <a 
+        <BigButton 
+          href='/tags/be-star'
+          name='BE STAR'
+          key='be-star'/>
+        
+        <BigButton 
+          href='/tags/black-hole'
+          name='BLACK HOLE'
+          key='black-hole'/>
+
+        <BigButton 
         href='/tags/burster'
-        className="rounded-xl border border-neutral-500 text-neutral-100 py-4 font-medium transition hover:text-neutral-900 hover:bg-gradient-to-br hover:from-neutral-400 hover:to-neutral-300">
-                Burster
-        </a>
-        <a 
+        name='BURSTER'
+        key='burster'/>
+
+        <BigButton 
         href='/tags/binary'
-        className="rounded-xl border border-neutral-500 text-neutral-100 py-4 font-medium transition hover:text-neutral-900 hover:bg-gradient-to-br hover:from-neutral-400 hover:to-neutral-300">
-                Binary
-        </a>
+        name='BINARY'
+        key='binary'/>
       </div>
     </main>
   );
