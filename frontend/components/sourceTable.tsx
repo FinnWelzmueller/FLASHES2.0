@@ -5,6 +5,8 @@ import { Tag } from './tag';
 export type TelescopeRecord = {
     data_url: string;
     last_timestamp: string;
+    last_flux: number;
+    last_error: number;
 }
 
 export type SourceRecord = {
@@ -37,9 +39,9 @@ export function SourceTable({ sources }: { sources: SourceRecord[] }) {
                                 <td className="px-4 py-3 text-sm font-medium">
                                     <Link href={`/sources/${source._id}`} className="hover:underline">{source.integral_name}</Link>
                                     </td>
-                                <td className="px-4 py-3 text-sm font-medium">{source.maxi ? source.maxi.last_timestamp : ""}</td>
-                                <td className="px-4 py-3 text-sm font-medium">{source.swift ? source.swift.last_timestamp : ""}</td>
-                                <td className="px-4 py-3 text-sm font-medium">{source.fermi ? source.fermi.last_timestamp : ""}</td>
+                                <td className="px-4 py-3 text-sm font-medium">{source.maxi ? <span>{(source.maxi.last_flux * 1000 / 0.285).toFixed(3)} &plusmn; {(source.maxi.last_error * 1000 / 0.285).toFixed(3)} mCrab</span>: ""}</td>
+                                <td className="px-4 py-3 text-sm font-medium">{source.swift ? <span>{(source.swift.last_flux * 1000 / 0.285).toFixed(3)} &plusmn; {(source.swift.last_error * 1000 / 0.285).toFixed(3)} mCrab</span>: ""}</td>
+                                <td className="px-4 py-3 text-sm font-medium">{source.fermi ? <span>{(source.fermi.last_flux * 1000 / 0.285).toFixed(3)} &plusmn; {(source.fermi.last_error * 1000 / 0.285).toFixed(3)} mCrab</span>: ""}</td>
                                 <td className="px-4 py-3 text-sm font-medium">
                                     <div className="flex flex-wrap gap-1.5">
                                         {source.labels_constant.map((l) => (
