@@ -92,7 +92,9 @@ for _, row in df.iterrows():
         source_data['maxi'] = {
             "data_url": maxi_url + row['Maxi ID'] + "/" + row['Maxi ID'] + "_g_lc_1day_all.dat",
             "influx_key": "maxi_" + row['Integral Name'].replace(" " ,"").lower(),
-            "last_timestamp": 0}
+            "last_timestamp": 0,
+            "last_error": 0,
+            "last_flux": 0}
     else:
         source_data['maxi'] = None
 
@@ -103,7 +105,9 @@ for _, row in df.iterrows():
         source_data['swift'] = {
             "data_url": str + row['Swift ID'] + ".lc.txt",
             "influx_key": "swift_" + row['Integral Name'].replace(" " ,"").lower(),
-            "last_timestamp": 0}
+            "last_timestamp": 0,
+            "last_error": 0,
+            "last_flux": 0}
     else:
         source_data['swift'] = None
     
@@ -111,7 +115,9 @@ for _, row in df.iterrows():
         source_data['fermi'] = {
             "data_url": fermi_url + row['Fermi ID'] + "_old.fits.gz", 
             "influx_key": "fermi_" + row['Integral Name'].replace(" " ,"").lower(),
-            "last_timestamp": 0}
+            "last_timestamp": 0,
+            "last_error": 0,
+            "last_flux": 0}
     else:
         source_data['fermi'] = None
 
