@@ -37,14 +37,16 @@ The database system contains a service for the source information and a dedicate
 | hardness_ratio  | Object / null | Provides the information necessary if hardness data is calculated. If no hardness data is calculated, this field is null.                                                                     |
 | combined        | Object / null | Provides the information necessary if combined-flux data is calculated. If no combined-flux data is calculated, this field is null.                                                           |
 
-If the fields maxi, swift or fermi are not null, the document provides the necessary information to download the new lightcurve data. The information is the following
+If the fields maxi, swift or fermi are not null, the document provides the necessary information to download the new lightcurve data. It is assumed that the lightcurve data is provided chronologically ordered by the data provider. The information is the following
 
 
 | Key            | Unit | Description                                                                                                                                                                                                                               |
 | :--------------- | :----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | data_url       | str  | Contains the exact url from which the data can be downloaded. If the data is calculated from existing data (in the ase of hardness or combined flux), this field does not exist.                                                          |
 | influx_key     | str  | Contains an unique identifier for the influxdb, which is the telescope name, an underscore and the integral name without whitespaces. As it can be guaranteed that sources are not doubled in FLASHES, the identifiers are indeed unique. |
-| last_timestamp | int  | Contains the timestamp of the latest datapoint in the timeseries. All data above this timestamp will be imported. This technique assumes that the lightcurve data is provided chronologically ordered.                                    |
+| last_timestamp | int  | Contains the timestamp of the latest datapoint in the timeseries. All data above this timestamp will be imported.                                                                                                                         |
+| last_flux      | int  | Contains the last flux value from the InfluxDB. This field only exists for the Swift/BAT, Fermi/GBM and MAXI objects (in the case of MAXI, the 2-20 keV flux is saved).                                                                   |
+| last_error     | int  | Contains the last flux-error value from the InfluxDB. This field only exists for the Swift/BAT, Fermi/GBM and MAXI objects (in the case of MAXI, the 2-20 keV flux is saved).                                                             |
 
 If large amounts of timeseries data is stored in dictionaries, such as in a mongoDB, both memory efficiency and access speed suffer. This is why it was decided to save the timeseries data for each source in a dedicated software. A standard software package for that is InfluxDB, which is also used in this project (image version 2.7). The bucket, in which the lightcurve data is saved, is called flashes_data. Each lightcurve is tagged with a source name, either **maxi**, **swift** or **fermi**. The following table summarizes all possible data fields.
 
@@ -138,6 +140,16 @@ The source-information endpoints are used to provide generic information of the 
 | :--------------- | :----------------------------------------------------------------------------------- |
 | /sources       | Lists all sources from the catalog with basic information as array of dictionaries |
 | /sources/{_id} | Lists all available details for a source in a dictionary                           |
+
+##### Tagged data
+
+The tagging endpoint provides pre-filtered source lists to obey filtering on the client side. Additionally, an endpoint is provided that returns a list of all available tags. More information on tagging is provided in the corresponding section of this file.
+
+
+| Endpoint    | Description                               |
+| ------------- | ------------------------------------------- |
+| /tags       | Lists all available tags                  |
+| /tags/{tag} | Lists all sources with this specific tag. |
 
 ##### Timeseries data
 
