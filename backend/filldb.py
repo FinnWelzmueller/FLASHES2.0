@@ -66,7 +66,7 @@ maxi_url = "http://maxi.riken.jp/star_data/"
 swift_url = "https://swift.gsfc.nasa.gov/results/transients/"
 fermi_url = "https://gammaray.nsstc.nasa.gov/gbm/science/pulsars/lightcurves/"
 
-client = MongoClient(f"mongodb://admin:{os.getenv("MONGO_INITDB_ROOT_PASSWORD")}@localhost:27017/")    # MongoDB connection setup
+client = MongoClient(f"mongodb://admin:{os.getenv("MONGO_INITDB_ROOT_PASSWORD")}@mongodb:27017/")    # MongoDB connection setup
 db = client['flashes']
 sources_collection = db['sources']
 
