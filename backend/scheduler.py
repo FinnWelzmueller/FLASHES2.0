@@ -8,5 +8,6 @@ def start_scheduler(args):
     """
     logging.info("Starting scheduler...")
     scheduler = BackgroundScheduler()
+    scheduler.start()
     logging.info("Scheduler started. Adding update job to run daily at 02:00 AM...")
     scheduler.add_job(update, 'cron', hour=2, minute=0, second=0, args=args)

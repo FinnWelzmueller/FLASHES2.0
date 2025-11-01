@@ -28,6 +28,9 @@ def write_to_influx(df: pd.DataFrame, write_api, source: dict, telescope: str, s
             .field("flux (15-150 keV)", row['FLUX 15-150']).field("error (15-150 keV)", row['ERROR 15-150']) \
             .time(row['UTC TIME'])
             points.append(p)
+        if len(df) > 0:
+            sources_collection.update_one({'_id': source['_id']}, {'$set': {f'swift.last_flux': row['FLUX 15-150']}})
+            sources_collection.update_one({'_id': source['_id']}, {'$set': {f'swift.last_error': row['ERROR 15-150']}})
 
     if telescope == "maxi":
         for index, row in df.iterrows():
@@ -38,13 +41,18 @@ def write_to_influx(df: pd.DataFrame, write_api, source: dict, telescope: str, s
             .field("flux (10-20 keV)", row['FLUX 10-20']).field("error (10-20 keV)", row['ERROR 10-20']) \
             .time(row['UTC TIME'])
             points.append(p)
-
+        if len(df) > 0:
+            sources_collection.update_one({'_id': source['_id']}, {'$set': {f'maxi.last_flux': row['FLUX 2-20']}})
+            sources_collection.update_one({'_id': source['_id']}, {'$set': {'maxi.last_error': row['ERROR 2-20']}})
     if telescope == "fermi":
         for index, row in df.iterrows():
             p = Point("flux data").tag("source", key) \
             .field("flux (12-50 keV)", row['FLUX 12-50']).field("error (12-50 keV)", row['ERROR 12-50']) \
             .time(row['UTC TIME'])
             points.append(p)
+        if len(df) > 0:
+            sources_collection.update_one({'_id': source['_id']}, {'$set': {f'fermi.last_flux': row['FLUX 12-50']}})
+            sources_collection.update_one({'_id': source['_id']}, {'$set': {'fermi.last_error': row['ERROR 12-50']}})
 
     if telescope == "hardness_ratio":
         for index, row in df.iterrows():
