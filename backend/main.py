@@ -171,6 +171,7 @@ async def get_sources(source_id: str = Path(..., description="The ID from the mo
     """
         Get a source by its ID.
     """
+    source_id = source_id.replace("%2B", "+") # supresses the wrong decoding from the URL in the backend
     return sources_collection.find({"_id": source_id})[0]
 
 
@@ -363,7 +364,7 @@ def plot_redirect(source_id: str):
     """
     Redirect to the appropriate Grafana dashboard for a given source based on its available data.
     """
-    GRAFANA_BASE_URL = "http://grafana:3001"
+    GRAFANA_BASE_URL = "http://localhost:3001"
     doc = sources_collection.find_one({"_id": source_id})
     if not doc:
         return JSONResponse(status_code=404, content={"message": f"Source with INTEGRAL name {source_id} not found."})
