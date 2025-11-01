@@ -37,7 +37,7 @@ export function SourceTable({ sources }: { sources: SourceRecord[] }) {
                         return (
                             <tr key={source._id} className="hover:bg-neutral-50/60 dark:hover:bg-neutral-900/50">
                                 <td className="px-4 py-3 text-sm font-medium">
-                                    <Link href={`/sources/${source._id}`} className="hover:underline">{source.integral_name}</Link>
+                                    <Link href={`/sources/${encodeURIComponent(source._id)}`} className="hover:underline">{source.integral_name}</Link>
                                     </td>
                                 <td className="px-4 py-3 text-sm font-medium">{source.maxi ? <span>{(source.maxi.last_flux * 1000 / 0.285).toFixed(3)} &plusmn; {(source.maxi.last_error * 1000 / 0.285).toFixed(3)} mCrab</span>: ""}</td>
                                 <td className="px-4 py-3 text-sm font-medium">{source.swift ? <span>{(source.swift.last_flux * 1000 / 0.285).toFixed(3)} &plusmn; {(source.swift.last_error * 1000 / 0.285).toFixed(3)} mCrab</span>: ""}</td>
@@ -49,7 +49,7 @@ export function SourceTable({ sources }: { sources: SourceRecord[] }) {
                                     </div>
                                 </td>
                                 <td className="px-4 py-3 text-sm font-medium">
-                                    <a href={`http://localhost:8000/plots/${source._id}`} className="externalLink" target="_blank">here</a></td>
+                                    <Link href={`http://localhost:8000/plots/${encodeURIComponent(source._id)}`} className="externalLink" target="_blank">here</Link></td>
                             </tr>)})}
                 </tbody>
             </table>
