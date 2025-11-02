@@ -5,8 +5,8 @@ import { TelescopeSection } from '@/components/telescopeSection';
 
 export type TelescopeRecord = {
   data_url: string;
-  influx_key?: string;
-  last_timestamp?: number; // MJD
+  influx_key: string;
+  last_timestamp: number; 
   last_flux?: number;
   last_error?: number;
 };
@@ -20,8 +20,8 @@ export type SourceData = {
   swift?: TelescopeRecord | null;
   maxi?: TelescopeRecord | null;
   fermi?: TelescopeRecord | null;
-  hardness_ratio?: { influx_key?: string; last_timestamp?: number } | null;
-  combined?: { influx_key?: string; last_timestamp?: number } | null;
+  hardness_ratio?: { influx_key: string; last_timestamp: number } | null;
+  combined?: { influx_key: string; last_timestamp: number } | null;
 };
 
 export default async function SourceDetails({ params }: { params: Promise<{ _id: string }> }) {
