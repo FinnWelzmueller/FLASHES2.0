@@ -1,6 +1,5 @@
 import { Tag } from '@/components/tag';
 import { ExternalLinks } from '@/components/externalLinks';
-import { OpenActions } from '@/components/openActions';
 import type { SourceData } from '@/src/app/sources/[_id]/page';
 
 export function SourceHeader({ data }: { data: SourceData }) {
@@ -8,7 +7,6 @@ export function SourceHeader({ data }: { data: SourceData }) {
     <header className="flex flex-col gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-6">
       <div className="flex items-start justify-between gap-4">
         <h1 className="text-3xl font-semibold tracking-tight">{data.integral_name}</h1>
-        <OpenActions data={data} />
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
