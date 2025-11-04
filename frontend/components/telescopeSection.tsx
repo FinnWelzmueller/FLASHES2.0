@@ -1,13 +1,14 @@
 import type { SourceData, TelescopeRecord } from '@/src/app/sources/[_id]/page';
 import { mjdToIso } from '@/lib/astro';
 
+
 function TelescopeCard({ name, rec }: { name: 'Swift' | 'MAXI' | 'Fermi'; rec?: TelescopeRecord | null }) {
   if (!rec) return null;
   const when = rec.last_timestamp ? mjdToIso(rec.last_timestamp) : '—';
   const flux = rec.last_flux != null && rec.last_error != null
     ? `${rec.last_flux.toFixed(3)} ± ${rec.last_error.toFixed(3)}`
     : '—';
-
+  
   return (
     <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 p-4">
       <div className="flex items-center justify-between">
@@ -26,11 +27,17 @@ function TelescopeCard({ name, rec }: { name: 'Swift' | 'MAXI' | 'Fermi'; rec?: 
         <div className="font-medium">{flux}</div>
         <div className="text-neutral-500 mt-0.5">{when}</div>
       </div>
-
+      <div >
+        <iframe 
+          src={`http://localhost:3001/d-solo/telescope-card-${name.toLowerCase()}/telescope-card-${name.toLowerCase()}?orgId=1&from=now-7d&to=now&timezone=browser&var-influxkey=${encodeURIComponent(rec.influx_key)}&kiosk=tv&panelId=panel-1&__feature.dashboardSceneSolo=true`} 
+          width="325" 
+          height="200"
+          className="pointer-events-none"></iframe>
+      </div>
       {rec.influx_key && (
         <div className="mt-4 flex gap-2">
           <a
-            href={`/download/${encodeURIComponent(rec.influx_key)}`}
+            href={`http://localhost:8000/download/${encodeURIComponent(rec.influx_key)}`}
             className="px-3 py-1.5 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30"
           >
             Download CSV
@@ -48,7 +55,7 @@ export function TelescopeSection({ data }: { data: SourceData }) {
       <div className="flex flex-wrap gap-2">
         {data.combined?.influx_key && (
           <a
-            href={`/download/${encodeURIComponent(data.combined.influx_key)}`}
+            href={`http://localhost:8000/download/${encodeURIComponent(data.combined.influx_key)}`}
             className="px-3 py-1.5 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30"
           >
             Download Combined CSV
@@ -56,7 +63,7 @@ export function TelescopeSection({ data }: { data: SourceData }) {
         )}
         {data.hardness_ratio?.influx_key && (
           <a
-            href={`/download/${encodeURIComponent(data.hardness_ratio.influx_key)}`}
+            href={`http://localhost:8000/download/${encodeURIComponent(data.hardness_ratio.influx_key)}`}
             className="px-3 py-1.5 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30"
           >
             Download Hardness CSV
