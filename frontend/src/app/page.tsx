@@ -20,26 +20,26 @@ export default function Home() {
 
       <div className="space-y-8 text-neutral-300 leading-relaxed">
       <h1 className="text-2xl font-semibold tracking-tight mt-10 mb-3">The FLASHES2.0 Open <span className="text-red-400">&beta;</span></h1>
-      <p className="space-y-4">
+      <p>
         FLASHES2.0 is currently in open beta. This means that not all features are fully implemented and bugs may still occur. Currently, the following features are available:
       </p>
       <ul className="list-disc list-inside space-y-1">
-        <li> • Browse the whole FLASHES2.0 source catalog</li>
-        <li> • Filter sources based on automated tagging</li>
-        <li> • Find first details of every source (more details to come!)</li>
-        <li> • View daily updated flux data and (if available) hardness information on dedicated dashboards</li>
-        <li> • Download interesting datasets directly from the dashboards</li>
+        <li> Browse the whole FLASHES2.0 source catalog</li>
+        <li> Filter sources based on automated tagging</li>
+        <li> Find first details of every source (more details to come!)</li>
+        <li> View daily updated flux data and (if available) hardness information on dedicated dashboards</li>
+        <li> Download interesting datasets directly from the dashboards</li>
       </ul>
       <p className="space-y-1">
         More features are comming soon! Here is a short overview of planned features:
       </p>
       <ul className="list-disc list-inside space-y-1">
-        <li> • Relevance evaluation of each source based on their past to detect interesting features</li>
-        <li> • Alerting and advertizing of relevant sources in the tables, on the main page and via Email</li>
-        <li> • More detailed source information including relevances</li>
-        <li> • Common units for dashboards (MJD and mCrab)</li>
-        <li> • Build dashboards for an indivdual selection of sources without creating an account</li>
-        <li> • A map of the sky showing all sources for a better visual overview</li>
+        <li> Relevance evaluation of each source based on their past to detect interesting features</li>
+        <li> Alerting and advertizing of relevant sources in the tables, on the main page and via Email</li>
+        <li> More detailed source information including relevances</li>
+        <li> Common units for dashboards (MJD and mCrab)</li>
+        <li> Build dashboards for an indivdual selection of sources without creating an account</li>
+        <li> A map of the sky showing all sources for a better visual overview</li>
       </ul>
       <p className="space-y-4">
 
