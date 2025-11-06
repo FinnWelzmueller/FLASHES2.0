@@ -3,6 +3,8 @@ import os
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from astroquery.heasarc import Heasarc
+from astropy import units as u
+from astropy.coordinates import SkyCoord
 
 def load_tags(df: pd.DataFrame) -> pd.DataFrame:
     def get_hierarchy():
@@ -60,6 +62,14 @@ def load_tags(df: pd.DataFrame) -> pd.DataFrame:
     df['Tags'] = all
     return df
 
+def convert_to_galactic(ra: float, dec: float) -> tuple[float, float]:
+    """
+        Transforms RA and DEC (in degrees) to galactic latitude (b) and galactic longitude (l), both in degree
+    """
+    c = SkyCoord(ra=ra*u.degree, dec=dec*u.degree, frame="icrs")
+    return c.galactic.b.deg, c.galactic.l.deg - 360.0 if c.galactic.l.deg >= 180.0 else c.galactic.l.deg
+
+
 load_dotenv()
 
 maxi_url = "http://maxi.riken.jp/star_data/"
@@ -78,11 +88,14 @@ heasarc = Heasarc()
 df = load_tags(df)
 
 for _, row in df.iterrows():
+    b, l = convert_to_galactic(row["coord_ra"], row["coord_dec"])
     source_data = { # Base Information
         "_id": row['Integral Name'].replace(" ", "").lower(), # -> _id from Name? -> I don't want to have twice the same source in the db anyway
         "integral_name": row['Integral Name'],  
         "coord_ra": row['Ra Obj'],
         "coord_dec": row['Dec Obj'],
+        "coord_gal_b" : b,
+        "coord_gal_l" : l,
         "labels_constant" : row["Tags"],
         "labels_dynamic": []
     }
