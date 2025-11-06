@@ -8,7 +8,11 @@ export function SourceHeader({ data }: { data: SourceData }) {
       <div className="flex items-start justify-between gap-4">
         <h1 className="text-3xl font-semibold tracking-tight">{data.integral_name}</h1>
       </div>
-
+      <img
+        src={`http://localhost:8000/static/${data._id}.png`}
+        alt={data.integral_name}
+        className="w-full max-w-md rounded-2xl border dark:border-neutral-800"
+/>
       <div className="flex flex-wrap items-center gap-2">
         {data.labels_constant?.map((label) => <Tag key={label} label={label} />)}
       </div>
