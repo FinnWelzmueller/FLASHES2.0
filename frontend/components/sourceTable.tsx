@@ -1,59 +1,103 @@
-import React from 'react';
-import Link from 'next/link';
-import { Tag } from './tag';
+"use client"
+import { Button } from "@/components/ui/button"
 
-export type TelescopeRecord = {
-    data_url: string;
-    last_timestamp: string;
-    last_flux: number;
-    last_error: number;
+import { 
+    ColumnDef,
+    flexRender,
+    getCoreRowModel,
+    useReactTable,
+    getPaginationRowModel
+} from "@tanstack/react-table"
+
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow
+} from "@/components/ui/table"
+
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
 }
 
-export type SourceRecord = {
-    _id : string;
-    integral_name: string;
-    maxi?: TelescopeRecord;
-    swift?: TelescopeRecord;
-    fermi?: TelescopeRecord;
-    labels_constant: string[];
-}
-
-export function SourceTable({ sources }: { sources: SourceRecord[] }) {
-    return (
-        <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 overflow-hidden shadow-sm">
-            <table className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-800">
-                <thead className="bg-neutral-50 dark:bg-neutral-900/60">
-                    <tr>
-                        <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Name</th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Last Data MAXI</th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Last Data Swift/BAT</th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Last Data Fermi/GBM</th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Tags</th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Plots</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
-                    {sources.map((source) => {
-                        return (
-                            <tr key={source._id} className="hover:bg-neutral-50/60 dark:hover:bg-neutral-900/50">
-                                <td className="px-4 py-3 text-sm font-medium">
-                                    <Link href={`/sources/${encodeURIComponent(source._id)}`} className="hover:underline">{source.integral_name}</Link>
-                                    </td>
-                                <td className="px-4 py-3 text-sm font-medium">{source.maxi ? <span>{(source.maxi.last_flux * 1000 / 0.285).toFixed(3)} &plusmn; {(source.maxi.last_error * 1000 / 0.285).toFixed(3)} mCrab</span>: ""}</td>
-                                <td className="px-4 py-3 text-sm font-medium">{source.swift ? <span>{(source.swift.last_flux * 1000 / 0.285).toFixed(3)} &plusmn; {(source.swift.last_error * 1000 / 0.285).toFixed(3)} mCrab</span>: ""}</td>
-                                <td className="px-4 py-3 text-sm font-medium">{source.fermi ? <span>{(source.fermi.last_flux * 1000 / 0.285).toFixed(3)} &plusmn; {(source.fermi.last_error * 1000 / 0.285).toFixed(3)} mCrab</span>: ""}</td>
-                                <td className="px-4 py-3 text-sm font-medium">
-                                    <div className="flex flex-wrap gap-1.5">
-                                        {source.labels_constant.map((l) => (
-                                            <Tag key={l} label={l} />))}
-                                    </div>
-                                </td>
-                                <td className="px-4 py-3 text-sm font-medium">
-                                    <Link href={`http://localhost:8000/plots/${encodeURIComponent(source._id)}`} className="externalLink" target="_blank">here</Link></td>
-                            </tr>)})}
-                </tbody>
-            </table>
-        </div>
-
-    );
+export function SourceTable<TData, TValue>({
+  columns,
+  data,
+}: DataTableProps<TData, TValue>) {
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel()
+  })
+ 
+  return (
+    <div>
+    <div className="overflow-hidden rounded-md border">
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                )
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+        </Button>
+      </div>
+    </div>
+    </div>
+  )
 }

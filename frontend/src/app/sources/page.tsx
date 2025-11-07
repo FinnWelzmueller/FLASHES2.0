@@ -1,4 +1,5 @@
 import { SourceTable } from "@/components/sourceTable";
+import { columns, SourceRecord } from "@/components/sourceTable-columns"
 import { PageDescription } from "@/components/pageDescription";
 export default async function Sources() {
 
@@ -15,7 +16,7 @@ export default async function Sources() {
       <PageDescription>
         This is the sources page of the application.
         </PageDescription>
-      <SourceTable sources={data} />
+      <SourceTable columns={columns} data={data} />
 
     </main>
   );
