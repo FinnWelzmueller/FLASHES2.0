@@ -14,8 +14,10 @@ export type TelescopeRecord = {
 export type SourceData = {
   _id: string;
   integral_name: string;
-  coord_ra: number;   // deg
-  coord_dec: number;  // deg
+  coord_ra: number;
+  coord_dec: number;
+  coord_gal_b: number;
+  coord_gal_l: number;
   labels_constant: string[];
   swift?: TelescopeRecord | null;
   maxi?: TelescopeRecord | null;
