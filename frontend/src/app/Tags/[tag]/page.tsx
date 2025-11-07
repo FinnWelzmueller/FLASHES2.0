@@ -1,5 +1,6 @@
 import { SourceTable } from "@/components/sourceTable";
 import { formatTag } from "@/lib/formatTag";
+import { columns } from "@/components/sourceTable-columns";
 import { PageDescription } from "@/components/pageDescription";
 export default async function SourcesFiltered({ params }: { params: { tag: string } ;
 }) {
@@ -18,7 +19,7 @@ export default async function SourcesFiltered({ params }: { params: { tag: strin
       <PageDescription>
         Select a source name to view more details. Click on the plot link to see all available timeseries data.
       </PageDescription>
-      <SourceTable sources={data} />
+      <SourceTable columns={columns} data={data} />
 
     </main>
   );
