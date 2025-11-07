@@ -24,8 +24,8 @@ export function StatGrid({ data }: { data: SourceData }) {
       <div className="p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800">
         <div className="text-xs uppercase tracking-wider text-neutral-500 mb-1">Coordinates</div>
         <div className="text-sm text-neutral-800 dark:text-neutral-200">
-          RA: {data.coord_ra.toFixed(5)}°<br />
-          Dec: {data.coord_dec.toFixed(5)}°
+          Galactic Latitude: {data.coord_gal_b.toFixed(5)}°<br />
+          Galactic Longitude: {data.coord_gal_l.toFixed(5)}°
         </div>
       </div>
 
