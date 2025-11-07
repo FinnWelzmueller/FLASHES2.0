@@ -10,6 +10,7 @@ from influxdb_client.rest import ApiException
 from fastapi.responses import JSONResponse, StreamingResponse, RedirectResponse
 import requests
 from fastapi import FastAPI, Path, Query
+from fastapi.staticfiles import StaticFiles
 from datetime import timezone
 from scheduler import start_scheduler
 from utils import iso_to_mjd
@@ -58,6 +59,9 @@ start_scheduler(args=[sources_collection, write_api, os.getenv("TEMP_DIR", "./_t
 ### FastAPI ###
 logging.info("Starting API...")
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="./static"), name="static")
+
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
