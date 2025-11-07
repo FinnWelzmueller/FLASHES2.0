@@ -1,7 +1,9 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
+import { ArrowUpDown } from "lucide-react"
 import Link from 'next/link';
+import { Button } from "@/components/ui/button"
 import { Tag } from './tag';
 
 export type TelescopeRecord = {
@@ -23,7 +25,17 @@ export type SourceRecord = {
 
 export const columns: ColumnDef<SourceRecord>[] = [
     {   accessorKey: "integral_name",
-        header: () => <div className="text-right">Name</div>,
+        header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          <div className="text-right">Name</div>
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
         cell: ({ row }) => {
             const _id = row.original._id;
             const name = row.original.integral_name;
