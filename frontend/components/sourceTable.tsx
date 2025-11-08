@@ -1,14 +1,17 @@
 "use client"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import * as React from "react"
 import { 
     ColumnDef,
+    ColumnFiltersState,
     SortingState,
     flexRender,
     getCoreRowModel,
-    useReactTable,
+    getFilteredRowModel,
     getPaginationRowModel,
-    getSortedRowModel
+    getSortedRowModel,
+    useReactTable
 } from "@tanstack/react-table"
 
 import {
@@ -31,6 +34,9 @@ export function SourceTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
 
   const [sorting, setSorting] = React.useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  )
   const table = useReactTable({
     data,
     columns,
@@ -38,13 +44,26 @@ export function SourceTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
+      columnFilters,
     },
   })
  
   return (
     <div>
+      <div className="flex items-center py-4">
+        <Input
+          placeholder="Filter sources..."
+          value={(table.getColumn("integral_name")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("integral_name")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+      </div>
     <div className="overflow-hidden rounded-md border">
       <Table>
         <TableHeader>
