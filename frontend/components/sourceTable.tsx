@@ -66,12 +66,12 @@ export function SourceTable<TData, TValue>({
       </div>
     <div className="overflow-hidden rounded-md border">
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-neutral-100 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 border-b border-neutral-300">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="uppercase tracking-wide text-xs font-semibold">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -107,12 +107,14 @@ export function SourceTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
+          </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"
           size="sm"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
+          className="text-foreground"
         >
           Previous
         </Button>
@@ -121,11 +123,12 @@ export function SourceTable<TData, TValue>({
           size="sm"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
+          className="text-foreground"
         >
           Next
         </Button>
       </div>
-    </div>
+
     </div>
   )
 }
