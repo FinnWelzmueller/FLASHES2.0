@@ -4,7 +4,7 @@ import { columns } from "@/components/sourceTable-columns";
 import { PageDescription } from "@/components/pageDescription";
 export default async function SourcesFiltered({ params }: { params: { tag: string } ;
 }) {
-  const tag_name = params.tag;
+  const tag_name = (await params).tag;
   const res = await fetch(`http://localhost:8000/tags/${encodeURIComponent(String(tag_name))}`, { next: { revalidate: 0 } });
   
   if (!res.ok) {
