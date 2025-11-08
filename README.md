@@ -10,6 +10,36 @@ The relevance calculation is based on a linear combination of a flux term, a tre
 
 The sources in the FLASHES catalogue are departed into several categories. Each category has an overview table that can be assessed in the frontend. The tables provide an overview of the measurements for each source. Additionally, each source has a detail page showing all measurements, the relevance terms and additinoal details. The plots are generated with Python as interactive websites from which data can be selected and downloaded.
 
+## FLASHES2.0 usage
+
+FLASHES2.0 is currently in the open beta phase. This means that not all features has fully been implemented yet. This Section summarizes all available features and gives an overview of the frontend.
+
+### Landing Page
+
+The FLASHES2.0 landing page gives a brief description of FLASHES' functionalities, the data, sources and categorization. Additionally, an image of the catalogue is shown. The navigation bar leads to a table in which all sources are shown, a list with all available tags and to a description page. On the bottom of the landing page, the four most important tags ("Binary", "Black Hole", "Burster" and "Binary") are linked.
+
+### Sources Lists
+
+Several lists with sources are available. The tables show the source name, the last flux values from available telescopes, the tags and a link to the Grafana dashboards. By clicking on the source names, the detail page from the source can be accessed. Clicking on a tag leads to the source list of the tag. The tables can be sorted by name and individual sources can be searched in the search bar above.
+
+All sources are listed under /sources. This page can be added via the "Sources" button in the navigation bar. All sources with a specific tag are listed under /tags/"tag-name".
+
+### Tag List
+
+All available tags are listed under /tags. The page can be accessed via the "Tags" button in the navigation bar. From this page, the source lists for tags can be accessd via the buttons.
+
+### About Page
+
+The about page presents more details of FLASHES. It can be accessed under /about and via the "About" button in the navigation bar.
+
+### Source Detail Page
+
+By clicking on the source name in the source tables, the detail pages can be accessed. This page shows all available information. Below the title, an image with the galactic position of the source is shown. Below that, the tags, coordinates and links to the [SIMBAD Astronomical Database](https://simbad.u-strasbg.fr/simbad/), the [IPAC Extragalactic Database](https://ned.ipac.caltech.edu) and the High Energy Astrophysics Science Research Center [(HEARSAC)](https://heasarc.gsfc.nasa.gov) are shown. It is noted that not all sources are available in all databases and the links can lead to non-existing pages. Below that, an overview on the last available data is given, together with the galactic coordinates. In the last part, the telescope cards can be seen, where the original data pages are linked, the data of the last week is shown (if no new data from the last week is available, empty boards are shown), and the full dataset can be downloaded as CSV.
+
+### Grafana Dashboard
+
+The Grafana dashboards are the main source for data visualization. They offer an overview plot showing the Swift/BAT 15-150 keV channel, the MAXI 2-20 keV channel and the Fermi/GBM 12-50 keV channel (depending on the availablity). Lightcurve visibility can be toggled by clicking on the correponding channel in the legend. If Swift/BAT and MAXI data are available, the Hardness-Intensity Diagram and the Combined Flux is shown in this section too. Below the overview section, further lightcurves are provided, sorted by telescope. The visualized time range can be adjusted with the time picker in the top right corner of the dashboard and by dragging a selection field over the time series. Via the panel links (next to the panel title), the shown data can be downloaded. Errors are visualized as shaded areas. Exact flux values are shown in the tooltip by hovering over the flux time series. If no new data is available for longer times (currently > 3 days), the plot is intersected, otherwise the lines are connected, even with one or two days without an update.
+
 ## FLASHES2.0 architecture
 
 The architecture of this project consists of two databases, a backend for the API, data download and processing and the relevance calculation, and two frontend technologies, one for browsing and quick information and one for the dasboards. The whole project is fully containerized and designed in a way that allows for a quick local installation. In this section, an overview is given over the individual parts. Even though being only preliminary, it is aimed to fix the framework selection as soon as possible.
