@@ -113,11 +113,19 @@ export function SourceTable<TData, TValue>({
         <Button
           variant="outline"
           size="sm"
+          onClick={() => table.firstPage()}
+          className="text-foreground"
+        >
+          {'<<'}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
           className="text-foreground"
         >
-          Previous
+          {'<'}
         </Button>
         <Button
           variant="outline"
@@ -126,7 +134,15 @@ export function SourceTable<TData, TValue>({
           disabled={!table.getCanNextPage()}
           className="text-foreground"
         >
-          Next
+          {'>'}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.lastPage()}
+          className="text-foreground"
+        >
+          {'>>'}
         </Button>
       </div>
 
