@@ -2,7 +2,7 @@ import type { SourceData, TelescopeRecord } from '@/src/app/sources/[_id]/page';
 import { mjdToIso } from '@/lib/astro';
 
 
-function TelescopeCard({ name, rec }: { name: 'Swift' | 'MAXI' | 'Fermi'; rec?: TelescopeRecord | null }) {
+function TelescopeCard({ name, rec }: { name: 'Swift' | 'MAXI' | 'Fermi'; rec?: TelescopeRecord | null}) {
   if (!rec) return null;
   const when = rec.last_timestamp ? mjdToIso(rec.last_timestamp) : '—';
   const flux = rec.last_flux != null && rec.last_error != null
@@ -51,8 +51,13 @@ function TelescopeCard({ name, rec }: { name: 'Swift' | 'MAXI' | 'Fermi'; rec?: 
 export function TelescopeSection({ data }: { data: SourceData }) {
   return (
     <div className="space-y-6">
-      {/* Optional Hinweis / Quick Links */}
+
       <div className="flex flex-wrap gap-2">
+        <a
+        href={`http://localhost:8000/plots/${encodeURIComponent(data._id)}`}
+        className="px-3 py-1.5 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30">
+            <b>View Dashboard</b>
+      </a>
         {data.combined?.influx_key && (
           <a
             href={`http://localhost:8000/download/${encodeURIComponent(data.combined.influx_key)}`}
