@@ -109,7 +109,15 @@ export function SourceTable<TData, TValue>({
         </TableBody>
       </Table>
           </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-center space-x-2 py-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.firstPage()}
+          className="text-foreground"
+        >
+          {'<<'}
+        </Button>
         <Button
           variant="outline"
           size="sm"
@@ -117,8 +125,14 @@ export function SourceTable<TData, TValue>({
           disabled={!table.getCanPreviousPage()}
           className="text-foreground"
         >
-          Previous
+          {'<'}
         </Button>
+        <select
+          value={table.getState().pagination.pageSize}
+          onChange={e => {table.setPageSize(Number(e.target.value))}}
+        >
+          {[10, 20, 30, 40, 50].map(pageSize => (<option key={pageSize} value={pageSize}> {pageSize} </option>))}
+        </select>
         <Button
           variant="outline"
           size="sm"
@@ -126,7 +140,15 @@ export function SourceTable<TData, TValue>({
           disabled={!table.getCanNextPage()}
           className="text-foreground"
         >
-          Next
+          {'>'}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.lastPage()}
+          className="text-foreground"
+        >
+          {'>>'}
         </Button>
       </div>
 
