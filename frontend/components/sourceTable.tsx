@@ -90,6 +90,7 @@ export function SourceTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                className="hover:bg-transparent"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
