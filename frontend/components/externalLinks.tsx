@@ -10,7 +10,6 @@ export function ExternalLinks({ name, raDeg, decDeg }: { name: string; raDeg: nu
 
   return (
     <div className="text-sm text-neutral-500 dark:text-neutral-400 flex flex-wrap gap-3">
-      <span>RA {hms} • Dec {dms}</span>
       <a className="underline hover:no-underline" href={simbad} target="_blank">SIMBAD</a>
       <a className="underline hover:no-underline" href={ned} target="_blank">NED</a>
       <a className="underline hover:no-underline" href={heasarc} target="_blank">HEASARC</a>
