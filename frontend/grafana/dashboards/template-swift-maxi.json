@@ -813,7 +813,7 @@
             "params": [
               {
                 "key": "influx_key",
-                "value": "combined_influxkey"
+                "value": "${combined_influxkey}"
               },
               {
                 "key": "start",
