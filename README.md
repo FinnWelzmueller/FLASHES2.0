@@ -38,7 +38,7 @@ By clicking on the source name in the source tables, the detail pages can be acc
 
 ### Grafana Dashboard
 
-The Grafana dashboards are the main source for data visualization. They offer an overview plot showing the Swift/BAT 15-150 keV channel, the MAXI 2-20 keV channel and the Fermi/GBM 12-50 keV channel (depending on the availablity). Lightcurve visibility can be toggled by clicking on the correponding channel in the legend. If Swift/BAT and MAXI data are available, the Hardness-Intensity Diagram and the Combined Flux is shown in this section too. Below the overview section, further lightcurves are provided, sorted by telescope. The visualized time range can be adjusted with the time picker in the top right corner of the dashboard and by dragging a selection field over the time series. Via the panel links (next to the panel title), the shown data can be downloaded. Errors are visualized as shaded areas. Exact flux values are shown in the tooltip by hovering over the flux time series. If no new data is available for longer times (currently > 3 days), the plot is intersected, otherwise the lines are connected, even with one or two days without an update.
+The Grafana dashboards are the main source for data visualization. They offer an overview plot showing the Swift/BAT 15-50 keV channel, the MAXI 2-20 keV channel and the Fermi/GBM 12-50 keV channel (depending on the availablity). Lightcurve visibility can be toggled by clicking on the correponding channel in the legend. If Swift/BAT and MAXI data are available, the Hardness-Intensity Diagram and the Combined Flux is shown in this section too. Below the overview section, further lightcurves are provided, sorted by telescope. The visualized time range can be adjusted with the time picker in the top right corner of the dashboard and by dragging a selection field over the time series. Via the panel links (next to the panel title), the shown data can be downloaded. Errors are visualized as shaded areas. Exact flux values are shown in the tooltip by hovering over the flux time series. If no new data is available for longer times (currently > 3 days), the plot is intersected, otherwise the lines are connected, even with one or two days without an update.
 
 ## FLASHES2.0 architecture
 
@@ -83,8 +83,8 @@ If large amounts of timeseries data is stored in dictionaries, such as in a mong
 
 | Key                | Backend Channel-ID | Telescope        | Availability                                            |
 | :------------------- | :------------------- | :----------------- | :-------------------------------------------------------- |
-| flux (15-150 keV)  | 15-150             | Swift/BAT        | Only if Swift/BAT data exists for this source.          |
-| error (15-150 keV) | 15-150             | Swift/BAT        | Only if Swift/BAT data exists for this source.          |
+| flux (15-50 keV)  | 15-50             | Swift/BAT        | Only if Swift/BAT data exists for this source.          |
+| error (15-50 keV) | 15-50             | Swift/BAT        | Only if Swift/BAT data exists for this source.          |
 | flux (2-20 keV)    | 2-20               | MAXI             | Only if MAXI data exists for this source.               |
 | error (2-20 keV)   | 2-20               | MAXI             | Only if MAXI data exists for this source.               |
 | flux (2-4 keV)     | 2-4                | MAXI             | Only if MAXI data exists for this source.               |
@@ -100,15 +100,15 @@ If large amounts of timeseries data is stored in dictionaries, such as in a mong
 | combined flux      | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
 | combined error     | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
 
-The x-ray hardness $h$ and combined x-ray fluxes $\Phi_c$ are calculated from Swift/BAT 15-150 keV data and MAXI 2-20 keV data, following these equations:
+The x-ray hardness $h$ and combined x-ray fluxes $\Phi_c$ are calculated from Swift/BAT 15-50 keV data and MAXI 2-20 keV data, following these equations:
 
 $$
-h = \frac{\Phi_{15-150\text{ keV}}}{\Phi_{2-20\text{ keV}}}; \quad \Delta h = \frac{\Phi_{15-150\text{ keV}}}{\Phi_{2-20\text{ keV}}}\sqrt{\left(\frac{\Delta\Phi_{15-150\text{ keV}}}{\Phi_{15-150\text{ keV}}}\right)^2 + \left(\frac{\Delta\Phi_{2-20\text{ keV}}}{\Phi_{2-20\text{ keV}}}\right)^2}
+h = \frac{\Phi_{15-50\text{ keV}}}{\Phi_{2-20\text{ keV}}}; \quad \Delta h = \frac{\Phi_{15-50\text{ keV}}}{\Phi_{2-20\text{ keV}}}\sqrt{\left(\frac{\Delta\Phi_{15-50\text{ keV}}}{\Phi_{15-50\text{ keV}}}\right)^2 + \left(\frac{\Delta\Phi_{2-20\text{ keV}}}{\Phi_{2-20\text{ keV}}}\right)^2}
 
 $$
 
 $$
-\Phi_c = \Phi_{15-150\text{ keV}} + \Phi_{2-20\text{ keV}}; \quad \Delta\Phi_c = \sqrt{\left(\Delta\Phi_{15-150\text{ keV}}\right)^2 + \left(\Delta\Phi_{2-20\text{ keV}}\right)^2}
+\Phi_c = \Phi_{15-50\text{ keV}} + \Phi_{2-20\text{ keV}}; \quad \Delta\Phi_c = \sqrt{\left(\Delta\Phi_{15-50\text{ keV}}\right)^2 + \left(\Delta\Phi_{2-20\text{ keV}}\right)^2}
 
 $$
 
@@ -266,7 +266,7 @@ For each source, a dashboard is provided, showing all available lightcurve data 
 
 For each of the six cases, a template for a dashboard is available. In the template, the placeholder for the source name is 'integral_name'. The placeholders for the influx keys are 'swift_influxkey', 'maxi_influxkey', 'fermi_influxkey', 'hardness_influxkey' and 'combined_influxkey'. They are marked as variables as ${...} in Grafana and their usage is described [here](https://grafana.com/docs/grafana/latest/dashboards/build-dashboards/create-dashboard-url-variables/). When assessing the dashboard for a source, the placeholders are replaced with the corresponding keys from the mongoDB by forwarding them in the URL of the dashboard. The templates are available in Grafana in the template folder.
 
-The dashboards are structured in the following way. On top, there is an overview section, which covers the most important available lightcurves (Swift/BAT 15-150 keV, MAXI 2-20 keV and Fermi/GBM 12-50 keV). If Swift and MAXI data are available, the overview section covers the Hardness-Intensity diagram and a lightcurves of the combined flux.
+The dashboards are structured in the following way. On top, there is an overview section, which covers the most important available lightcurves (Swift/BAT 15-50 keV, MAXI 2-20 keV and Fermi/GBM 12-50 keV). If Swift and MAXI data are available, the overview section covers the Hardness-Intensity diagram and a lightcurves of the combined flux.
 
 The connection from the dashboard to the InfluxDB happens via the backend. The Infinity Datasource is used as datasource in Grafana. The UID of the datasource is 'flashes-datasource'
 

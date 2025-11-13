@@ -108,7 +108,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (15-150 keV) max"
+              "options": "flux (15-50 keV) max"
             },
             "properties": [
               {
@@ -121,7 +121,7 @@
               },
               {
                 "id": "custom.fillBelowTo",
-                "value": "flux (15-150 keV)"
+                "value": "flux (15-50 keV)"
               },
               {
                 "id": "custom.hideFrom",
@@ -136,7 +136,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (15-150 keV) min"
+              "options": "flux (15-50 keV) min"
             },
             "properties": [
               {
@@ -156,12 +156,12 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (15-150 keV)"
+              "options": "flux (15-50 keV)"
             },
             "properties": [
               {
                 "id": "custom.fillBelowTo",
-                "value": "flux (15-150 keV) min"
+                "value": "flux (15-50 keV) min"
               },
               {
                 "id": "custom.fillOpacity",
@@ -315,7 +315,7 @@
               },
               {
                 "key": "channel",
-                "value": "15-150"
+                "value": "15-50"
               },
               {
                 "key": "start",
@@ -442,7 +442,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (15-150 keV) max"
+                  "options": "flux (15-50 keV) max"
                 },
                 "properties": [
                   {
@@ -455,7 +455,7 @@
                   },
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (15-150 keV)"
+                    "value": "flux (15-50 keV)"
                   },
                   {
                     "id": "custom.hideFrom",
@@ -470,7 +470,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (15-150 keV) min"
+                  "options": "flux (15-50 keV) min"
                 },
                 "properties": [
                   {
@@ -490,12 +490,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (15-150 keV)"
+                  "options": "flux (15-50 keV)"
                 },
                 "properties": [
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (15-150 keV) min"
+                    "value": "flux (15-50 keV) min"
                   },
                   {
                     "id": "custom.fillOpacity",
@@ -570,7 +570,7 @@
                   },
                   {
                     "key": "channel",
-                    "value": "15-150"
+                    "value": "15-50"
                   },
                   {
                     "key": "start",

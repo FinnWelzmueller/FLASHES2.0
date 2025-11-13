@@ -188,7 +188,7 @@ async def load_timeseries(influx_key : str = Query(None, description="Influx Key
                           end : str = Query(None, description="End time as ISO format (YYYY-MM-DD)")):
     
     channel_in_influx = f"flux ({channel} keV)"
-    swift_data_cols = ["flux (15-150 keV)", "flux (15-150 keV) max", "flux (15-150 keV) min"]
+    swift_data_cols = ["flux (15-50 keV)", "flux (15-50 keV) max", "flux (15-50 keV) min"]
     maxi_data_cols = ["flux (10-20 keV)", "flux (10-20 keV) max", "flux (10-20 keV) min",
                       "flux (2-20 keV)", "flux (2-20 keV) max", "flux (2-20 keV) min",
                       "flux (2-4 keV)", "flux (2-4 keV) max", "flux (2-4 keV) min",
@@ -206,7 +206,7 @@ async def load_timeseries(influx_key : str = Query(None, description="Influx Key
     }
 
     channel_dict = {
-        "swift": ["15-150"],
+        "swift": ["15-50"],
         "maxi": ["10-20", "2-20", "2-4", "4-10"],
         "fermi": ["12-50"],
         "combined": [],
@@ -297,7 +297,7 @@ async def load_download(influx_key : str,
             |> drop(columns: ["_start","_stop"])
     """
 
-    swift_keys = ["error (15-150 keV)", "flux (15-150 keV)"]
+    swift_keys = ["error (15-50 keV)", "flux (15-50 keV)"]
     maxi_keys = ["error (10-20 keV)", "error (2-20 keV)", "error (2-4 keV)", "error (4-10 keV)",
             "flux (10-20 keV)", "flux (2-20 keV)", "flux (2-4 keV)", "flux (4-10 keV)"]
     fermi_keys = ["error (12-50 keV)", "flux (12-50 keV)"]
