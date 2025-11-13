@@ -66,23 +66,23 @@ def update(sources_collection, write_api, temp_dir = "./_temp") -> None:
 def calculate_hardness_and_combined_flux(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
     """
     Calculates the hardness ratio and combined flux from Swift/BAT and MAXI data.
-    The hardness ratio is defined as the ratio of the Swift/BAT flux (15-150 keV) to the MAXI flux (2-20 keV).
-    The combined flux is defined as the sum of the Swift/BAT flux (15-150 keV) and the MAXI flux (2-20 keV).
+    The hardness ratio is defined as the ratio of the Swift/BAT flux (15-50 keV) to the MAXI flux (2-20 keV).
+    The combined flux is defined as the sum of the Swift/BAT flux (15-50 keV) and the MAXI flux (2-20 keV).
     The errors are calculated using standard error propagation.
-    :param df1: DataFrame containing Swift/BAT data. Must contain columns 'UTC TIME', 'FLUX 15-150', 'ERROR 15-150'.
+    :param df1: DataFrame containing Swift/BAT data. Must contain columns 'UTC TIME', 'FLUX 15-50', 'ERROR 15-50'.
     :param df2: DataFrame containing MAXI data. Must contain columns 'UTC TIME', 'FLUX 2-20', 'ERROR 2-20'.
     :return: DataFrame containing the hardness ratio and combined flux with columns 'UTC TIME', 'HARDNESS RATIO', 'HARDNESS ERROR', 'COMBINED FLUX', 'COMBINED ERROR'.
     """
     df_out = pd.DataFrame(columns=['UTC TIME', 'HARDNESS RATIO', 'HARDNESS ERROR', 'COMBINED FLUX', 'COMBINED ERROR'])
     merged = pd.merge(df1, df2, left_on="UTC TIME",right_on="UTC TIME", how='outer')
     for idx, row in merged.iterrows():
-        if not (pd.isna(row['FLUX 2-20']) or pd.isna(row['FLUX 15-150'])):
+        if not (pd.isna(row['FLUX 2-20']) or pd.isna(row['FLUX 15-50'])):
             df_out.loc[len(df_out)] = {
                 'UTC TIME': row['UTC TIME'],
-                'HARDNESS RATIO': row['FLUX 15-150'] / row['FLUX 2-20'],
-                'HARDNESS ERROR': (row['FLUX 15-150'] / row['FLUX 2-20']) * ((row['ERROR 15-150'] / row['FLUX 15-150'])**2 + (row['ERROR 2-20'] / row['FLUX 2-20'])**2)**0.5,
-                'COMBINED FLUX': row['FLUX 15-150'] + row['FLUX 2-20'],
-                'COMBINED ERROR': (row['ERROR 15-150']**2 + row['ERROR 2-20']**2)**0.5
+                'HARDNESS RATIO': row['FLUX 15-50'] / row['FLUX 2-20'],
+                'HARDNESS ERROR': (row['FLUX 15-50'] / row['FLUX 2-20']) * ((row['ERROR 15-50'] / row['FLUX 15-50'])**2 + (row['ERROR 2-20'] / row['FLUX 2-20'])**2)**0.5,
+                'COMBINED FLUX': row['FLUX 15-50'] + row['FLUX 2-20'],
+                'COMBINED ERROR': (row['ERROR 15-50']**2 + row['ERROR 2-20']**2)**0.5
             }
     df_out['TIME'] = df_out['UTC TIME'].apply(lambda x: int(Time(x).mjd))
     return df_out 
@@ -106,7 +106,7 @@ def download_all_data_swift_maxi(url:str, telescope:str) -> pd.DataFrame | None:
             df = pd.read_csv(data, sep=r"\s+", comment="#", header=None)
             if telescope == "swift":
                 df.columns = [
-                "TIME", "FLUX 15-150", "ERROR 15-150", "YEAR", "DAY", "STAT_ERR", "SYS_ERR", 
+                "TIME", "FLUX 15-50", "ERROR 15-50", "YEAR", "DAY", "STAT_ERR", "SYS_ERR", 
                 "DATA_FLAG", "TIMEDEL_EXPO", "TIMEDEL_CODED", "TIMEDEL_DITHERED"
                 ]
             if telescope == "maxi":

@@ -25,12 +25,12 @@ def write_to_influx(df: pd.DataFrame, write_api, source: dict, telescope: str, s
     if telescope == "swift":
         for index, row in df.iterrows():
             p = Point("flux data").tag("source", key) \
-            .field("flux (15-150 keV)", row['FLUX 15-150']).field("error (15-150 keV)", row['ERROR 15-150']) \
+            .field("flux (15-50 keV)", row['FLUX 15-50']).field("error (15-50 keV)", row['ERROR 15-50']) \
             .time(row['UTC TIME'])
             points.append(p)
         if len(df) > 0:
-            sources_collection.update_one({'_id': source['_id']}, {'$set': {f'swift.last_flux': row['FLUX 15-150']}})
-            sources_collection.update_one({'_id': source['_id']}, {'$set': {f'swift.last_error': row['ERROR 15-150']}})
+            sources_collection.update_one({'_id': source['_id']}, {'$set': {f'swift.last_flux': row['FLUX 15-50']}})
+            sources_collection.update_one({'_id': source['_id']}, {'$set': {f'swift.last_error': row['ERROR 15-50']}})
 
     if telescope == "maxi":
         for index, row in df.iterrows():
