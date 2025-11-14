@@ -774,7 +774,7 @@
         {
           "targetBlank": true,
           "title": "Download data",
-          "url": "http://backend:8000/download/combined_influxkey?start=${__from:date}&end=${__to:date}"
+          "url": "http://backend:8000/download/${combined_influxkey}?start=${__from:date}&end=${__to:date}"
         }
       ],
       "options": {
@@ -2734,7 +2734,7 @@
             {
               "targetBlank": true,
               "title": "Download data",
-              "url": "http://backend:8000/download/combined_influxkey?start=${__from:date}&end=${__to:date}"
+              "url": "http://backend:8000/download/${combined_influxkey}?start=${__from:date}&end=${__to:date}"
             }
           ],
           "options": {
