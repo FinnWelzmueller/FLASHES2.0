@@ -21,8 +21,11 @@ def update(sources_collection, write_api, temp_dir = "./_temp") -> None:
     logging.debug(f"Directory for temporary files: {temp_dir}")
     os.makedirs(temp_dir, exist_ok=True)
     errors = []
+    i = 1
+    all = sources_collection.count_documents({})
     for source in sources_collection.find({}):
-        logging.info(f"Processing source: {source['integral_name']}")
+        logging.info(f"Processing source: {source['integral_name']} ({i}/{all})")
+        i+=1
         try:
             if source.get("swift"):
                 logging.info(f"Downloading Swift/BAT data for {source['integral_name']}...")
