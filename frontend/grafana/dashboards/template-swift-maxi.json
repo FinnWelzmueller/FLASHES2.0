@@ -782,7 +782,7 @@
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": false
         },
         "tooltip": {
           "hideZeros": false,
@@ -2869,5 +2869,5 @@
   "timezone": "browser",
   "title": "Dashboard for Swift/BAT & MAXI",
   "uid": "flashes-swift-maxi",
-  "version": 5
+  "version": 14
 }
