@@ -363,6 +363,83 @@ async def load_download(influx_key : str,
         "Content-Disposition": f'attachment; filename="{filename}"'
     })
 
+@app.get("/download/hid/{hardness_influxkey}/{combined_influxkey}")
+async def download_hid(hardness_influxkey: str, 
+                        combined_influxkey: str, 
+                        start : str = Query(None, description="Start time as ISO format (YYYY-MM-DD)"),
+                        end : str = Query(None, description="End time as ISO format (YYYY-MM-DD)")):
+    """
+    Downloads data from a HID. 
+    The file comtains the columns _time, hardness ratio, hardness error, combined flux, combined error in a given time frame.
+    Returns only rows where both hardness ratio and combined flux are available.
+    :param hardness_influxkey: InfluxDB source key for hardness ratio data.
+    :param combined_influxkey: InfluxDB source key for combined flux data.
+    :param start: Start time for data retrieval.
+    :param end: End time for data retrieval.
+    """
+
+    if start is None:
+        start = "-1y"
+    if end is not None:
+        range_str = f'|> range(start: {start}, stop: {end})'
+    else:
+        range_str = f'|> range(start: {start})'
+
+    query_flux = f"""
+        from(bucket: "flashes_data")
+            {range_str}
+            |> filter(fn: (r) => r._measurement == "flux data")
+            |> filter(fn: (r) => r.source == "{hardness_influxkey}")
+            |> keep(columns: ["_time", "_field", "_value"])
+            |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
+            |> sort(columns: ["_time"])
+            |> drop(columns: ["_start","_stop"])
+    """
+    hardness_data = query_api.query_data_frame(org="flashes", query=query_flux)
+    query_flux = f"""
+        from(bucket: "flashes_data")
+            {range_str}
+            |> filter(fn: (r) => r._measurement == "flux data")
+            |> filter(fn: (r) => r.source == "{combined_influxkey}")
+            |> keep(columns: ["_time", "_field", "_value"])
+            |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
+            |> sort(columns: ["_time"])
+            |> drop(columns: ["_start","_stop"])
+    """
+    combined_data = query_api.query_data_frame(org="flashes", query=query_flux)
+    merge = hardness_data.merge(combined_data, on="_time", how="inner")
+    download = merge[["_time", "hardness ratio" ,"hardness error", "combined flux", "combined error"]]
+    cols = download.columns.tolist()
+    cols[0] = "time"
+
+    def generate():
+        # Header
+        yield ("\t".join(cols) + "\n").encode("utf-8")
+
+        # Zeilen
+        for _, row in download.iterrows():
+            t = row["_time"]
+            if hasattr(t, "to_pydatetime"):
+                t = t.to_pydatetime()
+            # als UTC-ISO-String ausgeben
+            t = t.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+            values = [t] + [str(row[c]) for c in cols[1:]]
+            yield ("\t".join(values) + "\n").encode("utf-8")
+
+    name = hardness_influxkey.replace("hardness_", "")
+    filename = f"{name}_hid.txt"
+    logging.info(f"Preparing HID download for {filename} with {len(download)} rows.")
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/tab-separated-values",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"'
+        },
+    )
+    
+
 @app.get("/plots/{source_id}")
 def plot_redirect(source_id: str):
     """
