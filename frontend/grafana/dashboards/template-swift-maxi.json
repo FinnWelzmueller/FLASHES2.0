@@ -499,6 +499,13 @@
         "y": 14
       },
       "id": 2,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "Download data",
+          "url": "http://backend:8000/download/hid/${hardness_influxkey}﻿﻿/﻿﻿${combined_influxkey}﻿﻿?start=${__from:date}&end=${__to:date}"
+        }
+      ],
       "options": {
         "legend": {
           "calcs": [],
@@ -2869,5 +2876,5 @@
   "timezone": "browser",
   "title": "Dashboard for Swift/BAT & MAXI",
   "uid": "flashes-swift-maxi",
-  "version": 14
+  "version": 17
 }
