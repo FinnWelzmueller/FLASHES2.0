@@ -81,24 +81,24 @@ If the fields maxi, swift or fermi are not null, the document provides the neces
 If large amounts of timeseries data is stored in dictionaries, such as in a mongoDB, both memory efficiency and access speed suffer. This is why it was decided to save the timeseries data for each source in a dedicated software. A standard software package for that is InfluxDB, which is also used in this project (image version 2.7). The bucket, in which the lightcurve data is saved, is called flashes_data. Each lightcurve is tagged with a source name, either **maxi**, **swift** or **fermi**. The following table summarizes all possible data fields.
 
 
-| Key                | Backend Channel-ID | Telescope        | Availability                                            |
-| :------------------- | :------------------- | :----------------- | :-------------------------------------------------------- |
-| flux (15-50 keV)  | 15-50             | Swift/BAT        | Only if Swift/BAT data exists for this source.          |
-| error (15-50 keV) | 15-50             | Swift/BAT        | Only if Swift/BAT data exists for this source.          |
-| flux (2-20 keV)    | 2-20               | MAXI             | Only if MAXI data exists for this source.               |
-| error (2-20 keV)   | 2-20               | MAXI             | Only if MAXI data exists for this source.               |
-| flux (2-4 keV)     | 2-4                | MAXI             | Only if MAXI data exists for this source.               |
-| error (2-4 keV)    | 2-4                | MAXI             | Only if MAXI data exists for this source.               |
-| flux (4-10 keV)    | 4-10               | MAXI             | Only if MAXI data exists for this source.               |
-| error (4-10 keV)   | 4-10               | MAXI             | Only if MAXI data exists for this source.               |
-| flux (10-20 keV)   | 10-20              | MAXI             | Only if MAXI data exists for this source.               |
-| error (10-20 keV)  | 10-20              | MAXI             | Only if MAXI data exists for this source.               |
-| flux (12-50 keV)   | 12-50              | Fermi/GBM        | Only if Fermi/GBM data exists for this source.          |
-| error (12-50 keV)  | 12-50              | Fermi/GBM        | Only if Fermi/GBM data exists for this source.          |
-| hardness ratio     | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
-| hardness error     | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
-| combined flux      | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
-| combined error     | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
+| Key               | Backend Channel-ID | Telescope        | Availability                                            |
+| :------------------ | :------------------- | :----------------- | :-------------------------------------------------------- |
+| flux (15-50 keV)  | 15-50              | Swift/BAT        | Only if Swift/BAT data exists for this source.          |
+| error (15-50 keV) | 15-50              | Swift/BAT        | Only if Swift/BAT data exists for this source.          |
+| flux (2-20 keV)   | 2-20               | MAXI             | Only if MAXI data exists for this source.               |
+| error (2-20 keV)  | 2-20               | MAXI             | Only if MAXI data exists for this source.               |
+| flux (2-4 keV)    | 2-4                | MAXI             | Only if MAXI data exists for this source.               |
+| error (2-4 keV)   | 2-4                | MAXI             | Only if MAXI data exists for this source.               |
+| flux (4-10 keV)   | 4-10               | MAXI             | Only if MAXI data exists for this source.               |
+| error (4-10 keV)  | 4-10               | MAXI             | Only if MAXI data exists for this source.               |
+| flux (10-20 keV)  | 10-20              | MAXI             | Only if MAXI data exists for this source.               |
+| error (10-20 keV) | 10-20              | MAXI             | Only if MAXI data exists for this source.               |
+| flux (12-50 keV)  | 12-50              | Fermi/GBM        | Only if Fermi/GBM data exists for this source.          |
+| error (12-50 keV) | 12-50              | Fermi/GBM        | Only if Fermi/GBM data exists for this source.          |
+| hardness ratio    | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
+| hardness error    | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
+| combined flux     | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
+| combined error    | None               | MAXI & Swift/BAT | Only if MAXI and Swift/BAT data exists for this source. |
 
 The x-ray hardness $h$ and combined x-ray fluxes $\Phi_c$ are calculated from Swift/BAT 15-50 keV data and MAXI 2-20 keV data, following these equations:
 
@@ -121,18 +121,18 @@ The mongoDB listens on port 27017 whereas the InfluxDB listens on port 8086.
 The backend offers a standardized way to access data from the database. It is structured into two areas. The first area is responsible for data download, processing and upload into the database. The second area is responsible for offering endpoints for access within the software. The backend as a whole depends on a variety of Python libraries. The top-level libraries are listed in the following table with a version number and a description why this libary is needed. It is noted that these libraries internally depend on other libraries. A complete list can be found in the `requirements.txt`, which is located in the backend folder.
 
 
-| Library         | Version  | Description                                                               |
-| :---------------- | :--------- | :-------------------------------------------------------------------------- |
-| APScheduler     | 3.11.1   | Time-sensitive tasks, such as automated data downloads                    |
-| astropy         | 7.0.1    | Astronomical calculations and number-conversions                          |
-| astroquery      | 0.4.11   | Source classification with Heasarc                                        |
-| fastapi         | 0.115.11 | Webframework for a REST-API                                               |
-| influxdb-client | 1.48.0   | Reading and Writing into the InfluxDB                                     |
-| numpy           | 2.2.4    | Generic library for numerical calculations                                |
-| pandas          | 2.2.3    | Data analysis and data handling                                           |
-| pymongo         | 4.11.3   | Reading and Writing into the mongoDB                                      |
-| python-dotenv   | 1.0.1    | Reading of environment variables, safe handling from passwords and tokens |
-| requests        | 2.32.3   | HTTP requests for data download                                           |
+| Library         | Version | Description                                                               |
+| :---------------- | :-------- | :-------------------------------------------------------------------------- |
+| APScheduler     | 3.11.1  | Time-sensitive tasks, such as automated data downloads                    |
+| astropy         | 7.0.1   | Astronomical calculations and number-conversions                          |
+| astroquery      | 0.4.11  | Source classification with Heasarc                                        |
+| fastapi         | 0.121.2 | Webframework for a REST-API                                               |
+| influxdb-client | 1.48.0  | Reading and Writing into the InfluxDB                                     |
+| numpy           | 2.2.4   | Generic library for numerical calculations                                |
+| pandas          | 2.2.3   | Data analysis and data handling                                           |
+| pymongo         | 4.11.3  | Reading and Writing into the mongoDB                                      |
+| python-dotenv   | 1.0.1   | Reading of environment variables, safe handling from passwords and tokens |
+| requests        | 2.32.3  | HTTP requests for data download                                           |
 
 The backend is available at port 8000.
 
