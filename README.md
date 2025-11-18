@@ -38,7 +38,7 @@ By clicking on the source name in the source tables, the detail pages can be acc
 
 ### Grafana Dashboard
 
-The Grafana dashboards are the main source for data visualization. They offer an overview plot showing the Swift/BAT 15-50 keV channel, the MAXI 2-20 keV channel and the Fermi/GBM 12-50 keV channel (depending on the availablity). Lightcurve visibility can be toggled by clicking on the correponding channel in the legend. If Swift/BAT and MAXI data are available, the Hardness-Intensity Diagram and the Combined Flux is shown in this section too. Below the overview section, further lightcurves are provided, sorted by telescope. The visualized time range can be adjusted with the time picker in the top right corner of the dashboard and by dragging a selection field over the time series. Via the panel links (next to the panel title), the shown data can be downloaded. Errors are visualized as shaded areas. Exact flux values are shown in the tooltip by hovering over the flux time series. If no new data is available for longer times (currently > 3 days), the plot is intersected, otherwise the lines are connected, even with one or two days without an update.
+The Grafana dashboards are the main source for data visualization. They offer an overview plot showing the Swift/BAT 15-50 keV channel, the MAXI 2-20 keV channel and the Fermi/GBM 12-50 keV channel (depending on the availablity). Lightcurve visibility can be toggled by clicking on the correponding channel in the legend. If Swift/BAT and MAXI data are available, the Hardness-Intensity Diagram and the Combined Flux is shown in this section too. Below the overview section, further lightcurves are provided, sorted by telescope. The visualized time range can be adjusted with the time picker in the top right corner of the dashboard and by dragging a selection field over the time series. Via the panel links (next to the panel title), the shown timeseries and HID data can be downloaded. Errors are visualized as shaded areas. Exact flux values are shown in the tooltip by hovering over the flux time series. If no new data is available for longer times (currently > 3 days), the plot is intersected, otherwise the lines are connected, even with one or two days without an update.
 
 ## FLASHES2.0 architecture
 
@@ -207,9 +207,10 @@ The influx_key parameter has to be given in order to lead to data. Furthermore, 
 To download data from FLASHES2.0, a system similar to the timeseries-data endpoint is used. The timeseries are defined by the influx key from the mongoDB. Additionally, generic source information can be downloaded. To identify the source, the _id field from the mongoDB is used. It is noted that these endpoints are to be used by the user to access data.
 
 
-| Endpoint               | Description                                      |
-| :----------------------- | :------------------------------------------------- |
-| /download/{influx_key} | Downloads a timeseries defined by the influx key |
+| Endpoint                                                | Description                                      |
+| :-------------------------------------------------------- | :------------------------------------------------- |
+| /download/{influx_key}                                  | Downloads a timeseries defined by the influx key |
+| /downlaod/hid/{hardness_influxkey}/{combined_influxkey} | Downloads hardness and combined-flux data        |
 
 To define the start and end of the desired download, two parameters can be handed over to the InfluxDB query:
 
