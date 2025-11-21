@@ -466,12 +466,13 @@ def plot_redirect(source_id: str):
     if not dashboard_uid:
         return JSONResponse(status_code=400, content={"message": "No available dashboards for this source."})
 
-    # Basis (/d/...) ggf. absolut bauen
     base = f"{GRAFANA_BASE_URL}/d/{dashboard_uid}/{dashboard_uid}" if GRAFANA_BASE_URL else f"/d/{dashboard_uid}/{dashboard_uid}"
 
-    # URL-Variablen nur anhängen, wenn vorhanden
     params = [f"var-integral_name={quote_plus(doc['integral_name'])}"]
 
+    params.append("kiosk")
+    params.append("theme=dark")
+    
     for telescope, subkey in [
         ("swift", "swift_influxkey"),
         ("maxi", "maxi_influxkey"),
