@@ -38,7 +38,7 @@ By clicking on the source name in the source tables, the detail pages can be acc
 
 ### Grafana Dashboard
 
-The Grafana dashboards are the main source for data visualization. They offer an overview plot showing the Swift/BAT 15-50 keV channel, the MAXI 2-20 keV channel and the Fermi/GBM 12-50 keV channel (depending on the availablity). Lightcurve visibility can be toggled by clicking on the correponding channel in the legend. If Swift/BAT and MAXI data are available, the Hardness-Intensity Diagram and the Combined Flux is shown in this section too. Below the overview section, further lightcurves are provided, sorted by telescope. The visualized time range can be adjusted with the time picker in the top right corner of the dashboard and by dragging a selection field over the time series. Via the panel links (next to the panel title), the shown timeseries and HID data can be downloaded. Errors are visualized as shaded areas. Exact flux values are shown in the tooltip by hovering over the flux time series. If no new data is available for longer times (currently > 3 days), the plot is intersected, otherwise the lines are connected, even with one or two days without an update.
+The Grafana dashboards are the main source for data visualization. They offer an overview plot showing the Swift/BAT 15-50 keV channel, the MAXI 2-20 keV channel and the Fermi/GBM 12-50 keV channel (depending on the availablity). Lightcurve visibility can be toggled by clicking on the correponding channel in the legend. If Swift/BAT and MAXI data are available, the Hardness-Intensity Diagram and the Combined Flux is shown in this section too. Visualisations containing the hardness ratio (HID and hardness-ratio timeseries) are traditionally shown in logarithmic scale. To achieve this, negative values (arising from the subtraction of constant backgrounds on the data-provider side), are ignored by the backend and not plotted. Below the overview section, further lightcurves are provided, sorted by telescope. The visualized time range can be adjusted with the time picker in the top right corner of the dashboard and by dragging a selection field over the time series. Via the panel links (next to the panel title), the shown timeseries and HID data can be downloaded. Errors are visualized as shaded areas. Exact flux values are shown in the tooltip by hovering over the flux time series. If no new data is available for longer times (currently > 3 days), the plot is intersected, otherwise the lines are connected, even with one or two days without an update.
 
 ## FLASHES2.0 architecture
 
@@ -50,7 +50,7 @@ The deployment of FLASHES2.0 is done in Docker, as it allows for an easy local i
 
 ### Database architecture
 
-The database system contains a service for the source information and a dedicated timeseries database for all timeseries. The source information database is a mongoDB (image version 6.0), as this is currently the latest version with long-term support. As a document-based database, mongoDB allows for excellent compability with backend technologies at sufficient speed. Each document resembles a source from the FLASHES source catalog. For each source, the following entries *must* be provided:
+The database system contains a service for the source information and a dedicated timeseries database for all timeseries. The source information database is a mongoDB (image version 8.0), as this is currently the latest version with long-term support. As a document-based database, mongoDB allows for excellent compability with backend technologies at sufficient speed. Each document resembles a source from the FLASHES source catalog. For each source, the following entries *must* be provided:
 
 
 | Key             | Unit          | Description                                                                                                                                                                                   |
@@ -341,13 +341,15 @@ Once the Scheduler in the backend is started, the first download is triggered, w
 
 [🎉️] Implement the dashboards
 
-[ ] Implement a frontend
+[🎉️] Implement a frontend
 
 **--- RELEASE FLASHES2.0 beta ---**
 
 [ ] Implement a relevance calculation
 
 [ ] Implement alerting
+
+[ ] Implement source-subscription system
 
 **--- RELEASE v1.0 ---**
 
@@ -361,7 +363,7 @@ Once the Scheduler in the backend is started, the first download is triggered, w
 ### Necessary packages and software
 
 - Docker (v28.0.1), incl. compose (v2.33.1)
-- mongoDB (Docker image: mongo:6.0)
+- mongoDB (Docker image: mongo:8.0)
 - InfluxDB (Docker image: influxdb:2.7)
 - Grafana (Docker image: grafana/grafana), incl. the yesoreyeram-infinity-datasource plugin
 - Python (v3.13.7), incl. libraries from the corresponding Table in the backend section
