@@ -516,7 +516,8 @@
             },
             "pointStrokeWidth": 1,
             "scaleDistribution": {
-              "type": "linear"
+              "log": 10,
+              "type": "log"
             },
             "show": "points"
           },
@@ -1884,7 +1885,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 71
+            "y": 83
           },
           "id": 6,
           "options": {
@@ -2072,7 +2073,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 71
+            "y": 83
           },
           "id": 7,
           "options": {
@@ -2260,7 +2261,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 79
+            "y": 91
           },
           "id": 9,
           "options": {
@@ -2448,7 +2449,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 79
+            "y": 91
           },
           "id": 10,
           "options": {
@@ -2765,7 +2766,7 @@
                 "pointSize": 5,
                 "scaleDistribution": {
                   "log": 10,
-                  "type": "symlog"
+                  "type": "log"
                 },
                 "showPoints": "never",
                 "showValues": false,
@@ -2860,7 +2861,7 @@
             "h": 12,
             "w": 24,
             "x": 0,
-            "y": 25
+            "y": 27
           },
           "id": 12,
           "links": [
@@ -3219,5 +3220,5 @@
   "timezone": "browser",
   "title": "Dashboard for Swift/BAT, MAXI & Fermi/GBM",
   "uid": "flashes-swift-maxi-fermi",
-  "version": 15
+  "version": 20
 }

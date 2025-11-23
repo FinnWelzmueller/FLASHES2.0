@@ -248,15 +248,19 @@ async def load_timeseries(influx_key : str = Query(None, description="Influx Key
         
         else: # Hardness, Combined
             if telescope == "hardness":
-                timestamp_dict["hardness ratio"] = row["hardness ratio"]
-                timestamp_dict["hardness ratio" + " max"] = row["hardness ratio"] + row["hardness error"]
-                timestamp_dict["hardness ratio" + " min"] = row["hardness ratio"] - row["hardness error"]
+                if row["hardness ratio"] > 0:
+                    timestamp_dict["hardness ratio"] = row["hardness ratio"]
+                    timestamp_dict["hardness ratio" + " max"] = row["hardness ratio"] + row["hardness error"]
+                    timestamp_dict["hardness ratio" + " min"] = row["hardness ratio"] - row["hardness error"]
+                    out.append(timestamp_dict)
             if telescope == "combined":
-                timestamp_dict["combined flux"] = row["combined flux"]
-                timestamp_dict["combined flux" + " max"] = row["combined flux"] + row["combined flux".replace("flux", "error")]
-                timestamp_dict["combined flux" + " min"] = row["combined flux"] - row["combined flux".replace("flux", "error")]
-
-        out.append(timestamp_dict)
+                if row["combined flux"] > 0:
+                    timestamp_dict["combined flux"] = row["combined flux"]
+                    timestamp_dict["combined flux" + " max"] = row["combined flux"] + row["combined flux".replace("flux", "error")]
+                    timestamp_dict["combined flux" + " min"] = row["combined flux"] - row["combined flux".replace("flux", "error")]
+                    out.append(timestamp_dict)
+    
+        
 
         # correct timestamp object: rewrite as grafana-understandable string
     for entry in out:
