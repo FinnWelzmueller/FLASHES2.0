@@ -10,3 +10,4 @@ config/influxdb/*
 .venv
 *.ipynb
 backend/old/
+backup/
