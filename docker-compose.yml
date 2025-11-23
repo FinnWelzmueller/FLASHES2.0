@@ -20,7 +20,7 @@ services:
       - flashes-network
 
   mongodb:
-    image: mongo:6.0
+    image: mongo:8.0
     container_name: flashes-mongodb
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
