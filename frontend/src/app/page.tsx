@@ -1,5 +1,5 @@
 import { BigButton } from "@/components/bigButton";
-
+import "@/src/app/globals.css";
 export default function Home() {
   return (
     <main>
