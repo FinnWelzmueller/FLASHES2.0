@@ -245,6 +245,7 @@ async def load_timeseries(influx_key : str = Query(None, description="Influx Key
             timestamp_dict[channel_in_influx] = row[channel_in_influx]
             timestamp_dict[channel_in_influx + " max"] = row[channel_in_influx] + row[channel_in_influx.replace("flux", "error")]
             timestamp_dict[channel_in_influx + " min"] = row[channel_in_influx] - row[channel_in_influx.replace("flux", "error")]
+            out.append(timestamp_dict)
         
         else: # Hardness, Combined
             if telescope == "hardness":
@@ -259,8 +260,6 @@ async def load_timeseries(influx_key : str = Query(None, description="Influx Key
                     timestamp_dict["combined flux" + " max"] = row["combined flux"] + row["combined flux".replace("flux", "error")]
                     timestamp_dict["combined flux" + " min"] = row["combined flux"] - row["combined flux".replace("flux", "error")]
                     out.append(timestamp_dict)
-    
-        
 
         # correct timestamp object: rewrite as grafana-understandable string
     for entry in out:
