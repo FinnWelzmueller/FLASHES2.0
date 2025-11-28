@@ -53,7 +53,7 @@ def flux_to_mcrab(flux: float, channel:str) -> float:
     Converts a number in counts/cm2/s into mCrab based on the conversion factors from FLASHES1.0 
     :param flux: flux in counts/cm2/s
     :param channel: energy channel
-    :return: number in mCrab
+    :return: flux in mCrab
     """
     factors = {
         "2-4": 1.0/2.1 * 1000, # MAXI
