@@ -13,7 +13,7 @@ from fastapi import FastAPI, Path, Query
 from fastapi.staticfiles import StaticFiles
 from datetime import timezone
 from scheduler import start_scheduler
-from utils import iso_to_mjd
+from utils import iso_to_mjd, flux_to_mcrab
 from urllib.parse import quote_plus
 
 ### SETUP ###
@@ -327,8 +327,9 @@ async def load_download(influx_key : str,
 
         for col in telescope_dict[telescope]:
             timestamp_dict[col] = row[col]
+            timestamp_dict[col+" mCrab"] = flux_to_mcrab(row[col], col.split()[1].replace("(", ""))
         out.append(timestamp_dict)
-
+    print(out)
     if not out or len(out) == 0:
         return JSONResponse(status_code=404, content={"message": "No data for given query"})
     
@@ -340,13 +341,13 @@ async def load_download(influx_key : str,
         entry["mjd"] = iso_to_mjd(entry["time"])
 
     # bring things into the right order
-    download = list()
+        download = []
+    mcrab_keys = [f"{k} mCrab" for k in keys]
+
     for row in out:
-        row_dict = dict()
-        row_dict["time"] = row["time"]
-        row_dict["mjd"] = row["mjd"]
-        for k in keys:
-            row_dict[k] = row.get(k, None)
+        row_dict = {"time": row["time"], "mjd": row["mjd"]}
+        for k in keys + mcrab_keys:
+            row_dict[k] = row.get(k)
         download.append(row_dict)
 
     # start download
