@@ -63,7 +63,7 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "flux [counts/cm²/s]",
+            "axisLabel": "flux [mCrab]",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
@@ -108,7 +108,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (15-50 keV) max"
+              "options": "Swift/BAT max"
             },
             "properties": [
               {
@@ -121,7 +121,7 @@
               },
               {
                 "id": "custom.fillBelowTo",
-                "value": "flux (15-50 keV)"
+                "value": "Swift/BAT"
               },
               {
                 "id": "custom.hideFrom",
@@ -136,7 +136,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (15-50 keV) min"
+              "options": "Swift/BAT min"
             },
             "properties": [
               {
@@ -156,12 +156,12 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (15-50 keV)"
+              "options": "Swift/BAT"
             },
             "properties": [
               {
                 "id": "custom.fillBelowTo",
-                "value": "flux (15-50 keV) min"
+                "value": "Swift/BAT min"
               },
               {
                 "id": "custom.fillOpacity",
@@ -172,7 +172,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (2-20 keV) max"
+              "options": "MAXI max"
             },
             "properties": [
               {
@@ -185,7 +185,7 @@
               },
               {
                 "id": "custom.fillBelowTo",
-                "value": "flux (2-20 keV)"
+                "value": "MAXI"
               },
               {
                 "id": "custom.hideFrom",
@@ -207,7 +207,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (2-20 keV) min"
+              "options": "MAXI min"
             },
             "properties": [
               {
@@ -227,7 +227,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (2-20 keV)"
+              "options": "MAXI"
             },
             "properties": [
               {
@@ -236,7 +236,7 @@
               },
               {
                 "id": "custom.fillBelowTo",
-                "value": "flux (2-20 keV) min"
+                "value": "MAXI min"
               },
               {
                 "id": "color",
@@ -250,7 +250,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (12-50 keV) max"
+              "options": "Fermi/GBM max"
             },
             "properties": [
               {
@@ -263,7 +263,7 @@
               },
               {
                 "id": "custom.fillBelowTo",
-                "value": "flux (12-50 keV)"
+                "value": "Fermi/GBM"
               },
               {
                 "id": "custom.hideFrom",
@@ -285,7 +285,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (12-50 keV) min"
+              "options": "Fermi/GBM min"
             },
             "properties": [
               {
@@ -305,7 +305,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (12-50 keV)"
+              "options": "Fermi/GBM"
             },
             "properties": [
               {
@@ -314,13 +314,29 @@
               },
               {
                 "id": "custom.fillBelowTo",
-                "value": "flux (12-50 keV) min"
+                "value": "Fermi/GBM min"
               },
               {
                 "id": "color",
                 "value": {
                   "fixedColor": "blue",
                   "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^flux.*"
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": true
                 }
               }
             ]
@@ -484,6 +500,206 @@
         }
       ],
       "title": "Overview plot",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Swift/BAT",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (15-50 keV)"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "4545.4545"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Swift/BAT max",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (15-50 keV) max"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "4545.4545"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Swift/BAT min",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (15-50 keV) min"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "4545.4545"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "MAXI",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (2-20 keV)"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "312.5"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "MAXI max",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (2-20 keV) max"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "312.5"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "MAXI min",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (2-20 keV) min"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "312.5"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Fermi/GBM",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (12-50 keV)"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "222.2222"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Fermi/GBM max",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (12-50 keV) max"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "222.2222"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Fermi/GBM min",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (12-50 keV) min"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "222.2222"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        }
+      ],
       "transparent": true,
       "type": "timeseries"
     },
@@ -986,7 +1202,7 @@
                 "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
-                "axisLabel": "flux [counts/cm²/s]",
+                "axisLabel": "flux [mCrab]",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
                 "barWidthFactor": 0.6,
@@ -1031,7 +1247,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (15-50 keV) max"
+                  "options": "Swift/BAT max"
                 },
                 "properties": [
                   {
@@ -1044,7 +1260,7 @@
                   },
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (15-50 keV)"
+                    "value": "Swift/BAT"
                   },
                   {
                     "id": "custom.hideFrom",
@@ -1059,7 +1275,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (15-50 keV) min"
+                  "options": "Swift/BAT min"
                 },
                 "properties": [
                   {
@@ -1079,12 +1295,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (15-50 keV)"
+                  "options": "Swift/BAT"
                 },
                 "properties": [
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (15-50 keV) min"
+                    "value": "Swift/BAT min"
                   },
                   {
                     "id": "custom.fillOpacity",
@@ -1094,14 +1310,19 @@
               },
               {
                 "matcher": {
-                  "id": "byValue",
-                  "options": {
-                    "op": "gte",
-                    "reducer": "allIsZero",
-                    "value": 0
-                  }
+                  "id": "byRegexp",
+                  "options": "^flux.*"
                 },
-                "properties": []
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": false,
+                      "tooltip": true,
+                      "viz": true
+                    }
+                  }
+                ]
               }
             ]
           },
@@ -1109,7 +1330,7 @@
             "h": 12,
             "w": 24,
             "x": 0,
-            "y": 22
+            "y": 24
           },
           "id": 4,
           "links": [
@@ -1174,6 +1395,74 @@
             }
           ],
           "title": "Swift/BAT data for ${integral_name}",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Swift/BAT",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (15-50 keV)"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "4545.4545"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Swift/BAT max",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (15-50 keV) max"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "4545.4545"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Swift/BAT min",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (15-50 keV) min"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "4545.4545"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            }
+          ],
           "transparent": true,
           "type": "timeseries"
         }
@@ -1206,7 +1495,7 @@
                 "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
-                "axisLabel": "flux [counts/cm²/s]",
+                "axisLabel": "flux [mCrab]",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
                 "barWidthFactor": 0.6,
@@ -1251,7 +1540,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (2-20 keV) max"
+                  "options": "MAXI (2-20 keV) max"
                 },
                 "properties": [
                   {
@@ -1264,7 +1553,7 @@
                   },
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (2-20 keV)"
+                    "value": "MAXI (2-20 keV)"
                   },
                   {
                     "id": "custom.hideFrom",
@@ -1279,7 +1568,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (2-20 keV) min"
+                  "options": "MAXI (2-20 keV) min"
                 },
                 "properties": [
                   {
@@ -1299,12 +1588,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (2-20 keV)"
+                  "options": "MAXI (2-20 keV)"
                 },
                 "properties": [
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (2-20 keV) min"
+                    "value": "MAXI (2-20 keV) min"
                   },
                   {
                     "id": "custom.fillOpacity",
@@ -1315,7 +1604,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (2-4 keV) max"
+                  "options": "MAXI (2-4 keV) max"
                 },
                 "properties": [
                   {
@@ -1328,34 +1617,7 @@
                   },
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (2-4 keV)"
-                  },
-                  {
-                    "id": "custom.hideFrom",
-                    "value": {
-                      "legend": true,
-                      "tooltip": true,
-                      "viz": false
-                    }
-                  },
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "orange",
-                      "mode": "fixed"
-                    }
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "flux (2-4 keV) min"
-                },
-                "properties": [
-                  {
-                    "id": "custom.lineWidth",
-                    "value": 0
+                    "value": "MAXI (2-4 keV)"
                   },
                   {
                     "id": "custom.hideFrom",
@@ -1377,12 +1639,39 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (2-4 keV)"
+                  "options": "MAXI (2-4 keV) min"
+                },
+                "properties": [
+                  {
+                    "id": "custom.lineWidth",
+                    "value": 0
+                  },
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": false
+                    }
+                  },
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "orange",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "MAXI (2-4 keV)"
                 },
                 "properties": [
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (2-4 keV) min"
+                    "value": "MAXI (2-4 keV) min"
                   },
                   {
                     "id": "custom.fillOpacity",
@@ -1400,7 +1689,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (4-10 keV) max"
+                  "options": "MAXI (4-10 keV) max"
                 },
                 "properties": [
                   {
@@ -1413,7 +1702,7 @@
                   },
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (4-10 keV)"
+                    "value": "MAXI (4-10 keV)"
                   },
                   {
                     "id": "custom.hideFrom",
@@ -1435,7 +1724,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (4-10 keV) min"
+                  "options": "MAXI (4-10 keV) min"
                 },
                 "properties": [
                   {
@@ -1462,12 +1751,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (4-10 keV)"
+                  "options": "MAXI (4-10 keV)"
                 },
                 "properties": [
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (4-10 keV) min"
+                    "value": "MAXI (4-10 keV) min"
                   },
                   {
                     "id": "custom.fillOpacity",
@@ -1485,7 +1774,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (10-20 keV) max"
+                  "options": "MAXI (10-20 keV) max"
                 },
                 "properties": [
                   {
@@ -1498,7 +1787,7 @@
                   },
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (10-20 keV)"
+                    "value": "MAXI (10-20 keV)"
                   },
                   {
                     "id": "custom.hideFrom",
@@ -1520,7 +1809,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (10-20 keV) min"
+                  "options": "MAXI (10-20 keV) min"
                 },
                 "properties": [
                   {
@@ -1547,12 +1836,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (10-20 keV)"
+                  "options": "MAXI (10-20 keV)"
                 },
                 "properties": [
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (10-20 keV) min"
+                    "value": "MAXI (10-20 keV) min"
                   },
                   {
                     "id": "custom.fillOpacity",
@@ -1563,6 +1852,22 @@
                     "value": {
                       "fixedColor": "red",
                       "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "^flux.*"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": true
                     }
                   }
                 ]
@@ -1573,7 +1878,7 @@
             "h": 12,
             "w": 24,
             "x": 0,
-            "y": 23
+            "y": 25
           },
           "id": 8,
           "links": [
@@ -1755,6 +2060,272 @@
             }
           ],
           "title": "MAXI data for ${integral_name}",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (2-20 keV)",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (2-20 keV)"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "312.5"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (2-20 keV) max",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (2-20 keV) max"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "312.5"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (2-20 keV) min",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (2-20 keV) min"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "312.5"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (2-4 keV)",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (2-4 keV)"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "476.1905"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (2-4 keV) max",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (2-4 keV) max"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "476.1905"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (2-4 keV) min",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (2-4 keV) min"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "476.1905"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (4-10 keV)",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (4-10 keV)"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "833.3333"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (4-10 keV) max",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (4-10 keV) max"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "833.3333"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (4-10 keV) min",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (4-10 keV) min"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "833.3333"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (10-20 keV)",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (10-20 keV)"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "2500"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (10-20 keV) max",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (10-20 keV) max"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "2500"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (10-20 keV) min",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (10-20 keV) min"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "2500"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            }
+          ],
           "transparent": true,
           "type": "timeseries"
         },
@@ -1773,7 +2344,7 @@
                 "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
-                "axisLabel": "flux [counts/cm²/s]",
+                "axisLabel": "flux [mCrab]",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
                 "barWidthFactor": 0.6,
@@ -1818,7 +2389,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (2-20 keV) max"
+                  "options": "MAXI (2-20 keV) max"
                 },
                 "properties": [
                   {
@@ -1831,7 +2402,7 @@
                   },
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (2-20 keV)"
+                    "value": "MAXI (2-20 keV)"
                   },
                   {
                     "id": "custom.hideFrom",
@@ -1846,7 +2417,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (2-20 keV) min"
+                  "options": "MAXI (2-20 keV) min"
                 },
                 "properties": [
                   {
@@ -1866,16 +2437,32 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (2-20 keV)"
+                  "options": "MAXI (2-20 keV)"
                 },
                 "properties": [
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (2-20 keV) min"
+                    "value": "MAXI (2-20 keV) min"
                   },
                   {
                     "id": "custom.fillOpacity",
                     "value": 25
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "^flux.*"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": true
+                    }
                   }
                 ]
               }
@@ -1885,7 +2472,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 83
+            "y": 49
           },
           "id": 6,
           "options": {
@@ -1943,6 +2530,75 @@
             }
           ],
           "title": "2 - 20 keV",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (2-20 keV)",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (2-20 keV)"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "312.5"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (2-20 keV) max",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (2-20 keV) max"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "312.5"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (2-20 keV) min",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (2-20 keV) min"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "312.5"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "include": [],
+                  "reducer": "sum"
+                }
+              }
+            }
+          ],
           "transparent": true,
           "type": "timeseries"
         },
@@ -1961,7 +2617,7 @@
                 "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
-                "axisLabel": "flux [counts/cm²/s]",
+                "axisLabel": "flux [mCrab]",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
                 "barWidthFactor": 0.6,
@@ -2006,7 +2662,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (2-4 keV) max"
+                  "options": "MAXI (2-4 keV) max"
                 },
                 "properties": [
                   {
@@ -2019,7 +2675,7 @@
                   },
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (2-4 keV)"
+                    "value": "MAXI (2-4 keV)"
                   },
                   {
                     "id": "custom.hideFrom",
@@ -2034,7 +2690,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (2-4 keV) min"
+                  "options": "MAXI (2-4 keV) min"
                 },
                 "properties": [
                   {
@@ -2054,16 +2710,32 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (2-4 keV)"
+                  "options": "MAXI (2-4 keV)"
                 },
                 "properties": [
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (2-4 keV) min"
+                    "value": "MAXI (2-4 keV) min"
                   },
                   {
                     "id": "custom.fillOpacity",
                     "value": 25
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "^flux.*"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": true
+                    }
                   }
                 ]
               }
@@ -2073,7 +2745,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 83
+            "y": 49
           },
           "id": 7,
           "options": {
@@ -2131,6 +2803,74 @@
             }
           ],
           "title": "2 - 4 keV",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (2-4 keV)",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (2-4 keV)"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "476.1905"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (2-4 keV) max",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (2-4 keV) max"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "476.1905"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (2-4 keV) min",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (2-4 keV) min"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "476.1905"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            }
+          ],
           "transparent": true,
           "type": "timeseries"
         },
@@ -2149,7 +2889,7 @@
                 "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
-                "axisLabel": "flux [counts/cm²/s]",
+                "axisLabel": "flux [mCrab]",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
                 "barWidthFactor": 0.6,
@@ -2194,7 +2934,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (4-10 keV) max"
+                  "options": "MAXI (4-10 keV) max"
                 },
                 "properties": [
                   {
@@ -2207,7 +2947,7 @@
                   },
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (4-10 keV)"
+                    "value": "MAXI (4-10 keV)"
                   },
                   {
                     "id": "custom.hideFrom",
@@ -2222,7 +2962,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (4-10 keV) min"
+                  "options": "MAX (4-10 keV) min"
                 },
                 "properties": [
                   {
@@ -2242,16 +2982,32 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (4-10 keV)"
+                  "options": "MAXI (4-10 keV)"
                 },
                 "properties": [
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (4-10 keV) min"
+                    "value": "MAX (4-10 keV) min"
                   },
                   {
                     "id": "custom.fillOpacity",
                     "value": 25
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "^flux.*"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": true
+                    }
                   }
                 ]
               }
@@ -2261,7 +3017,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 91
+            "y": 57
           },
           "id": 9,
           "options": {
@@ -2319,6 +3075,74 @@
             }
           ],
           "title": "4 - 10 keV",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (4-10 keV)",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (4-10 keV)"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "833.3333"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (4-10 keV) max",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (4-10 keV) max"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "833.3333"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAX (4-10 keV) min",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (4-10 keV) min"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "833.3333"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            }
+          ],
           "transparent": true,
           "type": "timeseries"
         },
@@ -2337,7 +3161,7 @@
                 "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
-                "axisLabel": "flux [counts/cm²/s]",
+                "axisLabel": "flux [mCrab]",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
                 "barWidthFactor": 0.6,
@@ -2382,7 +3206,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (10-20 keV) max"
+                  "options": "MAXI (10-20 keV) max"
                 },
                 "properties": [
                   {
@@ -2395,7 +3219,7 @@
                   },
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (10-20 keV)"
+                    "value": "MAXI (10-20 keV)"
                   },
                   {
                     "id": "custom.hideFrom",
@@ -2410,7 +3234,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (10-20 keV) min"
+                  "options": "MAXI (10-20 keV) min"
                 },
                 "properties": [
                   {
@@ -2430,16 +3254,32 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (10-20 keV)"
+                  "options": "MAXI (10-20 keV)"
                 },
                 "properties": [
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (10-20 keV) min"
+                    "value": "MAXI (10-20 keV) min"
                   },
                   {
                     "id": "custom.fillOpacity",
                     "value": 25
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "^flux.*"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": true
+                    }
                   }
                 ]
               }
@@ -2449,7 +3289,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 91
+            "y": 57
           },
           "id": 10,
           "options": {
@@ -2507,6 +3347,74 @@
             }
           ],
           "title": "10 - 20 keV",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (10-20 keV)",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (10-20 keV)"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "2500"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (10-20 keV) max",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (10-20 keV) max"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "2500"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "MAXI (10-20 keV) min",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (10-20 keV) min"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "2500"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            }
+          ],
           "transparent": true,
           "type": "timeseries"
         }
@@ -2539,7 +3447,7 @@
                 "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
-                "axisLabel": "flux [counts/cm²/s]",
+                "axisLabel": "flux [mCrab]",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
                 "barWidthFactor": 0.6,
@@ -2584,7 +3492,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (12-50 keV) max"
+                  "options": "Fermi/GBM max"
                 },
                 "properties": [
                   {
@@ -2597,7 +3505,7 @@
                   },
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (12-50 keV)"
+                    "value": "Fermi/GBM"
                   },
                   {
                     "id": "custom.hideFrom",
@@ -2612,7 +3520,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (12-50 keV) min"
+                  "options": "Fermi/GBM min"
                 },
                 "properties": [
                   {
@@ -2632,16 +3540,32 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (12-50 keV)"
+                  "options": "Fermi/GBM"
                 },
                 "properties": [
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (12-50 keV) min"
+                    "value": "Fermi/GBM min"
                   },
                   {
                     "id": "custom.fillOpacity",
                     "value": 25
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "^flux.*"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": true
+                    }
                   }
                 ]
               }
@@ -2651,7 +3575,7 @@
             "h": 12,
             "w": 24,
             "x": 0,
-            "y": 24
+            "y": 26
           },
           "id": 17,
           "links": [
@@ -2716,6 +3640,74 @@
             }
           ],
           "title": "Fermi/GBM data for ${integral_name}",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Fermi/GBM",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (12-50 keV)"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "222.2222"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Fermi/GBM max",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (12-50 keV) max"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "222.2222"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Fermi/GBM min",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (12-50 keV) min"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "222.2222"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            }
+          ],
           "transparent": true,
           "type": "timeseries"
         }
@@ -2861,7 +3853,7 @@
             "h": 12,
             "w": 24,
             "x": 0,
-            "y": 27
+            "y": 151
           },
           "id": 12,
           "links": [
@@ -3066,7 +4058,7 @@
             "h": 12,
             "w": 24,
             "x": 0,
-            "y": 26
+            "y": 150
           },
           "id": 14,
           "links": [
@@ -3220,5 +4212,5 @@
   "timezone": "browser",
   "title": "Dashboard for Swift/BAT, MAXI & Fermi/GBM",
   "uid": "flashes-swift-maxi-fermi",
-  "version": 20
+  "version": 21
 }
