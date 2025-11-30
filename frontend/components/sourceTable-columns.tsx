@@ -12,6 +12,7 @@ export type TelescopeRecord = {
     last_timestamp: string;
     last_flux: number;
     last_error: number;
+    influx_key: string;
 }
 
 export type SourceRecord = {
