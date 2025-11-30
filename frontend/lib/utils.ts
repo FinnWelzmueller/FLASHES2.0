@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-
+import { TelescopeRecord } from "@/components/sourceTable-columns";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -26,4 +26,22 @@ export function getConversionFactor(channel: string): number {
   }
 
   return factor;
+}
+
+export function findChannel(telescope:  TelescopeRecord): string {
+  /**
+   * This function returns the main energy channel string based on the telescope influx key. Mostly used to get the conversion factor.
+   */
+  if (telescope.influx_key.includes("swift")) {
+    return "15-50";
+  } 
+  else if (telescope.influx_key.includes("maxi")) {
+    return "2-20";
+  }
+  else if (telescope.influx_key.includes("fermi")) {
+    return "12-50";
+  }
+  else {
+    throw new Error(`Unknown telescope influx key: ${telescope.influx_key}`);
+  }
 }
