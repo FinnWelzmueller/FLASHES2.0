@@ -1,15 +1,18 @@
 import { mjdToIso } from '@/lib/astro';
 import type { SourceData, TelescopeRecord } from '@/src/app/sources/[_id]/page';
+import { getConversionFactor, findChannel } from '@/lib/utils';
 
 function LastPoint({ label, rec }: { label: string; rec?: TelescopeRecord | null }) {
   if (!rec?.last_flux || rec.last_error == null) return null;
-  const val = rec.last_flux.toFixed(3);
-  const err = rec.last_error.toFixed(3);
+
+  const conversionFactor = getConversionFactor(findChannel(rec));
+  const val = (rec.last_flux * conversionFactor).toFixed(3);
+  const err = (rec.last_error * conversionFactor).toFixed(3);
   const when = rec.last_timestamp ? mjdToIso(rec.last_timestamp) : '—';
   return (
     <div className="p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800">
       <div className="text-xs uppercase tracking-wider text-neutral-500 mb-1">{label}</div>
-      <div className="text-lg font-medium">{val} ± {err}</div>
+      <div className="text-lg font-medium">{val} ± {err} mCrab</div>
       <div className="text-xs text-neutral-500 mt-1">Last point: {when}</div>
     </div>
   );
