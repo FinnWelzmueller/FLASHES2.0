@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 16,
+  "id": 23,
   "links": [],
   "panels": [
     {
@@ -36,7 +36,7 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "flux [counts/cm²/s]",
+            "axisLabel": "flux [mCrab]",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
@@ -81,7 +81,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (15-50 keV) max"
+              "options": "Swift/BAT max"
             },
             "properties": [
               {
@@ -94,7 +94,7 @@
               },
               {
                 "id": "custom.fillBelowTo",
-                "value": "flux (15-50 keV)"
+                "value": "Swift/BAT"
               },
               {
                 "id": "custom.hideFrom",
@@ -109,7 +109,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (15-50 keV) min"
+              "options": "Swift/BAT min"
             },
             "properties": [
               {
@@ -129,12 +129,12 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (15-50 keV)"
+              "options": "Swift/BAT"
             },
             "properties": [
               {
                 "id": "custom.fillBelowTo",
-                "value": "flux (15-50 keV) min"
+                "value": "Swift/BAT min"
               },
               {
                 "id": "custom.fillOpacity",
@@ -144,14 +144,19 @@
           },
           {
             "matcher": {
-              "id": "byValue",
-              "options": {
-                "op": "gte",
-                "reducer": "allIsZero",
-                "value": 0
-              }
+              "id": "byRegexp",
+              "options": "^flux.*"
             },
-            "properties": []
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": true
+                }
+              }
+            ]
           }
         ]
       },
@@ -209,6 +214,74 @@
         }
       ],
       "title": "",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Swift/BAT",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (15-50 keV)"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "4545.4545"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Swift/BAT max",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (15-50 keV) max"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "4545.4545"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Swift/BAT min",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (15-50 keV) min"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "4545.4545"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        }
+      ],
       "transparent": true,
       "type": "timeseries"
     }
@@ -220,7 +293,7 @@
   ],
   "templating": {
     "list": [
-        {
+      {
         "current": {
           "text": "",
           "value": ""

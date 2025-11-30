@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 12,
+  "id": 22,
   "links": [],
   "panels": [
     {
@@ -36,7 +36,7 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "flux [counts/cm²/s]",
+            "axisLabel": "flux [mCrab]",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
@@ -81,7 +81,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (2-20 keV) max"
+              "options": "MAXI max"
             },
             "properties": [
               {
@@ -94,7 +94,7 @@
               },
               {
                 "id": "custom.fillBelowTo",
-                "value": "flux (2-20 keV)"
+                "value": "MAXI"
               },
               {
                 "id": "custom.hideFrom",
@@ -109,7 +109,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (2-20 keV) min"
+              "options": "MAXI min"
             },
             "properties": [
               {
@@ -129,16 +129,32 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (2-20 keV)"
+              "options": "MAXI"
             },
             "properties": [
               {
                 "id": "custom.fillBelowTo",
-                "value": "flux (2-20 keV) min"
+                "value": "MAXI min"
               },
               {
                 "id": "custom.fillOpacity",
                 "value": 25
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^flux.*"
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": true
+                }
               }
             ]
           }
@@ -198,6 +214,74 @@
         }
       ],
       "title": "",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "MAXI",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (2-20 keV)"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "312.5"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "MAXI max",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (2-20 keV) max"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "312.5"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "MAXI min",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (2-20 keV) min"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "312.5"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        }
+      ],
       "transparent": true,
       "type": "timeseries"
     }
