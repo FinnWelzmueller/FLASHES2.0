@@ -75,7 +75,7 @@ export default async function About() {
         Fermi/GBM contributes high-energy monitoring through its 12-50 keV Earth-occultation data products. While GBM primarily targets gamma-ray bursts, its continuous all-sky sensitivity provides valuable measurements of persistent and transient hard X-ray sources. GBM does not supply uncertainties for these flux values, so FLASHES stores error columns as zero to reflect the format of the original data. Despite this limitation, GBM plays an important role in extending the hard-X-ray coverage of FLASHES, especially for sources with strong non-thermal components or those exhibiting hard-state variability.
       </p>
       <p>
-        The lightcurve data is downloaded in SI units (counts/cm²/s) and converted to mCrab fluxes using established conversion factors (see Cifuentes Santos, 2021) for each instrument. This standardisation allows for direct comparison across different telescopes and energy bands within the FLASHES platform.
+        The lightcurve data is downloaded in SI units (counts/cm²/s) and converted to mCrab fluxes using established conversion factors (see Cifuentes Santos, 2021) for each instrument. This standardisation allows for direct comparison across different telescopes and energy bands within the FLASHES platform. The numbers are shown in the README.md. 
       </p>
       <h2>Getting involved</h2>
       <p>
