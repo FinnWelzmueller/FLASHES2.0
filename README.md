@@ -269,7 +269,7 @@ For each of the six cases, a template for a dashboard is available. In the templ
 
 The dashboards are structured in the following way. On top, there is an overview section, which covers the most important available lightcurves (Swift/BAT 15-50 keV, MAXI 2-20 keV and Fermi/GBM 12-50 keV). If Swift and MAXI data are available, the overview section covers the Hardness-Intensity diagram and a lightcurves of the combined flux.
 
-The connection from the dashboard to the InfluxDB happens via the backend. The Infinity Datasource is used as datasource in Grafana. The UID of the datasource is 'flashes-datasource'
+The connection from the dashboard to the InfluxDB happens via the backend. The Infinity Datasource is used as datasource in Grafana. The UID of the datasource is 'flashes-datasource'.
 
 ## Source Tagging
 
@@ -319,16 +319,16 @@ As no modified physical model exists for x-ray outburst to date - which is relat
 The flux data in raw format is provided in counts/cm²/s, which is also the unit, which is used in the databases. However, the community tends to use the unit of mCrab for x-ray fluxes, which is related to the x-ray intensity of the Crab nebular [Kirsch, 2005]. The conversion is linear and of the form y(x) = αx where α is the conversion factor, y the flux in mCrab and x the flux in counts/cm²/s. As the Crab nebular x-ray flux varies along the electromagnetic x-ray spectrum, the conversion factors depend on the monitor and the x-ray channel that is observed. In the following table, the conversion factors are listed.
 
 
-| Telescope & Channel  | α        | Reference   |
-| ---------------------- | ----------- | ------------- |
-| Swift/BAT: 15-50 keV | 4545.4545 | Krimm, 2013 |
-| MAXI: 2-20 keV       | 312.5     |             |
-| MAXI: 2-4 keV        | 476.1905  |             |
-| MAXI: 4-10 keV       | 833.3333  |             |
-| MAXI 10-20 keV       | 2500      |             |
-| Fermi/GBM: 12-50 keV | 222.2222  |             |
+| Telescope & Channel  | α        | Reference              |
+| ---------------------- | ----------- | ------------------------ |
+| Swift/BAT: 15-50 keV | 4545.4545 | Krimm, 2013            |
+| MAXI: 2-20 keV       | 312.5     | Cifuentes Santos, 2021 |
+| MAXI: 2-4 keV        | 476.1905  | Cifuentes Santos, 2021 |
+| MAXI: 4-10 keV       | 833.3333  | Cifuentes Santos, 2021 |
+| MAXI 10-20 keV       | 2500      | Cifuentes Santos, 2021 |
+| Fermi/GBM: 12-50 keV | 222.2222  | Cifuentes Santos, 2021 |
 
-The conversion from counts/cm²/s into mCrab is taking place in the frontend to distribute the additional workload into the backend-, frontend- and the grafana docker container. In the backend, the conversion is needed to offer both the unconverted flux values (in counts/cm²/s) and the converted ones (in mCrab) in the download files. In the frontend, the conversion is applied to give both flux numbers in the source pages. In the Grafana dashboards, the conversion is applied via a build-in data transformation.
+The conversion from counts/cm²/s into mCrab is taking place in the frontend to distribute the additional workload into the backend-, frontend- and the grafana docker container. In the backend, the conversion is needed to offer both the unconverted flux values (in counts/cm²/s) and the converted ones (in mCrab) in the download files. In the frontend, the conversion is applied to give both flux numbers in the source pages. In the Grafana dashboards, the conversion is applied via a build-in data transformation. 
 
 ## Alerting
 
