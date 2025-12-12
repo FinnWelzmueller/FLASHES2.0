@@ -3,7 +3,9 @@ import { columns, SourceRecord } from "@/components/sourceTable-columns"
 import { PageDescription } from "@/components/pageDescription";
 export default async function Sources() {
 
-  const res = await fetch("http://localhost:8000/sources", { next: { revalidate: 0 } });
+  const base = process.env.INTERNAL_API_URL ?? "http://backend:8000";
+  const res = await fetch(`${base}/sources`, { next: { revalidate: 0 } });
+  //const res = await fetch("http://localhost:8000/sources", { next: { revalidate: 0 } });
   
   if (!res.ok) {
     throw new Error("The FLASHES backend appears to be down. Please try again later.");
