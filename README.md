@@ -108,7 +108,7 @@ h = \frac{\Phi_{15-50\text{ keV}}}{\Phi_{2-20\text{ keV}}}; \quad \Delta h = \fr
 $$
 
 $$
-\Phi_c = \Phi_{15-50\text{ keV}} + \Phi_{2-20\text{ keV}}; \quad \Delta\Phi_c = \sqrt{\left(\Delta\Phi_{15-50\text{ keV}}\right)^2 + \left(\Delta\Phi_{2-20\text{ keV}}\right)^2}
+\Phi_c = \Phi_{15-50\text{ keV}} + \Phi_{2-20\text{ keV}}; \quad \Delta\Phi_c = \left(\Phi_{15-50\text{ keV}} + \Phi_{2-20\text{ keV}}\right)\sqrt{\left(\Delta\Phi_{15-50\text{ keV}}\right)^2 + \left(\Delta\Phi_{2-20\text{ keV}}\right)^2}
 
 $$
 
@@ -328,7 +328,7 @@ The flux data in raw format is provided in counts/cm²/s, which is also the unit
 | MAXI 10-20 keV       | 2500      | Cifuentes Santos, 2021 |
 | Fermi/GBM: 12-50 keV | 222.2222  | Cifuentes Santos, 2021 |
 
-The conversion from counts/cm²/s into mCrab is taking place in the frontend to distribute the additional workload into the backend-, frontend- and the grafana docker container. In the backend, the conversion is needed to offer both the unconverted flux values (in counts/cm²/s) and the converted ones (in mCrab) in the download files. In the frontend, the conversion is applied to give both flux numbers in the source pages. In the Grafana dashboards, the conversion is applied via a build-in data transformation. 
+The conversion from counts/cm²/s into mCrab is taking place in the frontend to distribute the additional workload into the backend-, frontend- and the grafana docker container. In the backend, the conversion is needed to offer both the unconverted flux values (in counts/cm²/s) and the converted ones (in mCrab) in the download files. In the frontend, the conversion is applied to give both flux numbers in the source pages. In the Grafana dashboards, the conversion is applied via a build-in data transformation.
 
 ## Alerting
 
