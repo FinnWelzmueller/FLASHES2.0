@@ -9,7 +9,7 @@ export function SourceHeader({ data }: { data: SourceData }) {
         <h1 className="text-3xl font-semibold tracking-tight">{data.integral_name}</h1>
       </div>
       <img
-        src={`http://localhost:8000/static/${data._id}.png`}
+        src={`/static/${data._id}.png`}
         alt={data.integral_name}
         className="w-full max-w-md rounded-2xl border dark:border-neutral-800"
 />

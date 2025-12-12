@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { TelescopeRecord } from "@/components/sourceTable-columns";
+import { TelescopeRecord } from "@/types/telescopeRecord";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }

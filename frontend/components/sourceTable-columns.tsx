@@ -6,14 +6,7 @@ import Link from 'next/link';
 import { Button } from "@/components/ui/button"
 import { Tag } from './tag';
 import { getConversionFactor } from "@/lib/utils";
-
-export type TelescopeRecord = {
-    data_url: string;
-    last_timestamp: string;
-    last_flux: number;
-    last_error: number;
-    influx_key: string;
-}
+import { TelescopeRecord } from "@/types/telescopeRecord";
 
 export type SourceRecord = {
     _id : string;
@@ -97,7 +90,7 @@ export const columns: ColumnDef<SourceRecord>[] = [
         header: "Plots",
         cell: ({ row }) => {
             const id = row.original._id;
-            return <Link href={`http://localhost:8000/plots/${encodeURIComponent(id)}`} className="externalLink" target="_blank">here</Link>
+            return <Link href={`http://backend:8000/plots/${encodeURIComponent(id)}`} className="externalLink" target="_blank">here</Link>
         }
     },
 ]

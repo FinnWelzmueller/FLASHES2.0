@@ -1,4 +1,5 @@
-import type { SourceData, TelescopeRecord } from '@/src/app/sources/[_id]/page';
+import type { SourceData } from '@/src/app/sources/[_id]/page';
+import type { TelescopeRecord } from '@/types/telescopeRecord';
 import { mjdToIso } from '@/lib/astro';
 import { getConversionFactor, findChannel } from '@/lib/utils';
 
@@ -39,7 +40,7 @@ function TelescopeCard({ name, rec }: { name: 'Swift' | 'MAXI' | 'Fermi'; rec?: 
       {rec.influx_key && (
         <div className="mt-4 flex gap-2">
           <a
-            href={`http://localhost:8000/download/${encodeURIComponent(rec.influx_key)}`}
+            href={`http://backend:8000/download/${encodeURIComponent(rec.influx_key)}`}
             className="px-3 py-1.5 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30"
           >
             Download CSV
@@ -56,13 +57,13 @@ export function TelescopeSection({ data }: { data: SourceData }) {
 
       <div className="flex flex-wrap gap-2">
         <a
-        href={`http://localhost:8000/plots/${encodeURIComponent(data._id)}`}
+        href={`http://backend:8000/plots/${encodeURIComponent(data._id)}`}
         className="px-3 py-1.5 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30">
             <b>View Dashboard</b>
       </a>
         {data.combined?.influx_key && (
           <a
-            href={`http://localhost:8000/download/${encodeURIComponent(data.combined.influx_key)}`}
+            href={`http://backend:8000/download/${encodeURIComponent(data.combined.influx_key)}`}
             className="px-3 py-1.5 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30"
           >
             Download Combined CSV
@@ -70,7 +71,7 @@ export function TelescopeSection({ data }: { data: SourceData }) {
         )}
         {data.hardness_ratio?.influx_key && (
           <a
-            href={`http://localhost:8000/download/${encodeURIComponent(data.hardness_ratio.influx_key)}`}
+            href={`http://backend:8000/download/${encodeURIComponent(data.hardness_ratio.influx_key)}`}
             className="px-3 py-1.5 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30"
           >
             Download Hardness CSV
