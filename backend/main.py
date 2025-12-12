@@ -287,26 +287,11 @@ async def load_timeseries(influx_key : str = Query(None, description="Influx Key
         # Getting data
         for idx, row in query_api.query_data_frame(org="flashes", query=query_flux).iterrows():
             timestamp_dict = {"time": row["_time"]}
-
-            if channel in list(channel_dict[telescope]): # Telescope case (Swift, MAXI, Fermi)
-                timestamp_dict[channel_in_influx] = row[channel_in_influx]
-                timestamp_dict[channel_in_influx + " max"] = row[channel_in_influx] + row[channel_in_influx.replace("flux", "error")]
-                timestamp_dict[channel_in_influx + " min"] = row[channel_in_influx] - row[channel_in_influx.replace("flux", "error")]
-                out.append(timestamp_dict)
+            timestamp_dict[channel_in_influx] = row[channel_in_influx]
+            timestamp_dict[channel_in_influx + " max"] = row[channel_in_influx] + row[channel_in_influx.replace("flux", "error")]
+            timestamp_dict[channel_in_influx + " min"] = row[channel_in_influx] - row[channel_in_influx.replace("flux", "error")]
+            out.append(timestamp_dict)
         
-            else: # Hardness, Combined
-                if telescope == "hardness":
-                    if row["hardness ratio"] > 0:
-                        timestamp_dict["hardness ratio"] = row["hardness ratio"]
-                        timestamp_dict["hardness ratio" + " max"] = row["hardness ratio"] + row["hardness error"]
-                        timestamp_dict["hardness ratio" + " min"] = row["hardness ratio"] - row["hardness error"]
-                        out.append(timestamp_dict)
-                if telescope == "combined":
-                    if row["combined flux"] > 0:
-                        timestamp_dict["combined flux"] = row["combined flux"]
-                        timestamp_dict["combined flux" + " max"] = row["combined flux"] + row["combined flux".replace("flux", "error")]
-                        timestamp_dict["combined flux" + " min"] = row["combined flux"] - row["combined flux".replace("flux", "error")]
-                        out.append(timestamp_dict)
     else: # Combined and Hardness case: need to get both swift and maxi data
         # Getting data
         influx_key = influx_key.replace(telescope, "swift")
