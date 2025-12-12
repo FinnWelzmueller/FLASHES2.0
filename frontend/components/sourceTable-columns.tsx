@@ -5,12 +5,14 @@ import { ArrowUpDown } from "lucide-react"
 import Link from 'next/link';
 import { Button } from "@/components/ui/button"
 import { Tag } from './tag';
+import { getConversionFactor } from "@/lib/utils";
 
 export type TelescopeRecord = {
     data_url: string;
     last_timestamp: string;
     last_flux: number;
     last_error: number;
+    influx_key: string;
 }
 
 export type SourceRecord = {
@@ -48,11 +50,10 @@ export const columns: ColumnDef<SourceRecord>[] = [
         header: () => <div className="text-right">Last Data MAXI</div>,
         cell: ( { row }) => { 
             const data = row.original.maxi;
-            const conversionFactor = 1000 / 0.285;
             if (!data || !data.last_flux) return null;
             return (
                 <div className="text-right">
-                    {(data.last_flux * conversionFactor).toFixed(3)} &plusmn; {(data.last_error * conversionFactor).toFixed(3)} mCrab
+                    {(data.last_flux * getConversionFactor("2-20")).toFixed(3)} &plusmn; {(data.last_error * getConversionFactor("2-20")).toFixed(3)} mCrab
                 </div>
             )
        } 
@@ -61,11 +62,10 @@ export const columns: ColumnDef<SourceRecord>[] = [
         header: () => <div className="text-right">Last Data Swift/BAT</div>,
         cell: ({ row }) => { 
             const data = row.original.swift;
-            const conversionFactor = 1000 / 0.285;
             if (!data || !data.last_flux) return null;
             return (
                 <div className="text-right">
-                    {(data.last_flux * conversionFactor).toFixed(3)} &plusmn; {(data.last_error * conversionFactor).toFixed(3)} mCrab
+                    {(data.last_flux * getConversionFactor("15-50")).toFixed(3)} &plusmn; {(data.last_error * getConversionFactor("15-50")).toFixed(3)} mCrab
                 </div>
             )
        } 
@@ -74,11 +74,10 @@ export const columns: ColumnDef<SourceRecord>[] = [
         header: () => <div className="text-right">Last Data Fermi/GBM</div>,
         cell: ({ row }) => { 
             const data = row.original.fermi;
-            const conversionFactor = 1000 / 0.285;
             if (!data || !data.last_flux) return null;
             return (
                 <div className="text-right">
-                    {(data.last_flux * conversionFactor).toFixed(3)} &plusmn; {(data.last_error * conversionFactor).toFixed(3)} mCrab
+                    {(data.last_flux * getConversionFactor("12-50")).toFixed(3)} &plusmn; {(data.last_error * getConversionFactor("12-50")).toFixed(3)} mCrab
                 </div>
             )
        } 

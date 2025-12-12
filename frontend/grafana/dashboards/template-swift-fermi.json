@@ -63,7 +63,7 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "flux [counts/cm²/s]",
+            "axisLabel": "flux [mCrab]",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
@@ -108,7 +108,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (15-50 keV) max"
+              "options": "Swift/BAT max"
             },
             "properties": [
               {
@@ -121,7 +121,7 @@
               },
               {
                 "id": "custom.fillBelowTo",
-                "value": "flux (15-50 keV)"
+                "value": "Swift/BAT"
               },
               {
                 "id": "custom.hideFrom",
@@ -136,7 +136,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (15-50 keV) min"
+              "options": "Swift/BAT min"
             },
             "properties": [
               {
@@ -156,12 +156,12 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (15-50 keV)"
+              "options": "Swift/BAT"
             },
             "properties": [
               {
                 "id": "custom.fillBelowTo",
-                "value": "flux (15-50 keV) min"
+                "value": "Swift/BAT min"
               },
               {
                 "id": "custom.fillOpacity",
@@ -172,7 +172,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (12-50 keV) max"
+              "options": "Fermi/GBM max"
             },
             "properties": [
               {
@@ -185,34 +185,7 @@
               },
               {
                 "id": "custom.fillBelowTo",
-                "value": "flux (12-50 keV)"
-              },
-              {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": true,
-                  "tooltip": true,
-                  "viz": false
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "blue",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "flux (12-50 keV) min"
-            },
-            "properties": [
-              {
-                "id": "custom.lineWidth",
-                "value": 0
+                "value": "Fermi/GBM"
               },
               {
                 "id": "custom.hideFrom",
@@ -234,7 +207,34 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (12-50 keV)"
+              "options": "Fermi/GBM min"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 0
+              },
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": false
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Fermi/GBM"
             },
             "properties": [
               {
@@ -243,13 +243,29 @@
               },
               {
                 "id": "custom.fillBelowTo",
-                "value": "flux (12-50 keV) min"
+                "value": "Fermi/GBM min"
               },
               {
                 "id": "color",
                 "value": {
                   "fixedColor": "blue",
                   "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^flux.*"
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": true
                 }
               }
             ]
@@ -369,6 +385,140 @@
         }
       ],
       "title": "Overview plot",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Swift/BAT",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (15-50 keV)"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "4545.4545"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Swift/BAT max",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (15-50 keV) max"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "4545.4545"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Swift/BAT min",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (15-50 keV) min"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "4545.4545"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Fermi/GBM",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (12-50 keV)"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "222.2222"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Fermi/GBM max",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (12-50 keV) max"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "222.2222"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Fermi/GBM min",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (12-50 keV) min"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "222.2222"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        }
+      ],
       "transparent": true,
       "type": "timeseries"
     },
@@ -397,7 +547,7 @@
                 "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
-                "axisLabel": "flux [counts/cm²/s]",
+                "axisLabel": "flux [mCrab]",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
                 "barWidthFactor": 0.6,
@@ -442,7 +592,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (15-50 keV) max"
+                  "options": "Swift/BAT max"
                 },
                 "properties": [
                   {
@@ -455,7 +605,7 @@
                   },
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (15-50 keV)"
+                    "value": "Swift/BAT"
                   },
                   {
                     "id": "custom.hideFrom",
@@ -470,7 +620,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (15-50 keV) min"
+                  "options": "Swift/BAT min"
                 },
                 "properties": [
                   {
@@ -490,12 +640,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (15-50 keV)"
+                  "options": "Swift/BAT"
                 },
                 "properties": [
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (15-50 keV) min"
+                    "value": "Swift/BAT min"
                   },
                   {
                     "id": "custom.fillOpacity",
@@ -505,14 +655,19 @@
               },
               {
                 "matcher": {
-                  "id": "byValue",
-                  "options": {
-                    "op": "gte",
-                    "reducer": "allIsZero",
-                    "value": 0
-                  }
+                  "id": "byRegexp",
+                  "options": "^flux.*"
                 },
-                "properties": []
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": true
+                    }
+                  }
+                ]
               }
             ]
           },
@@ -520,7 +675,7 @@
             "h": 11,
             "w": 24,
             "x": 0,
-            "y": 12
+            "y": 14
           },
           "id": 1,
           "links": [
@@ -535,7 +690,7 @@
               "calcs": [],
               "displayMode": "list",
               "placement": "bottom",
-              "showLegend": true
+              "showLegend": false
             },
             "tooltip": {
               "hideZeros": false,
@@ -585,6 +740,74 @@
             }
           ],
           "title": "Swift/BAT data for ${integral_name}",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Swift/BAT",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (15-50 keV)"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "4545.4545"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Swift/BAT max",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (15-50 keV) max"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "4545.4545"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Swift/BAT min",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (15-50 keV) min"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "4545.4545"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            }
+          ],
           "transparent": true,
           "type": "timeseries"
         }
@@ -617,7 +840,7 @@
                 "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
-                "axisLabel": "flux [counts/cm²/s]",
+                "axisLabel": "flux [mCrab]",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
                 "barWidthFactor": 0.6,
@@ -662,7 +885,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (12-50 keV) max"
+                  "options": "Fermi/GBM max"
                 },
                 "properties": [
                   {
@@ -675,7 +898,7 @@
                   },
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (12-50 keV)"
+                    "value": "Fermi/GBM"
                   },
                   {
                     "id": "custom.hideFrom",
@@ -690,7 +913,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (12-50 keV) min"
+                  "options": "Fermi/GBM min"
                 },
                 "properties": [
                   {
@@ -710,12 +933,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "flux (12-50 keV)"
+                  "options": "Fermi/GBM"
                 },
                 "properties": [
                   {
                     "id": "custom.fillBelowTo",
-                    "value": "flux (12-50 keV) min"
+                    "value": "Fermi/GBM min"
                   },
                   {
                     "id": "custom.fillOpacity",
@@ -725,14 +948,19 @@
               },
               {
                 "matcher": {
-                  "id": "byValue",
-                  "options": {
-                    "op": "gte",
-                    "reducer": "allIsZero",
-                    "value": 0
-                  }
+                  "id": "byRegexp",
+                  "options": "^flux.*"
                 },
-                "properties": []
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": true
+                    }
+                  }
+                ]
               }
             ]
           },
@@ -740,7 +968,7 @@
             "h": 11,
             "w": 24,
             "x": 0,
-            "y": 13
+            "y": 15
           },
           "id": 5,
           "links": [
@@ -755,7 +983,7 @@
               "calcs": [],
               "displayMode": "list",
               "placement": "bottom",
-              "showLegend": true
+              "showLegend": false
             },
             "tooltip": {
               "hideZeros": false,
@@ -805,6 +1033,74 @@
             }
           ],
           "title": "Fermi/GBM data for ${integral_name}",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Fermi/GBM",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (12-50 keV)"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "222.2222"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Fermi/GBM max",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (12-50 keV) max"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "222.2222"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Fermi/GBM min",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "flux (12-50 keV) min"
+                    }
+                  },
+                  "operator": "*",
+                  "right": {
+                    "fixed": "222.2222"
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            }
+          ],
           "transparent": true,
           "type": "timeseries"
         }
@@ -864,5 +1160,5 @@
   "timezone": "browser",
   "title": "Dashboard for Swift/BAT & Fermi/GBM",
   "uid": "flashes-swift-fermi",
-  "version": 5
+  "version": 12
 }

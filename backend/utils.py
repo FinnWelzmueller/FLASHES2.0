@@ -47,3 +47,20 @@ def iso_to_mjd(iso):
     """
     t = Time(iso, format="isot", scale="utc")
     return int(t.mjd)
+
+def flux_to_mcrab(flux: float, channel:str) -> float:
+    """
+    Converts a number in counts/cm2/s into mCrab based on the conversion factors from FLASHES1.0 
+    :param flux: flux in counts/cm2/s
+    :param channel: energy channel
+    :return: flux in mCrab
+    """
+    factors = {
+        "2-4": 1.0/2.1 * 1000, # MAXI
+        "4-10": 1.0/1.2 * 1000, # MAXI
+        "10-20": 1.0/0.4 * 1000, # MAXI
+        "2-20": 1.0/3.2 * 1000, # MAXI
+        "15-50": 1.0/0.22 * 1000, # Swift-BAT
+        "12-50": 1.0/4.5 * 1000 # Fermi-GBM
+    }
+    return flux * factors[channel]

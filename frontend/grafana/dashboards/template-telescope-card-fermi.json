@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 10,
+  "id": 21,
   "links": [],
   "panels": [
     {
@@ -36,7 +36,7 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "flux [counts/cm²/s]",
+            "axisLabel": "flux [mCrab]",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
@@ -81,7 +81,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (12-50 keV) max"
+              "options": "Fermi/GBM max"
             },
             "properties": [
               {
@@ -94,7 +94,7 @@
               },
               {
                 "id": "custom.fillBelowTo",
-                "value": "flux (12-50 keV)"
+                "value": "Fermi/GBM"
               },
               {
                 "id": "custom.hideFrom",
@@ -109,7 +109,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (12-50 keV) min"
+              "options": "Fermi/GBM min"
             },
             "properties": [
               {
@@ -129,16 +129,32 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "flux (12-50 keV)"
+              "options": "Fermi/GBM"
             },
             "properties": [
               {
                 "id": "custom.fillBelowTo",
-                "value": "flux (12-50 keV) min"
+                "value": "Fermi/GBM min"
               },
               {
                 "id": "custom.fillOpacity",
                 "value": 25
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^flux.*"
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": true
+                }
               }
             ]
           }
@@ -198,6 +214,74 @@
         }
       ],
       "title": "",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Fermi/GBM",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (12-50 keV)"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "222.2222"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Fermi/GBM max",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (12-50 keV) max"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "222.2222"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Fermi/GBM min",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "flux (12-50 keV) min"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "fixed": "222.2222"
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        }
+      ],
       "type": "timeseries"
     }
   ],
@@ -208,7 +292,7 @@
   ],
   "templating": {
     "list": [
-        {
+      {
         "current": {
           "text": "",
           "value": ""
@@ -229,5 +313,5 @@
   "timezone": "browser",
   "title": "Telescope Card Fermi",
   "uid": "telescope-card-fermi",
-  "version": 3
+  "version": 2
 }

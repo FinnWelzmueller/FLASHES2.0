@@ -1,12 +1,14 @@
 import type { SourceData, TelescopeRecord } from '@/src/app/sources/[_id]/page';
 import { mjdToIso } from '@/lib/astro';
-
+import { getConversionFactor, findChannel } from '@/lib/utils';
 
 function TelescopeCard({ name, rec }: { name: 'Swift' | 'MAXI' | 'Fermi'; rec?: TelescopeRecord | null}) {
   if (!rec) return null;
+  const conversionFactor = getConversionFactor(findChannel(rec));
+
   const when = rec.last_timestamp ? mjdToIso(rec.last_timestamp) : '—';
   const flux = rec.last_flux != null && rec.last_error != null
-    ? `${rec.last_flux.toFixed(3)} ± ${rec.last_error.toFixed(3)}`
+    ? `${(rec.last_flux * conversionFactor).toFixed(3)} ± ${(rec.last_error * conversionFactor).toFixed(3)} mCrab`
     : '—';
   
   return (

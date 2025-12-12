@@ -108,7 +108,7 @@ h = \frac{\Phi_{15-50\text{ keV}}}{\Phi_{2-20\text{ keV}}}; \quad \Delta h = \fr
 $$
 
 $$
-\Phi_c = \Phi_{15-50\text{ keV}} + \Phi_{2-20\text{ keV}}; \quad \Delta\Phi_c = \sqrt{\left(\Delta\Phi_{15-50\text{ keV}}\right)^2 + \left(\Delta\Phi_{2-20\text{ keV}}\right)^2}
+\Phi_c = \Phi_{15-50\text{ keV}} + \Phi_{2-20\text{ keV}}; \quad \Delta\Phi_c = \left(\Phi_{15-50\text{ keV}} + \Phi_{2-20\text{ keV}}\right)\sqrt{\left(\Delta\Phi_{15-50\text{ keV}}\right)^2 + \left(\Delta\Phi_{2-20\text{ keV}}\right)^2}
 
 $$
 
@@ -269,7 +269,7 @@ For each of the six cases, a template for a dashboard is available. In the templ
 
 The dashboards are structured in the following way. On top, there is an overview section, which covers the most important available lightcurves (Swift/BAT 15-50 keV, MAXI 2-20 keV and Fermi/GBM 12-50 keV). If Swift and MAXI data are available, the overview section covers the Hardness-Intensity diagram and a lightcurves of the combined flux.
 
-The connection from the dashboard to the InfluxDB happens via the backend. The Infinity Datasource is used as datasource in Grafana. The UID of the datasource is 'flashes-datasource'
+The connection from the dashboard to the InfluxDB happens via the backend. The Infinity Datasource is used as datasource in Grafana. The UID of the datasource is 'flashes-datasource'.
 
 ## Source Tagging
 
@@ -314,6 +314,22 @@ In all these cases, the relevance should be computed as close to 1 (very relevan
 
 As no modified physical model exists for x-ray outburst to date - which is relatable as the sources covered in the FLASHES2.0 catalogue are of very different types - the relevance calculation has to be purely data-driven. To provide a reliable relevance for every source individually, a Machine Learning Algorithm is deployed which learns the behaviour of every source, analyses the newly incoming datapoint and calculates the relevance accordingly.
 
+## Flux conversions
+
+The flux data in raw format is provided in counts/cm²/s, which is also the unit, which is used in the databases. However, the community tends to use the unit of mCrab for x-ray fluxes, which is related to the x-ray intensity of the Crab nebular [Kirsch, 2005]. The conversion is linear and of the form y(x) = αx where α is the conversion factor, y the flux in mCrab and x the flux in counts/cm²/s. As the Crab nebular x-ray flux varies along the electromagnetic x-ray spectrum, the conversion factors depend on the monitor and the x-ray channel that is observed. In the following table, the conversion factors are listed.
+
+
+| Telescope & Channel  | α        | Reference              |
+| ---------------------- | ----------- | ------------------------ |
+| Swift/BAT: 15-50 keV | 4545.4545 | Krimm, 2013            |
+| MAXI: 2-20 keV       | 312.5     | Cifuentes Santos, 2021 |
+| MAXI: 2-4 keV        | 476.1905  | Cifuentes Santos, 2021 |
+| MAXI: 4-10 keV       | 833.3333  | Cifuentes Santos, 2021 |
+| MAXI 10-20 keV       | 2500      | Cifuentes Santos, 2021 |
+| Fermi/GBM: 12-50 keV | 222.2222  | Cifuentes Santos, 2021 |
+
+The conversion from counts/cm²/s into mCrab is taking place in the frontend to distribute the additional workload into the backend-, frontend- and the grafana docker container. In the backend, the conversion is needed to offer both the unconverted flux values (in counts/cm²/s) and the converted ones (in mCrab) in the download files. In the frontend, the conversion is applied to give both flux numbers in the source pages. In the Grafana dashboards, the conversion is applied via a build-in data transformation.
+
 ## Alerting
 
 FLASHES2.0 supports alerting, which are shown on the web-application.
@@ -343,6 +359,8 @@ Once the Scheduler in the backend is started, the first download is triggered, w
 
 [🎉️] Implement a frontend
 
+[ ] Implement tests and data verification
+
 **--- RELEASE FLASHES2.0 beta ---**
 
 [ ] Implement a relevance calculation
@@ -371,6 +389,8 @@ Once the Scheduler in the backend is started, the first download is triggered, w
 
 ## References
 
-**Böhringer [2010]:** Böhringer, H., Werner, N. X-ray spectroscopy of galaxy clusters: studying astrophysical processes in the largest celestial laboratories. *Astron Astrophys Rev 18*, 127–196 (2010) [https://doi.org/10.1007/s00159-009-0023-3](https://doi.org/10.1007/s00159-009-0023-3).
+**Böhringer [2010]:** Böhringer, H., Werner, N.: X-ray spectroscopy of galaxy clusters: studying astrophysical processes in the largest celestial laboratories. *Astron Astrophys Rev 18*, 127–196 (2010) [https://doi.org/10.1007/s00159-009-0023-3](https://doi.org/10.1007/s00159-009-0023-3).
+
+**Kirsch [2005]:** Kirsch, M.G.F., et al.: Crab: the standard x-ray candle with all (modern) x-ray satellites, *Proc. SPIE 5898, UV, X-Ray, and Gamma-Ray Space Instrumentation for Astronomy XIV*, 589803 (18 August 2005), [https://doi.org/10.1117/12.616893](https://doi.org/10.1117/12.616893).
 
 **Pooley [2010]:** D. Pooley, Globular cluster x-ray sources, *Proc. Natl. Acad. Sci. U.S.A.* 107 (16) 7164-7167 (2010), [https://doi.org/10.1073/pnas.0913903107](https://doi.org/10.1073/pnas.0913903107).
