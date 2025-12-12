@@ -90,7 +90,9 @@ export const columns: ColumnDef<SourceRecord>[] = [
         header: "Plots",
         cell: ({ row }) => {
             const id = row.original._id;
-            return <Link href={`http://backend:8000/plots/${encodeURIComponent(id)}`} className="externalLink" target="_blank">here</Link>
+            const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "";
+            console.log("API BASE", apiBase);
+            return <a href={`${apiBase}/plots/${encodeURIComponent(id)}`} className="externalLink" target="_blank">here</a>
         }
     },
 ]
