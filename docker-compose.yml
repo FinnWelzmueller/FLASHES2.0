@@ -2,8 +2,6 @@ services:
   influxdb:
     image: influxdb:2.7
     container_name: flashes-influxdb
-    ports:
-      - "8086:8086"
     volumes:
       - ./data/influxdb:/var/lib/influxdb2
       - ./config/influxdb:/etc/influxdb2
@@ -26,8 +24,6 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
       - MONGO_DB_PATH=/data/db
-    ports:
-      - "27017:27017"
     volumes:
       - ./data/mongodb:/data/db
     networks:
@@ -65,8 +61,6 @@ services:
       context: .
       dockerfile: backend/Dockerfile
     container_name: flashes-backend
-    ports:
-      - "8000:8000"
     env_file:
       - .env
     depends_on:
@@ -86,12 +80,10 @@ services:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://backend:8000   
+      - INTERNAL_API_URL=http://backend:8000
     depends_on:
       - backend
     restart: unless-stopped
-    volumes:
-     - ./frontend:/app
-     - /app/node_modules
     networks:
       - flashes-network
 networks:
