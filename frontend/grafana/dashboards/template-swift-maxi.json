@@ -874,17 +874,65 @@
         "overrides": [
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "^(?!combined).*"
+              "id": "byName",
+              "options": "combined flux max"
             },
             "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 0
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 25
+              },
+              {
+                "id": "custom.fillBelowTo",
+                "value": "combined flux"
+              },
               {
                 "id": "custom.hideFrom",
                 "value": {
                   "legend": true,
                   "tooltip": true,
-                  "viz": true
+                  "viz": false
                 }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "combined flux min"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 0
+              },
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": false
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "combined flux"
+            },
+            "properties": [
+              {
+                "id": "custom.fillBelowTo",
+                "value": "combined flux min"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 25
               }
             ]
           }
@@ -928,47 +976,9 @@
           "filters": [],
           "format": "timeseries",
           "global_query_id": "",
-          "parser": "uql",
-          "refId": "Swift",
-          "root_selector": "",
-          "source": "url",
-          "type": "json",
-          "url": "http://backend:8000/timeseries/",
-          "url_options": {
-            "data": "",
-            "method": "GET",
-            "params": [
-              {
-                "key": "influx_key",
-                "value": "${swift_influxkey}"
-              },
-              {
-                "key": "start",
-                "value": "${__from:date:iso}"
-              },
-              {
-                "key": "end",
-                "value": "${__to:date:iso}"
-              },
-              {
-                "key": "channel",
-                "value": "15-50"
-              }
-            ]
-          }
-        },
-        {
-          "columns": [],
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "flashes-datasource"
-          },
-          "filters": [],
-          "format": "timeseries",
-          "global_query_id": "",
           "hide": false,
           "parser": "uql",
-          "refId": "MAXI",
+          "refId": "combined",
           "root_selector": "",
           "source": "url",
           "type": "json",
@@ -979,7 +989,7 @@
             "params": [
               {
                 "key": "influx_key",
-                "value": "${maxi_influxkey}"
+                "value": "${combined_influxkey}"
               },
               {
                 "key": "start",
@@ -998,168 +1008,6 @@
         }
       ],
       "title": "Combined Flux",
-      "transformations": [
-        {
-          "id": "calculateField",
-          "options": {
-            "alias": "flux (15-50 keV) mCrab",
-            "binary": {
-              "left": {
-                "matcher": {
-                  "id": "byName",
-                  "options": "flux (15-50 keV)"
-                }
-              },
-              "operator": "*",
-              "right": {
-                "fixed": "4545.4545"
-              }
-            },
-            "mode": "binary",
-            "reduce": {
-              "reducer": "sum"
-            }
-          }
-        },
-        {
-          "id": "calculateField",
-          "options": {
-            "alias": "flux (15-50 keV) max mCrab",
-            "binary": {
-              "left": {
-                "matcher": {
-                  "id": "byName",
-                  "options": "flux (15-50 keV) max"
-                }
-              },
-              "operator": "*",
-              "right": {
-                "fixed": "4545.4545"
-              }
-            },
-            "mode": "binary",
-            "reduce": {
-              "reducer": "sum"
-            }
-          }
-        },
-        {
-          "id": "calculateField",
-          "options": {
-            "alias": "flux (15-50 keV) min mCrab",
-            "binary": {
-              "left": {
-                "matcher": {
-                  "id": "byName",
-                  "options": "flux (15-50 keV) min"
-                }
-              },
-              "operator": "*",
-              "right": {
-                "fixed": "4545.4545"
-              }
-            },
-            "mode": "binary",
-            "reduce": {
-              "reducer": "sum"
-            }
-          }
-        },
-        {
-          "id": "calculateField",
-          "options": {
-            "alias": "flux (2-20 keV) mCrab",
-            "binary": {
-              "left": {
-                "matcher": {
-                  "id": "byName",
-                  "options": "flux (2-20 keV)"
-                }
-              },
-              "operator": "*",
-              "right": {
-                "fixed": "312.5"
-              }
-            },
-            "mode": "binary",
-            "reduce": {
-              "reducer": "sum"
-            }
-          }
-        },
-        {
-          "id": "calculateField",
-          "options": {
-            "alias": "flux (2-20 keV) max mCrab",
-            "binary": {
-              "left": {
-                "matcher": {
-                  "id": "byName",
-                  "options": "flux (2-20 keV) max"
-                }
-              },
-              "operator": "*",
-              "right": {
-                "fixed": "312.5"
-              }
-            },
-            "mode": "binary",
-            "reduce": {
-              "reducer": "sum"
-            }
-          }
-        },
-        {
-          "id": "calculateField",
-          "options": {
-            "alias": "flux (2-20 keV) min mCrab",
-            "binary": {
-              "left": {
-                "matcher": {
-                  "id": "byName",
-                  "options": "flux (2-20 keV) min"
-                }
-              },
-              "operator": "*",
-              "right": {
-                "fixed": "312.5"
-              }
-            },
-            "mode": "binary",
-            "reduce": {
-              "reducer": "sum"
-            }
-          }
-        },
-        {
-          "id": "joinByField",
-          "options": {}
-        },
-        {
-          "id": "calculateField",
-          "options": {
-            "alias": "combined flux mCrab",
-            "binary": {
-              "left": {
-                "matcher": {
-                  "id": "byName",
-                  "options": "flux (15-50 keV) mCrab"
-                }
-              },
-              "right": {
-                "matcher": {
-                  "id": "byName",
-                  "options": "flux (2-20 keV) mCrab"
-                }
-              }
-            },
-            "mode": "binary",
-            "reduce": {
-              "reducer": "sum"
-            }
-          }
-        }
-      ],
       "transparent": true,
       "type": "timeseries"
     },
@@ -2458,7 +2306,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 61
+            "y": 81
           },
           "id": 6,
           "options": {
@@ -2730,7 +2578,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 61
+            "y": 81
           },
           "id": 7,
           "options": {
@@ -3002,7 +2850,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 69
+            "y": 89
           },
           "id": 9,
           "options": {
@@ -3274,7 +3122,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 69
+            "y": 89
           },
           "id": 10,
           "options": {
@@ -3477,17 +3325,65 @@
             "overrides": [
               {
                 "matcher": {
-                  "id": "byRegexp",
-                  "options": "^(?!hardness ratio$).*"
+                  "id": "byName",
+                  "options": "hardness ratio max"
                 },
                 "properties": [
+                  {
+                    "id": "custom.lineWidth",
+                    "value": 0
+                  },
+                  {
+                    "id": "custom.fillOpacity",
+                    "value": 25
+                  },
+                  {
+                    "id": "custom.fillBelowTo",
+                    "value": "hardness ratio"
+                  },
                   {
                     "id": "custom.hideFrom",
                     "value": {
                       "legend": true,
                       "tooltip": true,
-                      "viz": true
+                      "viz": false
                     }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "hardness ratio min"
+                },
+                "properties": [
+                  {
+                    "id": "custom.lineWidth",
+                    "value": 0
+                  },
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": false
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "hardness ratio"
+                },
+                "properties": [
+                  {
+                    "id": "custom.fillBelowTo",
+                    "value": "hardness ratio min"
+                  },
+                  {
+                    "id": "custom.fillOpacity",
+                    "value": 25
                   }
                 ]
               }
@@ -3531,47 +3427,9 @@
               "filters": [],
               "format": "timeseries",
               "global_query_id": "",
-              "parser": "uql",
-              "refId": "Swift",
-              "root_selector": "",
-              "source": "url",
-              "type": "json",
-              "url": "http://backend:8000/timeseries/",
-              "url_options": {
-                "data": "",
-                "method": "GET",
-                "params": [
-                  {
-                    "key": "influx_key",
-                    "value": "${swift_influxkey}"
-                  },
-                  {
-                    "key": "start",
-                    "value": "${__from:date:iso}"
-                  },
-                  {
-                    "key": "end",
-                    "value": "${__to:date:iso}"
-                  },
-                  {
-                    "key": "channel",
-                    "value": "15-50"
-                  }
-                ]
-              }
-            },
-            {
-              "columns": [],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "flashes-datasource"
-              },
-              "filters": [],
-              "format": "timeseries",
-              "global_query_id": "",
               "hide": false,
               "parser": "uql",
-              "refId": "Maxi",
+              "refId": "hardness",
               "root_selector": "",
               "source": "url",
               "type": "json",
@@ -3582,7 +3440,7 @@
                 "params": [
                   {
                     "key": "influx_key",
-                    "value": "${maxi_influxkey}"
+                    "value": "${hardness_influxkey}"
                   },
                   {
                     "key": "start",
@@ -3601,99 +3459,6 @@
             }
           ],
           "title": "Hardness ratio data for ${integral_name}",
-          "transformations": [
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "flux (15-50 keV) mCrab",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "flux (15-50 keV)"
-                    }
-                  },
-                  "operator": "*",
-                  "right": {
-                    "fixed": "4545.4545"
-                  }
-                },
-                "mode": "binary",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
-            },
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "flux (2-20 keV) mCrab",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "flux (2-20 keV)"
-                    }
-                  },
-                  "operator": "*",
-                  "right": {
-                    "fixed": "312.5"
-                  }
-                },
-                "mode": "binary",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
-            },
-            {
-              "id": "joinByField",
-              "options": {}
-            },
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "hardness ratio",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "flux (15-50 keV)"
-                    }
-                  },
-                  "operator": "/",
-                  "right": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "flux (2-20 keV)"
-                    }
-                  }
-                },
-                "mode": "binary",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
-            },
-            {
-              "id": "filterByValue",
-              "options": {
-                "filters": [
-                  {
-                    "config": {
-                      "id": "greater",
-                      "options": {
-                        "value": 0
-                      }
-                    },
-                    "fieldName": "hardness ratio"
-                  }
-                ],
-                "match": "any",
-                "type": "include"
-              }
-            }
-          ],
           "transparent": true,
           "type": "timeseries"
         }
@@ -3770,16 +3535,72 @@
             "overrides": [
               {
                 "matcher": {
-                  "id": "byRegexp",
-                  "options": "^(?!combined).*"
+                  "id": "byName",
+                  "options": "combined flux max"
                 },
                 "properties": [
+                  {
+                    "id": "custom.lineWidth",
+                    "value": 0
+                  },
+                  {
+                    "id": "custom.fillOpacity",
+                    "value": 25
+                  },
+                  {
+                    "id": "custom.fillBelowTo",
+                    "value": "combined flux"
+                  },
                   {
                     "id": "custom.hideFrom",
                     "value": {
                       "legend": true,
                       "tooltip": true,
-                      "viz": true
+                      "viz": false
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "combined flux min"
+                },
+                "properties": [
+                  {
+                    "id": "custom.lineWidth",
+                    "value": 0
+                  },
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": false
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "combined flux"
+                },
+                "properties": [
+                  {
+                    "id": "custom.fillOpacity",
+                    "value": 25
+                  },
+                  {
+                    "id": "custom.fillBelowTo",
+                    "value": "combined flux min"
+                  },
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": false
                     }
                   }
                 ]
@@ -3790,7 +3611,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 39
+            "y": 27
           },
           "id": 17,
           "links": [
@@ -3824,47 +3645,9 @@
               "filters": [],
               "format": "timeseries",
               "global_query_id": "",
-              "parser": "uql",
-              "refId": "Swift",
-              "root_selector": "",
-              "source": "url",
-              "type": "json",
-              "url": "http://backend:8000/timeseries/",
-              "url_options": {
-                "data": "",
-                "method": "GET",
-                "params": [
-                  {
-                    "key": "influx_key",
-                    "value": "${swift_influxkey}"
-                  },
-                  {
-                    "key": "start",
-                    "value": "${__from:date:iso}"
-                  },
-                  {
-                    "key": "end",
-                    "value": "${__to:date:iso}"
-                  },
-                  {
-                    "key": "channel",
-                    "value": "15-50"
-                  }
-                ]
-              }
-            },
-            {
-              "columns": [],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "flashes-datasource"
-              },
-              "filters": [],
-              "format": "timeseries",
-              "global_query_id": "",
               "hide": false,
               "parser": "uql",
-              "refId": "MAXI",
+              "refId": "combined",
               "root_selector": "",
               "source": "url",
               "type": "json",
@@ -3875,7 +3658,7 @@
                 "params": [
                   {
                     "key": "influx_key",
-                    "value": "${maxi_influxkey}"
+                    "value": "${combined_influxkey}"
                   },
                   {
                     "key": "start",
@@ -3894,168 +3677,6 @@
             }
           ],
           "title": "Combined Flux",
-          "transformations": [
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "flux (15-50 keV) mCrab",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "flux (15-50 keV)"
-                    }
-                  },
-                  "operator": "*",
-                  "right": {
-                    "fixed": "4545.4545"
-                  }
-                },
-                "mode": "binary",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
-            },
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "flux (15-50 keV) max mCrab",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "flux (15-50 keV) max"
-                    }
-                  },
-                  "operator": "*",
-                  "right": {
-                    "fixed": "4545.4545"
-                  }
-                },
-                "mode": "binary",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
-            },
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "flux (15-50 keV) min mCrab",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "flux (15-50 keV) min"
-                    }
-                  },
-                  "operator": "*",
-                  "right": {
-                    "fixed": "4545.4545"
-                  }
-                },
-                "mode": "binary",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
-            },
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "flux (2-20 keV) mCrab",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "flux (2-20 keV)"
-                    }
-                  },
-                  "operator": "*",
-                  "right": {
-                    "fixed": "312.5"
-                  }
-                },
-                "mode": "binary",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
-            },
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "flux (2-20 keV) max mCrab",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "flux (2-20 keV) max"
-                    }
-                  },
-                  "operator": "*",
-                  "right": {
-                    "fixed": "312.5"
-                  }
-                },
-                "mode": "binary",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
-            },
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "flux (2-20 keV) min mCrab",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "flux (2-20 keV) min"
-                    }
-                  },
-                  "operator": "*",
-                  "right": {
-                    "fixed": "312.5"
-                  }
-                },
-                "mode": "binary",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
-            },
-            {
-              "id": "joinByField",
-              "options": {}
-            },
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "combined flux mCrab",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "flux (15-50 keV) mCrab"
-                    }
-                  },
-                  "right": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "flux (2-20 keV) mCrab"
-                    }
-                  }
-                },
-                "mode": "binary",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
-            }
-          ],
           "transparent": true,
           "type": "timeseries"
         }
@@ -4137,5 +3758,5 @@
   "timezone": "browser",
   "title": "Dashboard for Swift/BAT & MAXI",
   "uid": "flashes-swift-maxi",
-  "version": 28
+  "version": 29
 }
