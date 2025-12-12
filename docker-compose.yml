@@ -70,6 +70,8 @@ services:
       - ./backend:/app
     networks:
       - flashes-network
+    ports:
+      - "8000:8000"
   
   frontend:
     build:
@@ -79,8 +81,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://backend:8000   
-      - INTERNAL_API_URL=http://backend:8000
+      - NEXT_PUBLIC_API_URL=${API_DOMAIN}
+      - NEXT_PUBLIC_PLOTS_URL=${PLOTS_DOMAIN}
     depends_on:
       - backend
     restart: unless-stopped
