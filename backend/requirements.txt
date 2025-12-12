@@ -42,6 +42,6 @@ soupsieve==2.8
 typing_extensions==4.12.2
 tzdata==2025.1
 tzlocal==5.3.1
-urllib3==2.5.0
+urllib3==2.6.0
 uvicorn==0.34.0
 webencodings==0.5.1
