@@ -62,7 +62,6 @@ start_scheduler(args=[sources_collection, write_api, os.getenv("TEMP_DIR", "./_t
 ### FastAPI ###
 logging.info("Starting API...")
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="./static"), name="static")
 
 
 @app.get("/")
