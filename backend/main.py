@@ -1,5 +1,7 @@
 import logging
 import os
+import numpy as np
+import pandas as pd
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
@@ -15,6 +17,7 @@ from datetime import timezone
 from scheduler import start_scheduler
 from utils import iso_to_mjd, flux_to_mcrab
 from urllib.parse import quote_plus
+
 
 ### SETUP ###
 load_dotenv()
@@ -187,6 +190,49 @@ async def load_timeseries(influx_key : str = Query(None, description="Influx Key
                           start : str = Query(None, description = "Start time as ISO format (YYYY-MM-DD)"),
                           end : str = Query(None, description="End time as ISO format (YYYY-MM-DD)")):
     
+    def calculate_hardness(swift_flux, swift_error, maxi_flux, maxi_error):
+        """
+            handles hardness ratio calculation and error propagation for the swift and maxi data. No div-by-zero check needs to be done as this was already checked in load_timeseries before this function is called.
+            :param swift_flux: swift flux value:
+            :param swift_error: swift error value
+            :param maxi_flux: maxi flux value
+            :param maxi_error: maxi error value
+
+            :return: hardness ratio, hardness ratio + hardness error, hardness ratio - hardness error
+
+        """
+        
+        # convert to mCrab
+        swift_flux = flux_to_mcrab(swift_flux, "15-50")
+        swift_error = flux_to_mcrab(swift_error, "15-50")
+        maxi_flux = flux_to_mcrab(maxi_flux, "2-20")
+        maxi_error = flux_to_mcrab(maxi_error, "2-20")
+
+        # calculate hardness 
+        hardness = swift_flux / maxi_flux
+        hardness_error = hardness * np.sqrt((swift_error / swift_flux) ** 2 + (maxi_error / maxi_flux) ** 2)
+        return hardness, hardness + hardness_error, hardness - hardness_error
+            
+    def calculate_combined(swift_flux, swift_error, maxi_flux, maxi_error):
+        """
+            handles combined flux calculation and error propagation for the swift and maxi data
+            :param swift_flux: swift flux value:
+            :param swift_error: swift error value
+            :param maxi_flux: maxi flux value
+            :param maxi_error: maxi error value
+        """
+
+        # convert to mCrab
+        swift_flux = flux_to_mcrab(swift_flux, "15-50")
+        swift_error = flux_to_mcrab(swift_error, "15-50")
+        maxi_flux = flux_to_mcrab(maxi_flux, "2-20")
+        maxi_error = flux_to_mcrab(maxi_error, "2-20")
+
+        # calculate combined flux
+        combined_flux = swift_flux + maxi_flux
+        combined_error = combined_flux * np.sqrt((swift_error / swift_flux) ** 2 + (maxi_error / maxi_flux) ** 2)
+        return combined_flux, combined_flux + combined_error, combined_flux - combined_error
+    
     channel_in_influx = f"flux ({channel} keV)"
     swift_data_cols = ["flux (15-50 keV)", "flux (15-50 keV) max", "flux (15-50 keV) min"]
     maxi_data_cols = ["flux (10-20 keV)", "flux (10-20 keV) max", "flux (10-20 keV) min",
@@ -226,42 +272,88 @@ async def load_timeseries(influx_key : str = Query(None, description="Influx Key
     else:
         range_str = f'|> range(start: {start})'
 
-    query_flux = f"""
-        from(bucket: "flashes_data")
-            {range_str}
-            |> filter(fn: (r) => r._measurement == "flux data")
-            |> filter(fn: (r) => r.source == "{influx_key}")
-            |> keep(columns: ["_time", "_field", "_value"])
-            |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
-            |> sort(columns: ["_time"])
-            |> drop(columns: ["_start","_stop"])
-    """
-    # Getting data
     out = []
-    for idx, row in query_api.query_data_frame(org="flashes", query=query_flux).iterrows():
-        timestamp_dict = {"time": row["_time"]}
+    if telescope in ["swift", "maxi", "fermi"]: # Telescope case: no further calculation needed
+        query_flux = f"""
+            from(bucket: "flashes_data")
+                {range_str}
+                |> filter(fn: (r) => r._measurement == "flux data")
+                |> filter(fn: (r) => r.source == "{influx_key}")
+                |> keep(columns: ["_time", "_field", "_value"])
+                |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
+                |> sort(columns: ["_time"])
+                |> drop(columns: ["_start","_stop"])
+        """
+        # Getting data
+        for idx, row in query_api.query_data_frame(org="flashes", query=query_flux).iterrows():
+            timestamp_dict = {"time": row["_time"]}
 
-        if channel in list(channel_dict[telescope]): # Telescope case (Swift, MAXI, Fermi)
-            timestamp_dict[channel_in_influx] = row[channel_in_influx]
-            timestamp_dict[channel_in_influx + " max"] = row[channel_in_influx] + row[channel_in_influx.replace("flux", "error")]
-            timestamp_dict[channel_in_influx + " min"] = row[channel_in_influx] - row[channel_in_influx.replace("flux", "error")]
-            out.append(timestamp_dict)
+            if channel in list(channel_dict[telescope]): # Telescope case (Swift, MAXI, Fermi)
+                timestamp_dict[channel_in_influx] = row[channel_in_influx]
+                timestamp_dict[channel_in_influx + " max"] = row[channel_in_influx] + row[channel_in_influx.replace("flux", "error")]
+                timestamp_dict[channel_in_influx + " min"] = row[channel_in_influx] - row[channel_in_influx.replace("flux", "error")]
+                out.append(timestamp_dict)
         
-        else: # Hardness, Combined
-            if telescope == "hardness":
-                if row["hardness ratio"] > 0:
-                    timestamp_dict["hardness ratio"] = row["hardness ratio"]
-                    timestamp_dict["hardness ratio" + " max"] = row["hardness ratio"] + row["hardness error"]
-                    timestamp_dict["hardness ratio" + " min"] = row["hardness ratio"] - row["hardness error"]
-                    out.append(timestamp_dict)
-            if telescope == "combined":
-                if row["combined flux"] > 0:
-                    timestamp_dict["combined flux"] = row["combined flux"]
-                    timestamp_dict["combined flux" + " max"] = row["combined flux"] + row["combined flux".replace("flux", "error")]
-                    timestamp_dict["combined flux" + " min"] = row["combined flux"] - row["combined flux".replace("flux", "error")]
-                    out.append(timestamp_dict)
+            else: # Hardness, Combined
+                if telescope == "hardness":
+                    if row["hardness ratio"] > 0:
+                        timestamp_dict["hardness ratio"] = row["hardness ratio"]
+                        timestamp_dict["hardness ratio" + " max"] = row["hardness ratio"] + row["hardness error"]
+                        timestamp_dict["hardness ratio" + " min"] = row["hardness ratio"] - row["hardness error"]
+                        out.append(timestamp_dict)
+                if telescope == "combined":
+                    if row["combined flux"] > 0:
+                        timestamp_dict["combined flux"] = row["combined flux"]
+                        timestamp_dict["combined flux" + " max"] = row["combined flux"] + row["combined flux".replace("flux", "error")]
+                        timestamp_dict["combined flux" + " min"] = row["combined flux"] - row["combined flux".replace("flux", "error")]
+                        out.append(timestamp_dict)
+    else: # Combined and Hardness case: need to get both swift and maxi data
+        # Getting data
+        influx_key = influx_key.replace(telescope, "swift")
+        query_flux = f"""
+            from(bucket: "flashes_data")
+                {range_str}
+                |> filter(fn: (r) => r._measurement == "flux data")
+                |> filter(fn: (r) => r.source == "{influx_key}")
+                |> keep(columns: ["_time", "_field", "_value"])
+                |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
+                |> sort(columns: ["_time"])
+                |> drop(columns: ["_start","_stop"])
+        """
+        df_swift = query_api.query_data_frame(org="flashes", query=query_flux)
+        influx_key= influx_key.replace("swift", "maxi")
+        query_flux = f"""
+            from(bucket: "flashes_data")
+                {range_str}
+                |> filter(fn: (r) => r._measurement == "flux data")
+                |> filter(fn: (r) => r.source == "{influx_key}")
+                |> keep(columns: ["_time", "_field", "_value"])
+                |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
+                |> sort(columns: ["_time"])
+                |> drop(columns: ["_start","_stop"])
+        """
+        df_maxi = query_api.query_data_frame(org="flashes", query=query_flux)
+        merged = pd.merge(df_swift, df_maxi, left_on="_time",right_on="_time", how='outer')
 
-        # correct timestamp object: rewrite as grafana-understandable string
+        for idx, row in merged.iterrows():
+            if not (pd.isna(row['flux (2-20 keV)']) or pd.isna(row['flux (15-50 keV)'])):
+                timestamp_dict = {"time": row["_time"]}
+                if telescope == "hardness":
+                    hardness, hardness_max, hardness_min = calculate_hardness(swift_flux=row["flux (15-50 keV)"], swift_error=row["error (15-50 keV)"], maxi_flux=row["flux (2-20 keV)"], maxi_error=row["error (2-20 keV)"])
+                    if hardness > 0:
+                        timestamp_dict["hardness ratio"] = hardness
+                        timestamp_dict["hardness ratio" + " max"] = hardness_max
+                        timestamp_dict["hardness ratio" + " min"] = hardness_min
+                        out.append(timestamp_dict)
+                if telescope == "combined":
+                    combined, combined_max, combined_min = calculate_combined(swift_flux=row["flux (15-50 keV)"], swift_error=row["error (15-50 keV)"], maxi_flux=row["flux (2-20 keV)"], maxi_error=row["error (2-20 keV)"])
+                    if combined > 0:
+                        timestamp_dict["combined flux"] = combined
+                        timestamp_dict["combined flux" + " max"] = combined_max
+                        timestamp_dict["combined flux" + " min"] = combined_min
+                        out.append(timestamp_dict)
+
+    # correct timestamp object: rewrite as grafana-understandable string
     for entry in out:
         t = entry["time"]
         if hasattr(t, "to_pydatetime"):
