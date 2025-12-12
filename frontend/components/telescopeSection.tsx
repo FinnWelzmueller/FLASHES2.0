@@ -1,4 +1,5 @@
-import type { SourceData, TelescopeRecord } from '@/src/app/sources/[_id]/page';
+import type { SourceData } from '@/src/app/sources/[_id]/page';
+import type { TelescopeRecord } from '@/types/telescopeRecord';
 import { mjdToIso } from '@/lib/astro';
 import { getConversionFactor, findChannel } from '@/lib/utils';
 
@@ -10,7 +11,8 @@ function TelescopeCard({ name, rec }: { name: 'Swift' | 'MAXI' | 'Fermi'; rec?: 
   const flux = rec.last_flux != null && rec.last_error != null
     ? `${(rec.last_flux * conversionFactor).toFixed(3)} ± ${(rec.last_error * conversionFactor).toFixed(3)} mCrab`
     : '—';
-  
+  const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "";
+  const plotBase = process.env.NEXT_PUBLIC_PLOTS_URL ?? "";
   return (
     <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 p-4">
       <div className="flex items-center justify-between">
@@ -31,7 +33,7 @@ function TelescopeCard({ name, rec }: { name: 'Swift' | 'MAXI' | 'Fermi'; rec?: 
       </div>
       <div >
         <iframe 
-          src={`http://localhost:3001/d-solo/telescope-card-${name.toLowerCase()}/telescope-card-${name.toLowerCase()}?orgId=1&from=now-7d&to=now&timezone=browser&var-influxkey=${encodeURIComponent(rec.influx_key)}&kiosk=tv&panelId=panel-1&__feature.dashboardSceneSolo=true`} 
+          src={`${plotBase}/d-solo/telescope-card-${name.toLowerCase()}/telescope-card-${name.toLowerCase()}?orgId=1&from=now-7d&to=now&timezone=browser&var-influxkey=${encodeURIComponent(rec.influx_key)}&kiosk=tv&panelId=panel-1&__feature.dashboardSceneSolo=true`} 
           width="325" 
           height="200"
           className="pointer-events-none"></iframe>
@@ -39,7 +41,7 @@ function TelescopeCard({ name, rec }: { name: 'Swift' | 'MAXI' | 'Fermi'; rec?: 
       {rec.influx_key && (
         <div className="mt-4 flex gap-2">
           <a
-            href={`http://localhost:8000/download/${encodeURIComponent(rec.influx_key)}`}
+            href={`${apiBase}/download/${encodeURIComponent(rec.influx_key)}`}
             className="px-3 py-1.5 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30"
           >
             Download CSV
@@ -51,18 +53,19 @@ function TelescopeCard({ name, rec }: { name: 'Swift' | 'MAXI' | 'Fermi'; rec?: 
 }
 
 export function TelescopeSection({ data }: { data: SourceData }) {
+  const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "";
   return (
     <div className="space-y-6">
 
       <div className="flex flex-wrap gap-2">
         <a
-        href={`http://localhost:8000/plots/${encodeURIComponent(data._id)}`}
+        href={`${apiBase}/plots/${encodeURIComponent(data._id)}`}
         className="px-3 py-1.5 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30">
             <b>View Dashboard</b>
       </a>
         {data.combined?.influx_key && (
           <a
-            href={`http://localhost:8000/download/${encodeURIComponent(data.combined.influx_key)}`}
+            href={`${apiBase}/download/${encodeURIComponent(data.combined.influx_key)}`}
             className="px-3 py-1.5 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30"
           >
             Download Combined CSV
@@ -70,7 +73,7 @@ export function TelescopeSection({ data }: { data: SourceData }) {
         )}
         {data.hardness_ratio?.influx_key && (
           <a
-            href={`http://localhost:8000/download/${encodeURIComponent(data.hardness_ratio.influx_key)}`}
+            href={`${apiBase}/download/${encodeURIComponent(data.hardness_ratio.influx_key)}`}
             className="px-3 py-1.5 text-sm rounded-xl border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30"
           >
             Download Hardness CSV

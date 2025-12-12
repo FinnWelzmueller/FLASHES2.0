@@ -2,8 +2,11 @@ export function mjdToDate(mjd: number): Date {
   const ms = (mjd - 40587) * 86400 * 1000;
   return new Date(ms);
 }
-export function mjdToIso(mjd: number): string {
+export function mjdToIso(mjd: number | string): string {
   try {
+    if (typeof mjd === 'string') {
+      mjd = parseFloat(mjd);
+    }
     return mjdToDate(mjd).toISOString().replace('.000Z', 'Z');
   } catch {
     return '—';

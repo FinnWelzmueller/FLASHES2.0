@@ -5,7 +5,9 @@ import { PageDescription } from "@/components/pageDescription";
 export default async function SourcesFiltered({ params }: { params: { tag: string } ;
 }) {
   const tag_name = (await params).tag;
-  const res = await fetch(`http://localhost:8000/tags/${encodeURIComponent(String(tag_name))}`, { next: { revalidate: 0 } });
+  const base = process.env.INTERNAL_API_URL ?? "http://backend:8000";
+  const res = await fetch(`${base}/tags/${tag_name}`, { next: { revalidate: 0 } });
+  //const res = await fetch(`http://localhost:8000/tags/${encodeURIComponent(String(tag_name))}`, { next: { revalidate: 0 } });
   
   if (!res.ok) {
     const body = await res.text();

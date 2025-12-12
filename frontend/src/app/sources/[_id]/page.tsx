@@ -2,14 +2,7 @@ import '@/src/app/globals.css';
 import { SourceHeader } from '@/components/sourceHeader';
 import { StatGrid } from '@/components/statGrid';
 import { TelescopeSection } from '@/components/telescopeSection';
-
-export type TelescopeRecord = {
-  data_url: string;
-  influx_key: string;
-  last_timestamp: string; 
-  last_flux?: number;
-  last_error?: number;
-};
+import { TelescopeRecord } from '@/types/telescopeRecord';
 
 export type SourceData = {
   _id: string;
@@ -28,7 +21,13 @@ export type SourceData = {
 
 export default async function SourceDetails({ params }: { params: Promise<{ _id: string }> }) {
   const _id = (await params)._id;
-  const res = await fetch(`http://localhost:8000/sources/${encodeURIComponent(String(_id))}`, { next: { revalidate: 0 } });
+  const base = process.env.INTERNAL_API_URL ?? "http://backend:8000";
+  const res = await fetch(
+  `${base}/sources/${encodeURIComponent(String(_id))}`,
+  { next: { revalidate: 0 } }
+);
+
+  //const res = await fetch(`http://localhost:8000/sources/${encodeURIComponent(String(_id))}`, { next: { revalidate: 0 } });
   if (!res.ok) throw new Error('The FLASHES backend appears to be down. Please try again later.');
   const data: SourceData = await res.json();
 

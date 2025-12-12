@@ -4,13 +4,10 @@ import { PageDescription } from '@/components/pageDescription';
 export default async function SourcesFiltered({ params }: { params: Promise<{ tag_name: string }> ;
 }) {
 
-  const res = await fetch("http://localhost:8000/tags/", { next: { revalidate: 0 } });
-  
-  if (!res.ok) {
-    throw new Error("The FLASHES backend appears to be down. Please try again later.");
-  }
+  const base = process.env.INTERNAL_API_URL ?? "http://backend:8000";
+  const res = await fetch(`${base}/tags`, { next: { revalidate: 0 } });
+  const data: string[] = await res.json();
 
-  const data = await res.json();
   return (
     <main className="p-6">
       <h1>Available Tags</h1>
