@@ -125,7 +125,7 @@ async def health_grafana():
     """
     logging.info("Healthcheck Grafana called.")
     try:
-        resp = requests.get("http://grafana:3001/api/health", timeout=2)
+        resp = requests.get("http://grafana:3000/api/health", timeout=2)
         if resp.status_code == 200 and resp.json().get("database") == "ok":
             logging.info("Healthcheck Grafana successful.")
             return {"status": "ok"}

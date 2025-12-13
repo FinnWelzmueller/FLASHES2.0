@@ -1,9 +1,6 @@
 .env
 backend/venv/
 backend/_temp/
-data/influxdb/*
-data/mongodb/*
-data/grafana/*
 __pycache__/
 .vscode/
 config/influxdb/*
@@ -11,3 +8,10 @@ config/influxdb/*
 *.ipynb
 backend/old/
 backup/
+data
+frontend/node_modules/
+frontend/.next/
+frontend/.turbo/
+*.log
+.DS_Store
+Thumbs.db

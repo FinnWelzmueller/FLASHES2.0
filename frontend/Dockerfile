@@ -9,6 +9,10 @@ RUN npm ci
 FROM node:20-alpine AS builder
 WORKDIR /app
 ENV NODE_ENV=production
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_PLOTS_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_PLOTS_URL=$NEXT_PUBLIC_PLOTS_URL
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build

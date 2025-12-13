@@ -76,7 +76,7 @@ maxi_url = "http://maxi.riken.jp/star_data/"
 swift_url = "https://swift.gsfc.nasa.gov/results/transients/"
 fermi_url = "https://gammaray.nsstc.nasa.gov/gbm/science/pulsars/lightcurves/"
 
-client = MongoClient(f"mongodb://admin:{os.getenv("MONGO_INITDB_ROOT_PASSWORD")}@mongodb:27017/")    # MongoDB connection setup
+client = MongoClient(f'mongodb://admin:{os.getenv("MONGO_INITDB_ROOT_PASSWORD")}@mongodb:27017/')    # MongoDB connection setup
 db = client['flashes']
 sources_collection = db['sources']
 
@@ -88,7 +88,7 @@ heasarc = Heasarc()
 df = load_tags(df)
 
 for _, row in df.iterrows():
-    b, l = convert_to_galactic(row["coord_ra"], row["coord_dec"])
+    b, l = convert_to_galactic(row["Ra Obj"], row["Dec Obj"])
     source_data = { # Base Information
         "_id": row['Integral Name'].replace(" ", "").lower(), # -> _id from Name? -> I don't want to have twice the same source in the db anyway
         "integral_name": row['Integral Name'],  

@@ -21,7 +21,7 @@ export default function Home() {
         </div>
         <div className="justify-self-end sm:justify-self-center">
           <img
-            src="http://localhost:8000/static/catalogue.png"
+            src="/static/catalogue.png"
             alt="FLASHES source catalogue"
             className="w-full h-auto rounded-2xl object-contain border dark:border-neutral-800"
           />
