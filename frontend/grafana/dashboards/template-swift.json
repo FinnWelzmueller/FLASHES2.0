@@ -198,7 +198,7 @@
         {
           "targetBlank": true,
           "title": "Download data",
-          "url": "http://backend:8000/download/${swift_influxkey}?start=${__from:date}&end=${__to:date}"
+          "url": "https://api.flashes.science/download/${swift_influxkey}?start=${__from:date}&end=${__to:date}"
         }
       ],
       "options": {

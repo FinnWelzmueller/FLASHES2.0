@@ -354,17 +354,17 @@
         {
           "targetBlank": true,
           "title": "Download data (Swift/BAT)",
-          "url": "http://backend:8000/download/${swift_influxkey}?start=${__from:date}&end=${__to:date}"
+          "url": "https://api.flashes.science/download/${swift_influxkey}?start=${__from:date}&end=${__to:date}"
         },
         {
           "targetBlank": true,
           "title": "Download data (MAXI)",
-          "url": "http://backend:8000/download/${maxi_influxkey}?start=${__from:date}&end=${__to:date}"
+          "url": "https://api.flashes.science/download/${maxi_influxkey}?start=${__from:date}&end=${__to:date}"
         },
         {
           "targetBlank": true,
           "title": "Download data (Fermi/GBM)",
-          "url": "http://backend:8000/download/${fermi_influxkey}?start=${__from:date}&end=${__to:date}"
+          "url": "https://api.flashes.science/download/${fermi_influxkey}?start=${__from:date}&end=${__to:date}"
         }
       ],
       "options": {
@@ -779,7 +779,7 @@
         {
           "targetBlank": true,
           "title": "Download data",
-          "url": "http://backend:8000/download/hid/${hardness_influxkey}﻿﻿/﻿﻿${combined_influxkey}﻿﻿?start=${__from:date}&end=${__to:date}"
+          "url": "https://api.flashes.science/download/hid/${hardness_influxkey}﻿﻿/﻿﻿${combined_influxkey}﻿﻿?start=${__from:date}&end=${__to:date}"
         }
       ],
       "options": {
@@ -1136,7 +1136,7 @@
         {
           "targetBlank": true,
           "title": "Download data",
-          "url": "http://backend:8000/download/${combined_influxkey}?start=${__from:date}&end=${__to:date}"
+          "url": "https://api.flashes.science/download/${combined_influxkey}?start=${__from:date}&end=${__to:date}"
         }
       ],
       "options": {
@@ -1353,7 +1353,7 @@
             {
               "targetBlank": true,
               "title": "Download data",
-              "url": "http://backend:8000/download/${swift_influxkey}?start=${__from:date}&end=${__to:date}"
+              "url": "https://api.flashes.science/download/${swift_influxkey}?start=${__from:date}&end=${__to:date}"
             }
           ],
           "options": {
@@ -1901,7 +1901,7 @@
             {
               "targetBlank": true,
               "title": "Download data",
-              "url": "http://backend:8000/download/${maxi_influxkey}?start=${__from:date}&end=${__to:date}"
+              "url": "https://api.flashes.science/download/${maxi_influxkey}?start=${__from:date}&end=${__to:date}"
             }
           ],
           "options": {
@@ -3598,7 +3598,7 @@
             {
               "targetBlank": true,
               "title": "Download data",
-              "url": "http://backend:8000/download/${fermi_influxkey}?start=${__from:date}&end=${__to:date}"
+              "url": "https://api.flashes.science/download/${fermi_influxkey}?start=${__from:date}&end=${__to:date}"
             }
           ],
           "options": {
@@ -3884,7 +3884,7 @@
             {
               "targetBlank": true,
               "title": "Download data",
-              "url": "http://backend:8000/download/${hardness_influxkey}?start=${__from:date}&end=${__to:date}"
+              "url": "https://api.flashes.science/download/${hardness_influxkey}?start=${__from:date}&end=${__to:date}"
             }
           ],
           "options": {
@@ -4090,7 +4090,7 @@
             {
               "targetBlank": true,
               "title": "Download data",
-              "url": "http://backend:8000/download/${combined_influxkey}?start=${__from:date}&end=${__to:date}"
+              "url": "https://api.flashes.science/download/${combined_influxkey}?start=${__from:date}&end=${__to:date}"
             }
           ],
           "options": {

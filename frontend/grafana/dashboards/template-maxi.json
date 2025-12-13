@@ -453,7 +453,7 @@
         {
           "targetBlank": true,
           "title": "Download data",
-          "url": "http://backend:8000/download/${maxi_influxkey}?start=${__from:date}&end=${__to:date}"
+          "url": "https://api.flashes.science/download/${maxi_influxkey}?start=${__from:date}&end=${__to:date}"
         }
       ],
       "options": {
