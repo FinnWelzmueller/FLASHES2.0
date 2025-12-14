@@ -5,7 +5,7 @@ export default function Home() {
     <main>
       <div className="space-y-4 text-neutral-300 leading-relaxed ">
         <h1>Welcome to the FLASHES<span className="text-neutral-400">2.0</span>!</h1>
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-1 gap-8 items-start">
+        <div className="grid grid-cols-1 gap-8 items-start">
         <div className="space-y-4 max-w-[70ch]">
         <p className="space-y-4">
           This is the <b>FL</b>exible <b>A</b>lert <b>S</b>ystem for <b>H</b>igh <b>E</b>nergy <b>S</b>ources. FLASHES is a monitoring and analyses tool for x-ray sources in space. It provides lightcurve data from the <i>Monitor of All-sky X-ray image</i> (<a href="https://maxi.riken.jp/top/index.html" className="externalLink" target="_blank">MAXI</a>), the <i>Burst Array Telescope</i> (<a href="https://swift.gsfc.nasa.gov/about_swift/bat_desc.html" className="externalLink" target="_blank">BAT</a>) of Swift, and the <i>Gamma-Ray Burst Monitor</i> (<a href="https://fermi.gsfc.nasa.gov/science/instruments/gbm.html" className="externalLink" target="_blank">GBM</a>) on Fermi are automatically downloaded, processed and analysed every day. For each source in the FLASHES source catalog, a relevance is calculated. If a worth-mentioning event is happening, a high relevance value (close to 1) is assigned. If nothing happens, a low relevance value (around 0) is assigned.
@@ -19,7 +19,7 @@ export default function Home() {
           Use the navigation bars above to explore the complete source catalogue, select tags, and learn more about FLASHES2.0. Enjoy your stay!
         </p>
         </div>
-        <div className="justify-self-end sm:justify-self-center">
+       <div className="justify-self-center">
           <img
             src="/static/catalogue.png"
             alt="FLASHES source catalogue"

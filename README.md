@@ -359,9 +359,9 @@ Once the Scheduler in the backend is started, the first download is triggered, w
 
 [🎉️] Implement a frontend
 
-[ ] Implement tests and data verification
-
 **--- RELEASE FLASHES2.0 beta ---**
+
+[ ] Implement tests and data verification
 
 [ ] Implement a relevance calculation
 
