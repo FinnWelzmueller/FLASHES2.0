@@ -1,6 +1,7 @@
 import logging
 import pandas as pd
 from astropy.time import Time
+import re
 
 def set_last_timestamp(sources_collection, source: dict, telescope: str, timestamp: int) -> None:
     """
@@ -64,3 +65,22 @@ def flux_to_mcrab(flux: float, channel:str) -> float:
         "12-50": 1.0/4.5 * 1000 # Fermi-GBM
     }
     return flux * factors[channel]
+
+def extract_band(col: str) -> str | None:
+    """
+        Extracts the energy band from a column name.
+        :param col: Column name containing an energy band in parentheses.
+        :return: Extracted energy band (e.g. "15-50 keV") or None if not present.
+    """
+    m = re.search(r"\(([^)]+)\)", col)
+    return m.group(1) if m else None
+
+
+def normalize_df(df):
+    if isinstance(df, list):
+        df = pd.concat(df, ignore_index=True) if df else pd.DataFrame()
+    if getattr(df, "empty", True):
+        return pd.DataFrame()
+    if "_time" not in df.columns and getattr(df.index, "name", None) == "_time":
+        df = df.reset_index()
+    return df
