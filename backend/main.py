@@ -15,7 +15,7 @@ from fastapi import FastAPI, Path, Query
 from fastapi.staticfiles import StaticFiles
 from datetime import timezone
 from scheduler import start_scheduler
-from utils import iso_to_mjd, flux_to_mcrab
+from utils import iso_to_mjd, flux_to_mcrab, extract_band, normalize_df
 from urllib.parse import quote_plus
 
 
@@ -259,8 +259,9 @@ async def load_timeseries(influx_key : str = Query(None, description="Influx Key
     }
 
     telescope = influx_key.split("_")[0]
-    if not list(data_cols_dict.keys()):
+    if telescope not in data_cols_dict:
         return {"message": f"Unknown telescope: {telescope}, please check your URL"}
+
     if telescope in list(channel_dict.keys()):
         if (channel not in channel_dict[telescope]) and (telescope in ["swift" , "maxi", "fermi"]):
             return {"message": f"Unknown channel {channel} for telescope {telescope}, please check your URL"}
@@ -317,6 +318,8 @@ async def load_timeseries(influx_key : str = Query(None, description="Influx Key
                 |> drop(columns: ["_start","_stop"])
         """
         df_maxi = query_api.query_data_frame(org="flashes", query=query_flux)
+        df_swift = normalize_df(df_swift)
+        df_maxi = normalize_df(df_maxi)
         merged = pd.merge(df_swift, df_maxi, left_on="_time",right_on="_time", how='outer')
 
         for idx, row in merged.iterrows():
@@ -398,14 +401,28 @@ async def load_download(influx_key : str,
     
     # Getting data
     out = []
-    for idx, row in query_api.query_data_frame(org="flashes", query=query_flux).iterrows():
+    df = query_api.query_data_frame(org="flashes", query=query_flux)
+    if isinstance(df, list):
+        df = pd.concat(df, ignore_index=True) if df else pd.DataFrame()
+    if df.empty:
+        return JSONResponse(status_code=404, content={"message": "No data for given query"})
+    for _, row in df.iterrows():
         timestamp_dict = {"time": row["_time"]}
 
         for col in telescope_dict[telescope]:
-            timestamp_dict[col] = row[col]
-            timestamp_dict[col+" mCrab"] = flux_to_mcrab(row[col], col.split()[1].replace("(", ""))
+            val = row.get(col)
+            timestamp_dict[col] = val
+
+            band = extract_band(col)
+            if band is None: # hardness ratio or combined flux case
+                continue
+
+            mcrab = flux_to_mcrab(val, band)
+            if mcrab is not None:
+                timestamp_dict[col + " mCrab"] = mcrab
+
         out.append(timestamp_dict)
-    print(out)
+
     if not out or len(out) == 0:
         return JSONResponse(status_code=404, content={"message": "No data for given query"})
     
@@ -417,7 +434,7 @@ async def load_download(influx_key : str,
         entry["mjd"] = iso_to_mjd(entry["time"])
 
     # bring things into the right order
-        download = []
+    download = []
     mcrab_keys = [f"{k} mCrab" for k in keys]
 
     for row in out:
