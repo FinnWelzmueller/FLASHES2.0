@@ -64,7 +64,7 @@ def flux_to_mcrab(flux: float, channel:str) -> float:
         "15-50": 1.0/0.22 * 1000, # Swift-BAT
         "12-50": 1.0/4.5 * 1000 # Fermi-GBM
     }
-    return flux * factors[channel]
+    return flux * factors[channel.replace(" keV","")]
 
 def extract_band(col: str) -> str | None:
     """
