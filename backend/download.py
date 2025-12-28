@@ -174,8 +174,12 @@ def filter_times(df: pd.DataFrame, source, telescope) -> pd.DataFrame | None:
         logging.error(f"Unsupported telescope: {telescope}. Skipping time filtering")
         return None
     last_timestamp = source[telescope]['last_timestamp']
-    logging.debug(f"Filtering data for {source['integral_name']} from {telescope}. Last timestamp is {last_timestamp}...")
-    return df[df['TIME'] > last_timestamp]
-
+    safety_window_days = 3
+    cutoff = last_timestamp - safety_window_days
+    logging.debug(
+        f"Filtering data for {source['integral_name']} from {telescope}. "
+        f"Last timestamp is {last_timestamp}, safety window is {safety_window_days} days..."
+    )
+    return df[df['TIME'] > cutoff]
 
 

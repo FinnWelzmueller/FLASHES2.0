@@ -5,15 +5,13 @@ import re
 
 def set_last_timestamp(sources_collection, source: dict, telescope: str, timestamp: int) -> None:
     """
-    Sets the last timestamp for a given source and telescope in the MongoDB. 
-    From the timestamp, 3 days are subtracted to account for possible changes (esp. in Swift/BAT data).
+    Sets the last timestamp for a given source and telescope in the MongoDB.
     :param db: MongoDB database object.
     :param source: Source dictionary from MongoDB.
     :param telescope: "swift", "maxi" or "fermi"
     :param timestamp: Last timestamp to be set.
     :return: None
     """
-    timestamp -= 3 # Subtract 3 to account for account for changes in the last datapoints (see Issue #29)
     try:
         sources_collection.update_one(
             {"_id": source['_id']},
