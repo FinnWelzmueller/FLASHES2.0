@@ -118,7 +118,10 @@ def download_all_data_swift_maxi(url:str, telescope:str) -> pd.DataFrame | None:
                 ]
             df['UTC TIME'] = get_utc_time(df['TIME'])
             df["TIME"] = df["TIME"].astype(int)
+            logging.debug(f"Maximum Timestamp in MJD:{df['TIME'].max()}")
+            logging.debug(f"Today's Timestamp in MJD: {int(Time.now().mjd)}")
             logging.debug(f"Download complete from {url} for {telescope}")
+            
             return df       
     else:
             logging.error(f"Failed to download data from {url}. Status code: {response.status_code}. Skipping download.")
@@ -154,6 +157,8 @@ def download_all_data_fermi(url:str, temp_dir) -> pd.DataFrame | None:
         df['UTC TIME'] = get_utc_time(df['PSRTIME'])
         df.columns = ['TIME', 'FLUX 12-50', 'ERROR 12-50', 'UTC TIME']
         df["TIME"] = df["TIME"].astype(int)
+        logging.debug(f"Maximum Timestamp in MJD: {df['TIME'].max()}")
+        logging.debug(f"Today's Timestamp in MJD: {int(Time.now().mjd)}")
         logging.debug(f"Download complete from {url} for fermi")
         return df
     else:
@@ -174,7 +179,7 @@ def filter_times(df: pd.DataFrame, source, telescope) -> pd.DataFrame | None:
         logging.error(f"Unsupported telescope: {telescope}. Skipping time filtering")
         return None
     last_timestamp = source[telescope]['last_timestamp']
-    safety_window_days = 3
+    safety_window_days = 1
     cutoff = last_timestamp - safety_window_days
     logging.debug(
         f"Filtering data for {source['integral_name']} from {telescope}. "
