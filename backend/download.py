@@ -119,6 +119,7 @@ def download_all_data_swift_maxi(url:str, telescope:str) -> pd.DataFrame | None:
             df['UTC TIME'] = get_utc_time(df['TIME'])
             df["TIME"] = df["TIME"].astype(int)
             logging.debug(f"Maximum Timestamp in MJD:{df['TIME'].max()}")
+            logging.debug(f"Today's Timestamp in MJD: {int(Time.now().mjd)}")
             logging.debug(f"Download complete from {url} for {telescope}")
             
             return df       
@@ -156,7 +157,8 @@ def download_all_data_fermi(url:str, temp_dir) -> pd.DataFrame | None:
         df['UTC TIME'] = get_utc_time(df['PSRTIME'])
         df.columns = ['TIME', 'FLUX 12-50', 'ERROR 12-50', 'UTC TIME']
         df["TIME"] = df["TIME"].astype(int)
-        logging.debug(f"Maximum Timestamp in MJD:{df['TIME'].max()}")
+        logging.debug(f"Maximum Timestamp in MJD: {df['TIME'].max()}")
+        logging.debug(f"Today's Timestamp in MJD: {int(Time.now().mjd)}")
         logging.debug(f"Download complete from {url} for fermi")
         return df
     else:
