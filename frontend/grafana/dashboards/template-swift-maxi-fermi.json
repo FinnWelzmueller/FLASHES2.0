@@ -718,6 +718,207 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
+            "axisLabel": "hardness [swift flux / maxi flux]",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": 259200000,
+            "lineInterpolation": "smooth",
+            "lineWidth": 3,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "log": 10,
+              "type": "log"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "hardness ratio max"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 0
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 25
+              },
+              {
+                "id": "custom.fillBelowTo",
+                "value": "hardness ratio"
+              },
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": false
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "hardness ratio min"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 0
+              },
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": false
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "hardness ratio"
+            },
+            "properties": [
+              {
+                "id": "custom.fillBelowTo",
+                "value": "hardness ratio min"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 25
+              },
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": false
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "id": 21,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "Download data",
+          "url": "https://api.flashes.science/download/${hardness_influxkey}?start=${__from:date}&end=${__to:date}"
+        }
+      ],
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "columns": [],
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "flashes-datasource"
+          },
+          "filters": [],
+          "format": "timeseries",
+          "global_query_id": "",
+          "hide": false,
+          "parser": "uql",
+          "refId": "hardness",
+          "root_selector": "",
+          "source": "url",
+          "type": "json",
+          "url": "http://backend:8000/timeseries/",
+          "url_options": {
+            "data": "",
+            "method": "GET",
+            "params": [
+              {
+                "key": "influx_key",
+                "value": "${hardness_influxkey}"
+              },
+              {
+                "key": "start",
+                "value": "${__from:date:iso}"
+              },
+              {
+                "key": "end",
+                "value": "${__to:date:iso}"
+              }
+            ]
+          }
+        }
+      ],
+      "title": "Hardness ratio data for ${integral_name}",
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "flashes-datasource"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "green",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "fillOpacity": 50,
@@ -772,7 +973,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 14
+        "y": 23
       },
       "id": 20,
       "links": [
@@ -1129,7 +1330,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 14
+        "y": 23
       },
       "id": 19,
       "links": [
@@ -1199,7 +1400,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 31
       },
       "id": 3,
       "panels": [
@@ -1492,7 +1693,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 23
+        "y": 32
       },
       "id": 5,
       "panels": [
@@ -1894,7 +2095,7 @@
             "h": 12,
             "w": 24,
             "x": 0,
-            "y": 84
+            "y": 120
           },
           "id": 8,
           "links": [
@@ -2488,7 +2689,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 120
+            "y": 156
           },
           "id": 6,
           "options": {
@@ -2761,7 +2962,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 120
+            "y": 156
           },
           "id": 7,
           "options": {
@@ -3033,7 +3234,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 128
+            "y": 164
           },
           "id": 9,
           "options": {
@@ -3305,7 +3506,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 128
+            "y": 164
           },
           "id": 10,
           "options": {
@@ -3444,7 +3645,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 33
       },
       "id": 16,
       "panels": [
@@ -3737,7 +3938,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 34
       },
       "id": 11,
       "panels": [
@@ -3877,9 +4078,9 @@
             "h": 12,
             "w": 24,
             "x": 0,
-            "y": 26
+            "y": 38
           },
-          "id": 21,
+          "id": 23,
           "links": [
             {
               "targetBlank": true,
@@ -3952,7 +4153,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 35
       },
       "id": 13,
       "panels": [
@@ -4083,7 +4284,7 @@
             "h": 11,
             "w": 24,
             "x": 0,
-            "y": 27
+            "y": 63
           },
           "id": 22,
           "links": [
@@ -4400,5 +4601,5 @@
   "timezone": "browser",
   "title": "Dashboard for Swift/BAT, MAXI & Fermi/GBM",
   "uid": "flashes-swift-maxi-fermi",
-  "version": 23
+  "version": 27
 }
