@@ -1571,70 +1571,6 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "MAXI (2-20 keV) max"
-                },
-                "properties": [
-                  {
-                    "id": "custom.lineWidth",
-                    "value": 0
-                  },
-                  {
-                    "id": "custom.fillOpacity",
-                    "value": 25
-                  },
-                  {
-                    "id": "custom.fillBelowTo",
-                    "value": "MAXI (2-20 keV)"
-                  },
-                  {
-                    "id": "custom.hideFrom",
-                    "value": {
-                      "legend": true,
-                      "tooltip": true,
-                      "viz": false
-                    }
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "MAXI (2-20 keV) min"
-                },
-                "properties": [
-                  {
-                    "id": "custom.lineWidth",
-                    "value": 0
-                  },
-                  {
-                    "id": "custom.hideFrom",
-                    "value": {
-                      "legend": true,
-                      "tooltip": true,
-                      "viz": false
-                    }
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "MAXI (2-20 keV)"
-                },
-                "properties": [
-                  {
-                    "id": "custom.fillBelowTo",
-                    "value": "MAXI (2-20 keV) min"
-                  },
-                  {
-                    "id": "custom.fillOpacity",
-                    "value": 25
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
                   "options": "MAXI (2-4 keV) max"
                 },
                 "properties": [
@@ -1657,13 +1593,6 @@
                       "tooltip": true,
                       "viz": false
                     }
-                  },
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "orange",
-                      "mode": "fixed"
-                    }
                   }
                 ]
               },
@@ -1684,13 +1613,6 @@
                       "tooltip": true,
                       "viz": false
                     }
-                  },
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "orange",
-                      "mode": "fixed"
-                    }
                   }
                 ]
               },
@@ -1707,13 +1629,6 @@
                   {
                     "id": "custom.fillOpacity",
                     "value": 25
-                  },
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "orange",
-                      "mode": "fixed"
-                    }
                   }
                 ]
               },
@@ -1746,7 +1661,7 @@
                   {
                     "id": "color",
                     "value": {
-                      "fixedColor": "blue",
+                      "fixedColor": "orange",
                       "mode": "fixed"
                     }
                   }
@@ -1773,7 +1688,7 @@
                   {
                     "id": "color",
                     "value": {
-                      "fixedColor": "blue",
+                      "fixedColor": "orange",
                       "mode": "fixed"
                     }
                   }
@@ -1796,7 +1711,7 @@
                   {
                     "id": "color",
                     "value": {
-                      "fixedColor": "blue",
+                      "fixedColor": "orange",
                       "mode": "fixed"
                     }
                   }
@@ -1831,7 +1746,7 @@
                   {
                     "id": "color",
                     "value": {
-                      "fixedColor": "red",
+                      "fixedColor": "blue",
                       "mode": "fixed"
                     }
                   }
@@ -1858,7 +1773,7 @@
                   {
                     "id": "color",
                     "value": {
-                      "fixedColor": "red",
+                      "fixedColor": "blue",
                       "mode": "fixed"
                     }
                   }
@@ -1881,7 +1796,7 @@
                   {
                     "id": "color",
                     "value": {
-                      "fixedColor": "red",
+                      "fixedColor": "blue",
                       "mode": "fixed"
                     }
                   }
@@ -1909,7 +1824,7 @@
             "h": 12,
             "w": 24,
             "x": 0,
-            "y": 25
+            "y": 34
           },
           "id": 8,
           "links": [
@@ -1934,44 +1849,6 @@
           },
           "pluginVersion": "12.2.0",
           "targets": [
-            {
-              "columns": [],
-              "datasource": {
-                "type": "yesoreyeram-infinity-datasource",
-                "uid": "flashes-datasource"
-              },
-              "filters": [],
-              "format": "timeseries",
-              "global_query_id": "",
-              "parser": "uql",
-              "refId": "2-20",
-              "root_selector": "",
-              "source": "url",
-              "type": "json",
-              "url": "http://backend:8000/timeseries/",
-              "url_options": {
-                "data": "",
-                "method": "GET",
-                "params": [
-                  {
-                    "key": "influx_key",
-                    "value": "${maxi_influxkey}"
-                  },
-                  {
-                    "key": "channel",
-                    "value": "2-20"
-                  },
-                  {
-                    "key": "start",
-                    "value": "${__from:date:iso}"
-                  },
-                  {
-                    "key": "end",
-                    "value": "${__to:date:iso}"
-                  }
-                ]
-              }
-            },
             {
               "columns": [],
               "datasource": {
@@ -2092,72 +1969,6 @@
           ],
           "title": "MAXI data for ${integral_name}",
           "transformations": [
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "MAXI (2-20 keV)",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "flux (2-20 keV)"
-                    }
-                  },
-                  "operator": "*",
-                  "right": {
-                    "fixed": "312.5"
-                  }
-                },
-                "mode": "binary",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
-            },
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "MAXI (2-20 keV) max",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "flux (2-20 keV) max"
-                    }
-                  },
-                  "operator": "*",
-                  "right": {
-                    "fixed": "312.5"
-                  }
-                },
-                "mode": "binary",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
-            },
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "MAXI (2-20 keV) min",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "flux (2-20 keV) min"
-                    }
-                  },
-                  "operator": "*",
-                  "right": {
-                    "fixed": "312.5"
-                  }
-                },
-                "mode": "binary",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
-            },
             {
               "id": "calculateField",
               "options": {
@@ -2503,7 +2314,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 93
+            "y": 46
           },
           "id": 6,
           "options": {
@@ -2775,7 +2586,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 93
+            "y": 46
           },
           "id": 7,
           "options": {
@@ -3047,7 +2858,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 101
+            "y": 54
           },
           "id": 9,
           "options": {
@@ -3319,7 +3130,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 101
+            "y": 54
           },
           "id": 10,
           "options": {
@@ -3590,7 +3401,7 @@
             "h": 12,
             "w": 24,
             "x": 0,
-            "y": 35
+            "y": 119
           },
           "id": 12,
           "links": [
@@ -3808,7 +3619,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 39
+            "y": 123
           },
           "id": 17,
           "links": [
@@ -3951,52 +3762,52 @@
     "from": "now-30d",
     "to": "now"
   },
-"timepicker": {
-      "quick_ranges": [
-        {
-          "display": "Last 7 days",
-          "from": "now-7d",
-          "to": "now"
-        },
-        {
-          "display": "Last 14 days",
-          "from": "now-14d",
-          "to": "now"
-        },
-        {
-          "display": "Last month",
-          "from": "now-1M",
-          "to": "now"
-        },
-        {
-          "display": "Last 2 months",
-          "from": "now-2M",
-          "to": "now"
-        },
-        {
-          "display": "Last 6 months",
-          "from": "now-6M",
-          "to": "now"
-        },
-        {
-          "display": "Last year",
-          "from": "now-1y",
-          "to": "now"
-        },
-        {
-          "display": "Last 2 years",
-          "from": "now-2y",
-          "to": "now"
-        },
-        {
-          "display": "Last 5 years",
-          "from": "now-5y",
-          "to": "now"
-        }
-      ]
+  "timepicker": {
+    "quick_ranges": [
+      {
+        "display": "Last 7 days",
+        "from": "now-7d",
+        "to": "now"
+      },
+      {
+        "display": "Last 14 days",
+        "from": "now-14d",
+        "to": "now"
+      },
+      {
+        "display": "Last month",
+        "from": "now-1M",
+        "to": "now"
+      },
+      {
+        "display": "Last 2 months",
+        "from": "now-2M",
+        "to": "now"
+      },
+      {
+        "display": "Last 6 months",
+        "from": "now-6M",
+        "to": "now"
+      },
+      {
+        "display": "Last year",
+        "from": "now-1y",
+        "to": "now"
+      },
+      {
+        "display": "Last 2 years",
+        "from": "now-2y",
+        "to": "now"
+      },
+      {
+        "display": "Last 5 years",
+        "from": "now-5y",
+        "to": "now"
+      }
+    ]
   },
   "timezone": "browser",
   "title": "Dashboard for Swift/BAT & MAXI",
   "uid": "flashes-swift-maxi",
-  "version": 33
+  "version": 41
 }
