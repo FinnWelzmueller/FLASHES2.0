@@ -1153,10 +1153,53 @@
     ]
   },
   "time": {
-    "from": "now-1y",
+    "from": "now-30d",
     "to": "now"
   },
-  "timepicker": {},
+"timepicker": {
+      "quick_ranges": [
+        {
+          "display": "Last 7 days",
+          "from": "now-7d",
+          "to": "now"
+        },
+        {
+          "display": "Last 14 days",
+          "from": "now-14d",
+          "to": "now"
+        },
+        {
+          "display": "Last month",
+          "from": "now-1M",
+          "to": "now"
+        },
+        {
+          "display": "Last 2 months",
+          "from": "now-2M",
+          "to": "now"
+        },
+        {
+          "display": "Last 6 months",
+          "from": "now-6M",
+          "to": "now"
+        },
+        {
+          "display": "Last year",
+          "from": "now-1y",
+          "to": "now"
+        },
+        {
+          "display": "Last 2 years",
+          "from": "now-2y",
+          "to": "now"
+        },
+        {
+          "display": "Last 5 years",
+          "from": "now-5y",
+          "to": "now"
+        }
+      ]
+  },
   "timezone": "browser",
   "title": "Dashboard for Swift/BAT & Fermi/GBM",
   "uid": "flashes-swift-fermi",
