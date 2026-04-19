@@ -3,8 +3,8 @@ import "@/src/app/globals.css";
 export default async function About() {
   return (
     <main>
-      <h1>About FLASHES<span className="text-neutral-400">2.0</span></h1>
-      <h2 className="space-y-4 text-neutral-300 leading-relaxed ">What is FLASHES?</h2>
+      <h1>About FLASHES<span className="text-white">2.0</span></h1>
+      <h2 className="space-y-4 text-white leading-relaxed ">What is FLASHES?</h2>
       <p>
         FLASHES (<b>FL</b>exible <b>A</b>lert <b>S</b>ystem for <b>H</b>igh-<b>E</b>nergy <b>S</b>ources) is a modern monitoring and analysis platform for variable X-ray sources across the sky. It is the successor to the original FLASHES system, which is currently operated by ESA and which you can access <a href="https://integral.esac.esa.int/flashes" className="externalLink">here</a>. The new version builds on the same idea—continuous all-sky activity monitoring—but extends it with a more robust backend, modern dashboards, improved data handling, and an architecture that allows full automation and easy deployment.
       </p>

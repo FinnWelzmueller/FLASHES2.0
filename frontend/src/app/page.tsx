@@ -3,7 +3,7 @@ import "@/src/app/globals.css";
 export default function Home() {
   return (
     <main>
-      <div className="space-y-4 text-neutral-300 leading-relaxed ">
+      <div className="space-y-4 text-white leading-relaxed ">
         <h1>Welcome to the FLASHES<span className="text-neutral-400">2.0</span>!</h1>
         <div className="grid grid-cols-1 gap-8 items-start">
         <div className="space-y-4 max-w-[70ch]">
@@ -29,7 +29,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="space-y-8 text-neutral-300 leading-relaxed">
+      <div className="space-y-8 text-neutral-100 leading-relaxed">
       <h1 className="text-2xl font-semibold tracking-tight mt-10 mb-3">The FLASHES2.0 Open <span className="text-red-400">&beta;</span></h1>
       <p>
         FLASHES2.0 is currently in open beta. This means that not all features are fully implemented and bugs may still occur. Currently, the following features are available:
