@@ -27,9 +27,9 @@ function TelescopeCard({ name, rec }: { name: 'Swift' | 'MAXI' | 'Fermi'; rec?: 
       </div>
 
       <div className="mt-3 text-sm">
-        <div className="text-neutral-500">Last point</div>
+        <div className="text-white">Last point</div>
         <div className="font-medium">{flux}</div>
-        <div className="text-neutral-500 mt-0.5">{when}</div>
+        <div className="text-white mt-0.5">{when}</div>
       </div>
       <div >
         <iframe 

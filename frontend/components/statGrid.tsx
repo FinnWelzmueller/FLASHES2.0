@@ -13,9 +13,9 @@ function LastPoint({ label, rec }: { label: string; rec?: TelescopeRecord | null
   
   return (
     <div className="p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800">
-      <div className="text-xs uppercase tracking-wider text-neutral-500 mb-1">{label}</div>
+      <div className="text-xs font-bold uppercase tracking-wider text-white mb-1">{label}</div>
       <div className="text-lg font-medium">{val} ± {err} mCrab</div>
-      <div className="text-xs text-neutral-500 mt-1">Last point: {when}</div>
+      <div className="text-xs text-white mt-1">Last point: {when}</div>
     </div>
   );
 }
@@ -29,7 +29,7 @@ export function StatGrid({ data }: { data: SourceData }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <div className="p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800">
-        <div className="text-xs uppercase tracking-wider text-neutral-500 mb-1">Coordinates</div>
+        <div className="text-xs font-bold uppercase tracking-wider text-white mb-1">Coordinates</div>
         <div className="text-sm">
           Galactic Latitude: {galB}°<br />
           Galactic Longitude: {galL}°
@@ -37,12 +37,12 @@ export function StatGrid({ data }: { data: SourceData }) {
       </div>
 
       <div className="p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800">
-        <div className="text-xs uppercase tracking-wider text-neutral-500 mb-1">Combined (last update)</div>
+        <div className="text-xs font-bold uppercase tracking-wider text-white mb-1">Combined (last update)</div>
         <div className="text-sm">{combinedTs}</div>
       </div>
 
       <div className="p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800">
-        <div className="text-xs uppercase tracking-wider text-neutral-500 mb-1">Hardness (last update)</div>
+        <div className="text-xs font-bold uppercase tracking-wider text-white mb-1">Hardness (last update)</div>
         <div className="text-sm">{hardnessTs}</div>
       </div>
 

@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className={`${grotesk.variable} ${mono.variable}`}>
-      <body className="min-h-dvh bg-neutral-950 text-neutral-100 antialiased">
+      <body className="min-h-dvh bg-neutral-950 text-white antialiased">
         {/* Header */}
         <header className="sticky top-0 z-50 backdrop-blur bg-neutral-950/70 border-b border-neutral-900">
           <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">

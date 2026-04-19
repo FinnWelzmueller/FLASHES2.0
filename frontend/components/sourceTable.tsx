@@ -66,7 +66,7 @@ export function SourceTable<TData, TValue>({
       </div>
     <div className="overflow-hidden rounded-md border">
       <Table>
-        <TableHeader className="bg-neutral-100 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 border-b border-neutral-300">
+        <TableHeader className="bg-neutral-100 dark:bg-neutral-900 text-white dark:text-white border-b border-neutral-300">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
