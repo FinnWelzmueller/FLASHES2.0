@@ -2,8 +2,12 @@ import logging
 import requests
 from io import StringIO
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
 import gzip
 import shutil
+from datetime import datetime, timedelta
 from astropy.time import Time
 from astropy.table import Table
 import os
@@ -188,3 +192,103 @@ def filter_times(df: pd.DataFrame, source, telescope) -> pd.DataFrame | None:
     return df[df['TIME'] > cutoff]
 
 
+def calculate_trend_relevance(query_api, influx_key: str, scale: float = 3, plot: bool = False, window_size: int = 7, limit: int = 5) -> float:
+    """
+    Calculates the trend relevance for a certain timeseries. The fluxes of the timeseries are converted into a flux gradient, from which a histogram is calculated. Then, a Gaussian is fitted to the histogram and the mean and standard deviation are calculated. The trend relevance is then calculated as the number of standard deviations the mean flux gradient is above the mean of the fitted Gaussian. The result is clipped to a maximum of 1 and a minimum of 0. To account for certain unphysical changes, the current flux gradient is calculated as a mean over the last days. The window size for this mean can me adjusted by changing the parameter window_size. To account for large gaps in the data, a minimum number of data points can be set with the parameter limit. If the number of data points in the last window_size days is below this limit, None is returned.
+    """
+    def gauss(x, A, mu, sigma):
+        return A * np.exp(-(x - mu)**2 / (2 * sigma**2))
+
+    if "swift" in influx_key:
+        channel = "flux (15-50 keV)"
+    elif "fermi" in influx_key:
+        channel = "flux (12-50 keV)"
+    elif "maxi" in influx_key:
+        channel = "flux (2-20 keV)"
+    else:
+        raise ValueError("Invalid influx_key. No adequate timeseries found.")
+
+    query_flux = f"""
+            from(bucket: "flashes_data")
+                |> range(start: 0)
+                |> filter(fn: (r) => r._measurement == "flux data")
+                |> filter(fn: (r) => r.source == "{influx_key}")
+            |> keep(columns: ["_time", "_field", "_value"])
+            |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
+            |> sort(columns: ["_time"])
+            |> drop(columns: ["_start","_stop"])
+            """
+    data = query_api.query_data_frame(org="flashes", query=query_flux)
+    time_deltas = data["_time"].diff().dt.total_seconds() / 86400
+    data["flux gradient"] = data[channel].diff() / time_deltas
+    data["_time"] = data["_time"].dt.tz_convert(None)
+    recent_data = data[data["_time"] > (datetime.now() - timedelta(days=window_size))]
+    if len(recent_data) >= limit:
+        valid_gradient = data["flux gradient"].replace([np.inf, -np.inf], np.nan).dropna()
+        counts, bin_edges = np.histogram(valid_gradient, bins=np.linspace(data["flux gradient"].min(), data["flux gradient"].max(), 100))
+        bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+        recent_data_mean = recent_data["flux gradient"].dropna().mean()
+        popt, pcov = curve_fit(gauss, bin_centers, counts)
+        mu, sigma = popt[1], popt[2]
+        sigma = np.abs(sigma)
+        if plot:
+            plt.plot(bin_centers, counts, 'bo')
+            plt.plot(bin_centers, gauss(bin_centers, *popt), 'r-')
+            plt.xlabel(r'$\Delta\Phi$ / day')
+            plt.ylabel('Counts')
+            plt.title(f"mu={mu:.2f}, sigma={sigma:.6f}")
+            plt.show()
+        return np.clip(1/scale * (recent_data_mean - mu) / sigma, 0, 1)
+    else:
+        return None
+    
+def get_flux_relevance(query_api, current_snr:float, influx_key: str, scale: float = 3, plot: bool = False) -> float:
+    """
+        Calculates the Flux Relevance for a certain timeseries. The fluxes and errors of the timeseries are converted into a SNR, from which a histogram is calculated. Then, the mean and standard deviation of a Gaussian is fitted to the histogram and the flux relevance is calculated as the number of standard deviations the flux is above the mean. The result is clipped to a maximum of 3 and a minimum of 0 and scaled to be between 0 and 1.
+        :param query_api: The InfluxDB query API.
+        :param current_snr: The current SNR value for which the relevance should be calculated.
+        :param influx_key: The key of the timeseries in the InfluxDB.
+        :param scale: The maximum relevance value. Default is 3, which corresponds to 3 standard deviations above the mean, giving a flux relevance of 1.
+        :param plot: Whether to plot the histogram and the fitted Gaussian. Default is False.
+        :return: The flux relevance, a value between 0 and 1.
+    """
+    def gauss(x, A, mu, sigma):
+        return A * np.exp(-(x - mu)**2 / (2 * sigma**2))
+    
+    if "swift" in influx_key:
+        channel = "flux (15-50 keV)"
+    elif "fermi" in influx_key:
+        channel = "flux (12-50 keV)"
+    elif "maxi" in influx_key:
+        channel = "flux (2-20 keV)"
+    else:
+        raise ValueError("Invalid influx_key. No adequate timeseries found.")
+    
+    query_flux = f"""
+        from(bucket: "flashes_data")
+            |> range(start: 0)
+            |> filter(fn: (r) => r._measurement == "flux data")
+            |> filter(fn: (r) => r.source == "{influx_key}")
+        |> keep(columns: ["_time", "_field", "_value"])
+        |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
+        |> sort(columns: ["_time"])
+        |> drop(columns: ["_start","_stop"])
+        """
+    data = query_api.query_data_frame(org="flashes", query=query_flux)
+    snr = np.divide(data[channel], data[f"{channel.replace('flux', 'error')}"])
+    counts, bin_edges = np.histogram(snr, bins=np.linspace(snr.min(), snr.max(), 100))
+    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+
+    popt, pcov = curve_fit(gauss, bin_centers, counts)
+    mu, sigma = popt[1], popt[2]
+
+    sigma = np.abs(sigma)  # Ensure sigma is positive
+    print(f"mu: {mu}, sigma: {sigma}")
+    if plot:
+        plt.plot(bin_centers, counts, 'bo')
+        plt.plot(bin_centers, gauss(bin_centers, *popt), 'r-')
+        plt.xlabel('SNR')
+        plt.ylabel('Counts')
+        plt.title(f"mu={mu:.2f}, sigma={sigma:.2f}")
+        plt.show()
+    return np.clip(1/scale * (current_snr - mu) / sigma, 0, 1)
