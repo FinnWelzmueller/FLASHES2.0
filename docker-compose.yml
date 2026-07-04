@@ -16,6 +16,8 @@ services:
       - INFLUXDB_STORAGE_TSI_DISABLE_COMPACTION=true
     networks:
       - flashes-network
+    ports:
+      - "8086:8086"
 
   mongodb:
     image: mongo:8.0
@@ -28,6 +30,8 @@ services:
       - ./data/mongodb:/data/db
     networks:
       - flashes-network
+    ports:
+      - "27017:27017"
 
   grafana:
     image: grafana/grafana
