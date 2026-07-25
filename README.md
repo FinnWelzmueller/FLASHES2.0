@@ -54,7 +54,7 @@ The database system contains a service for the source information and a dedicate
 
 
 | Key             | Unit          | Description                                                                                                                                                                                   |
-| :---------------- | :-------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| :-------------- | :------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | _id             | str           | The source name without whitespaces and in lower letters. This is the primary key and used for identification in the backend                                                                  |
 | integral_name   | str           | The source name from the Integral source catalog                                                                                                                                              |
 | coord_ra        | degree        | Right Ascension coordinate of the source                                                                                                                                                      |
@@ -71,7 +71,7 @@ If the fields maxi, swift or fermi are not null, the document provides the neces
 
 
 | Key            | Unit | Description                                                                                                                                                                                                                               |
-| :--------------- | :----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| :------------- | :--- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | data_url       | str  | Contains the exact url from which the data can be downloaded. If the data is calculated from existing data (in the ase of hardness or combined flux), this field does not exist.                                                          |
 | influx_key     | str  | Contains an unique identifier for the influxdb, which is the telescope name, an underscore and the integral name without whitespaces. As it can be guaranteed that sources are not doubled in FLASHES, the identifiers are indeed unique. |
 | last_timestamp | int  | Contains the timestamp of the latest datapoint in the timeseries. All data above this timestamp will be imported.                                                                                                                         |
@@ -82,7 +82,7 @@ If large amounts of timeseries data is stored in dictionaries, such as in a mong
 
 
 | Key               | Backend Channel-ID | Telescope        | Availability                                            |
-| :------------------ | :------------------- | :----------------- | :-------------------------------------------------------- |
+| :---------------- | :----------------- | :--------------- | :------------------------------------------------------ |
 | flux (15-50 keV)  | 15-50              | Swift/BAT        | Only if Swift/BAT data exists for this source.          |
 | error (15-50 keV) | 15-50              | Swift/BAT        | Only if Swift/BAT data exists for this source.          |
 | flux (2-20 keV)   | 2-20               | MAXI             | Only if MAXI data exists for this source.               |
@@ -104,12 +104,10 @@ The x-ray hardness $h$ and combined x-ray fluxes $\Phi_c$ are calculated from Sw
 
 $$
 h = \frac{\Phi_{15-50\text{ keV}}}{\Phi_{2-20\text{ keV}}}; \quad \Delta h = \frac{\Phi_{15-50\text{ keV}}}{\Phi_{2-20\text{ keV}}}\sqrt{\left(\frac{\Delta\Phi_{15-50\text{ keV}}}{\Phi_{15-50\text{ keV}}}\right)^2 + \left(\frac{\Delta\Phi_{2-20\text{ keV}}}{\Phi_{2-20\text{ keV}}}\right)^2}
-
 $$
 
 $$
 \Phi_c = \Phi_{15-50\text{ keV}} + \Phi_{2-20\text{ keV}}; \quad \Delta\Phi_c = \left(\Phi_{15-50\text{ keV}} + \Phi_{2-20\text{ keV}}\right)\sqrt{\left(\Delta\Phi_{15-50\text{ keV}}\right)^2 + \left(\Delta\Phi_{2-20\text{ keV}}\right)^2}
-
 $$
 
 An outer join of the two dataframes is done to ensure that the times of observations match for the calculations.
@@ -122,7 +120,7 @@ The backend offers a standardized way to access data from the database. It is st
 
 
 | Library         | Version | Description                                                               |
-| :---------------- | :-------- | :-------------------------------------------------------------------------- |
+| :-------------- | :------ | :------------------------------------------------------------------------ |
 | APScheduler     | 3.11.1  | Time-sensitive tasks, such as automated data downloads                    |
 | astropy         | 7.0.1   | Astronomical calculations and number-conversions                          |
 | astroquery      | 0.4.11  | Source classification with Heasarc                                        |
@@ -146,7 +144,7 @@ Generic endpoints are offered by the fastapi library and are not necessarily par
 
 
 | Endpoint | Description                                                       |
-| :--------- | :------------------------------------------------------------------ |
+| :------- | :---------------------------------------------------------------- |
 | /docs    | Opens the FastAPI SwaggerUI for testing and interactive API calls |
 
 ##### Health
@@ -155,7 +153,7 @@ The health endpoints are necessary to check the correct functionality of all ser
 
 
 | Endpoint         | Description                    | Healthcheck                                            |
-| :----------------- | :------------------------------- | -------------------------------------------------------- |
+| :--------------- | :----------------------------- | ------------------------------------------------------ |
 | /health/mongo    | Healthcheck for the mongoDB    | Tries to count all documents in the sources collection |
 | /health/influx   | Healthcheck for the InfluxDB   | Connects to the off-the-shelf health endpoint          |
 | /health/frontend | Healthcheck for the frontend   | Calls the frontend landing page                        |
@@ -167,7 +165,7 @@ The source-information endpoints are used to provide generic information of the 
 
 
 | Endpoint       | Description                                                                        |
-| :--------------- | :----------------------------------------------------------------------------------- |
+| :------------- | :--------------------------------------------------------------------------------- |
 | /sources       | Lists all sources from the catalog with basic information as array of dictionaries |
 | /sources/{_id} | Lists all available details for a source in a dictionary                           |
 
@@ -177,7 +175,7 @@ The tagging endpoint provides pre-filtered source lists to obey filtering on the
 
 
 | Endpoint    | Description                               |
-| ------------- | ------------------------------------------- |
+| ----------- | ----------------------------------------- |
 | /tags       | Lists all available tags                  |
 | /tags/{tag} | Lists all sources with this specific tag. |
 
@@ -187,14 +185,14 @@ The timeseries endpoints are used to connect the dashboards to the InfluxDB. The
 
 
 | Endpoint    | Description                                           |
-| :------------ | :------------------------------------------------------ |
+| :---------- | :---------------------------------------------------- |
 | /timeseries | Lists data from influxDB in a Grafana-readable format |
 
 It is noted that this data endpoint is to be used internally from the software only and is hence tailored to the needs of Grafana, which contains a list of dictionaries. Each dictionary provides a timestamp, the corresponding flux (named after the fields in the corresponding Table in the backend Section, the flux plus the error (naming: "flux {channel} max") and the flux minus the error (naming: "flux {channel} min"). This has the reason that the errors are displayed as shaded areas around the lightcurve rather than as error bars. To select certain data sets in the dashboard, four parameters can be handed over to the InfluxDB query:
 
 
 | Parameter  | Description                          |
-| :----------- | :------------------------------------- |
+| :--------- | :----------------------------------- |
 | influx_key | Influx ID from the MongoDB           |
 | channel    | Channel information                  |
 | start      | Starting time for the InfluxDB query |
@@ -208,7 +206,7 @@ To download data from FLASHES2.0, a system similar to the timeseries-data endpoi
 
 
 | Endpoint                                                | Description                                      |
-| :-------------------------------------------------------- | :------------------------------------------------- |
+| :------------------------------------------------------ | :----------------------------------------------- |
 | /download/{influx_key}                                  | Downloads a timeseries defined by the influx key |
 | /downlaod/hid/{hardness_influxkey}/{combined_influxkey} | Downloads hardness and combined-flux data        |
 
@@ -216,7 +214,7 @@ To define the start and end of the desired download, two parameters can be hande
 
 
 | Parameter | Description                          |
-| :---------- | :------------------------------------- |
+| :-------- | :----------------------------------- |
 | start     | Starting time for the InfluxDB query |
 | end       | Ending time for the InfluxDB query   |
 
@@ -229,7 +227,7 @@ The plots are available via a dedicated endpoint. As not all sources support the
 
 
 | Endpoint     | Description                                     |
-| -------------- | ------------------------------------------------- |
+| ------------ | ----------------------------------------------- |
 | /plots/{_id} | Forwards to the corresponding Grafana dashboard |
 
 After the call, the backend connects to the mongoDB and assesses the swift, maxi and fermi information to calculate which dashboard for the template has to be used. It then forwards to Grafana and passes the influx keys from all available data as URL query parameters.
@@ -240,7 +238,7 @@ FLASHES2.0 includes to user-oriented software parts. The frontend acts as a star
 
 
 | Library     | Version | Description                                              |
-| ------------- | --------- | ---------------------------------------------------------- |
+| ----------- | ------- | -------------------------------------------------------- |
 | react-dom   | 19.1.0  | Client-rendering library for React                       |
 | next        | 15.5.5  | Next.js framework                                        |
 | typescript  | ^5      | TypeScript compiler                                      |
@@ -252,7 +250,7 @@ For each source, a dashboard is provided, showing all available lightcurve data 
 
 
 | Combination                  | Template Name                  | Dashboard UID            | Comment                                    |
-| :----------------------------- | :------------------------------- | :------------------------- | :------------------------------------------- |
+| :--------------------------- | :----------------------------- | :----------------------- | :----------------------------------------- |
 | MAXI                         | template-maxi.json             | flashes-maxi             |                                            |
 | Swift/BAT                    | template-swift.json            | flashes-swift            |                                            |
 | Swift/BAT + MAXI             | template-swift-maxi.json       | flashes-swift-maxi       | hardness ratio and combined flux available |
@@ -277,7 +275,7 @@ To group the source catalogue into classes and to make things easier if someone 
 
 
 | Tag              | Description                                                                                                                                                                                         |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | LMXRB            | Low-Mass X-Ray Binary - A binary system, in which a Black Hole or a Neutron Star accretes matter from a low-mass companion. The hot matter produces light in the x-ray regime.                      |
 | SEYFERT GALAXY   | A subclass of AGN with a luminous nucleus. Emits x-rays though hot gas in the accretion disk.                                                                                                       |
 | GLOBULAR CLUSTER | A spherically-shaped group of typically very old stars. Frequently hosting x-ray sources [Pooley, 2010]                                                                                             |
@@ -312,7 +310,32 @@ The relevance calculation is the key part of FLASHES that might lead to new rese
 
 In all these cases, the relevance should be computed as close to 1 (very relevant). Sources behaving as suspected should have a relevance of 0 (not relevant).
 
-As no modified physical model exists for x-ray outburst to date - which is relatable as the sources covered in the FLASHES2.0 catalogue are of very different types - the relevance calculation has to be purely data-driven. To provide a reliable relevance for every source individually, a Machine Learning Algorithm is deployed which learns the behaviour of every source, analyses the newly incoming datapoint and calculates the relevance accordingly.
+As no modified physical model exists for x-ray outburst to date - which is relatable as the sources covered in the FLASHES2.0 catalogue are of very different types - the relevance calculation has to be purely data-driven. To achieve that, an ultra-light Machine Learning algorithm is deployed that estimates the relevance based on the source's past. The overall relevance is split into three parts, which are then combined by a weighted average to a single value. The weights depend on the sources tags.
+
+The three parts from which the relevance is calculated are the Flux Relevance, the Trend Relevance and the Hardness-Change Relevance. All of them are described below.
+
+### Flux Relevance
+
+The Flux Relevance is equivalent to a Signal-To-Noise Ratio (SNR). For every available flux channel, the SNR is calculated and the histogram, together with the mean and standard deviation of a fitted Gaussian are calculated. The histogram's mean is the sources individual baseline emission, while the standard deviation depicts how variable the source is. As outbursts have large SNRs, the data which should be flaggd as relevant is positioned at the very right of the histogram. The histogram together with the fitted Gaussian parameters are individual to each source and take past outbursts and general variability into account. Sources with only very occasional outbursts have smaller standard deviations, which makes high-SNR data points more relevant than for highly fluctuating sources, which have a large standard deviation. The data point's relevance is calculated based on a linear mapping function
+
+$$
+r_\text{flux} = \frac{1}{\alpha}\frac{\mu - \text{SNR}(t)}{\sigma}
+$$
+
+The scaling parameter $\alpha$ is a fine-tuning parameter that can be used to adjust the source's sensitivity to changes in the SNR. In the default iteration, the scale factor is chosen such that a $3\sigma$ detection above the mean corresponds to a Flux Relevance of 1. 
+
+The below image shows an example for how the Flux Relevance is calculated based on the data for the source MRK335. The histogram of the SNR are shown in blue while the Gaussian is shown in red. Considering the mean of $\mu = 0.12$ and standard deviation of $\sigma = 1.02$, every data point with an SNR of above $0.12 + 3\cdot 1.02 = 3.18$ has a Flux Relevance of 1. The upper SNR limit can be fine-tuned by changing the scaling parameter $\alpha$. 
+
+
+
+![](assets/20260725_092951_flux_relevance_mrk335.png)
+
+
+### Trend Relevance
+
+
+### Hardness-Change Relevance
+
 
 ## Flux conversions
 
@@ -320,7 +343,7 @@ The flux data in raw format is provided in counts/cm²/s, which is also the unit
 
 
 | Telescope & Channel  | α        | Reference              |
-| ---------------------- | ----------- | ------------------------ |
+| -------------------- | --------- | ---------------------- |
 | Swift/BAT: 15-50 keV | 4545.4545 | Krimm, 2013            |
 | MAXI: 2-20 keV       | 312.5     | Cifuentes Santos, 2021 |
 | MAXI: 2-4 keV        | 476.1905  | Cifuentes Santos, 2021 |
@@ -373,7 +396,7 @@ Once the Scheduler in the backend is started, the first download is triggered, w
 
 ## Further Ideas
 
-- FLASHES supported user-handling to "subscribe" to specific sources of interest. FLASHES2.0 should implement a similar feature but ideally without credential handling to keep things safe. An idea is to map generate a hashcode from the sources of interest, which then can be saved on the user-side and pasted into FLASHES2.0 to generate an individual dashboard from this code.
+- FLASHES supported user-handling to "subscribe" to specific sources of interest. FLASHES2.0 should implement a similar feature but ideally without credential handling to keep things safe. An idea is to  generate a hashcode from the sources of interest, which then can be saved on the user-side and pasted into FLASHES2.0 to generate an individual dashboard from this code.
 - FLASHES2.0 should support alerting via E-Mail for individual sources. The E-Mail adresses has to be treated with care to assure data security measures and must be revokable.
 
 ## Introduced Changes to FLASHES
