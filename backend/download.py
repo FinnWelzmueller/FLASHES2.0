@@ -192,9 +192,15 @@ def filter_times(df: pd.DataFrame, source, telescope) -> pd.DataFrame | None:
     return df[df['TIME'] > cutoff]
 
 
-def calculate_trend_relevance(query_api, influx_key: str, scale: float = 3, plot: bool = False, window_size: int = 7, limit: int = 5) -> float:
+def calculate_trend_relevance(influx_key: str, scale: float = 3, plot: bool = False, window_size: int = 7, limit: int = 5) -> float | None:
     """
     Calculates the trend relevance for a certain timeseries. The fluxes of the timeseries are converted into a flux gradient, from which a histogram is calculated. Then, a Gaussian is fitted to the histogram and the mean and standard deviation are calculated. The trend relevance is then calculated as the number of standard deviations the mean flux gradient is above the mean of the fitted Gaussian. The result is clipped to a maximum of 1 and a minimum of 0. To account for certain unphysical changes, the current flux gradient is calculated as a mean over the last days. The window size for this mean can me adjusted by changing the parameter window_size. To account for large gaps in the data, a minimum number of data points can be set with the parameter limit. If the number of data points in the last window_size days is below this limit, None is returned.
+    :param influx_key: The key of the timeseries in the InfluxDB.
+    :param scale: The maximum relevance value. Default is 3, which corresponds to 3 standard deviations above the mean, giving a flux relevance of 1.
+    :param plot: Whether to plot the histogram and the fitted Gaussian. Default is False.
+    :param window_size: Amount of data poitns that are considered as recent.
+    :param limit: minmum amount of data points that has to be in the window.
+    :return: Trend Relevance
     """
     def gauss(x, A, mu, sigma):
         return A * np.exp(-(x - mu)**2 / (2 * sigma**2))
@@ -292,3 +298,32 @@ def get_flux_relevance(query_api, current_snr:float, influx_key: str, scale: flo
         plt.title(f"mu={mu:.2f}, sigma={sigma:.2f}")
         plt.show()
     return np.clip(1/scale * (current_snr - mu) / sigma, 0, 1)
+
+def get_hardness_change_relevance(influx_key : str, window_size : int = 365, limit : int = 3) -> float | None:
+    """
+    Calculates the hardness-change relevance for a certain timeseries. As data, the hardness ratio from the influxDB is used. 
+    The last data points of the hardness ratio are loaded and if enough data points are available, the mean of the data is calculated.
+    If the sign of the log of the mean differs from the sign of the log of the current hardness ratio, a Hardness-Change relevance of 1 is returned. If they are similar, 0 is returned. Limit and timewindow can be changed if needed. Default values are 7 data points for the average and a limit of three data points within this window.
+    Absolute values are taken to supress errors during the analysis of the hardness ratios.
+    :param influx_key: influx key for the timeseries
+    :param window: time window for the data considered for the mean calculation in days 
+    :param limit: minimum amount of data points that needs to be within the data loaded by applying the window.
+    :return: Hardness-Change Relevance
+    """
+    if limit >= window_size:
+        raise ValueError("Window-size must be larger than the limit.")
+    
+    query_flux = f"""
+                from(bucket: "flashes_data")
+                    |> range(start: -{window_size}d)
+                    |> filter(fn: (r) => r._measurement == "flux data")
+                    |> filter(fn: (r) => r.source == "{influx_key}")
+                |> keep(columns: ["_time", "_field", "_value"])
+                |> pivot(rowKey: ["_time"], columnKey: ["_field"], valueColumn: "_value")
+                |> sort(columns: ["_time"])
+                |> drop(columns: ["_start","_stop"])
+                """
+    data = query_api.query_data_frame(org="flashes", query=query_flux)
+    if len(data) < limit:
+        return None
+    return 1 if np.sign(np.log(np.abs(data["hardness ratio"].iloc[-1]))) != np.sign(np.log(np.abs(data["hardness ratio"].mean()))) else 0
