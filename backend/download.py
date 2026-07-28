@@ -192,13 +192,14 @@ def filter_times(df: pd.DataFrame, source, telescope) -> pd.DataFrame | None:
     return df[df['TIME'] > cutoff]
 
 
-def calculate_trend_relevance(influx_key: str, scale: float = 3, plot: bool = False, window_size: int = 7, limit: int = 5) -> float | None:
+def calculate_trend_relevance(query_api, influx_key: str, scale: float = 3, plot: bool = False, window_size: int = 7, limit: int = 5) -> float | None:
     """
     Calculates the trend relevance for a certain timeseries. The fluxes of the timeseries are converted into a flux gradient, from which a histogram is calculated. Then, a Gaussian is fitted to the histogram and the mean and standard deviation are calculated. The trend relevance is then calculated as the number of standard deviations the mean flux gradient is above the mean of the fitted Gaussian. The result is clipped to a maximum of 1 and a minimum of 0. To account for certain unphysical changes, the current flux gradient is calculated as a mean over the last days. The window size for this mean can me adjusted by changing the parameter window_size. To account for large gaps in the data, a minimum number of data points can be set with the parameter limit. If the number of data points in the last window_size days is below this limit, None is returned.
+    :param query_api: The InfluxDB query API.
     :param influx_key: The key of the timeseries in the InfluxDB.
     :param scale: The maximum relevance value. Default is 3, which corresponds to 3 standard deviations above the mean, giving a flux relevance of 1.
     :param plot: Whether to plot the histogram and the fitted Gaussian. Default is False.
-    :param window_size: Amount of data poitns that are considered as recent.
+    :param window_size: Size of the time window, in days, that is considered as recent.
     :param limit: minmum amount of data points that has to be in the window.
     :return: Trend Relevance
     """
@@ -231,7 +232,7 @@ def calculate_trend_relevance(influx_key: str, scale: float = 3, plot: bool = Fa
     recent_data = data[data["_time"] > (datetime.now() - timedelta(days=window_size))]
     if len(recent_data) >= limit:
         valid_gradient = data["flux gradient"].replace([np.inf, -np.inf], np.nan).dropna()
-        counts, bin_edges = np.histogram(valid_gradient, bins=np.linspace(data["flux gradient"].min(), data["flux gradient"].max(), 100))
+        counts, bin_edges = np.histogram(valid_gradient, bins=np.linspace(valid_gradient.min(), valid_gradient.max(), 100))
         bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
         recent_data_mean = recent_data["flux gradient"].dropna().mean()
         popt, pcov = curve_fit(gauss, bin_centers, counts)
